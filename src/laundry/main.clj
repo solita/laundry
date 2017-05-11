@@ -8,12 +8,19 @@
   [["-p" "--port PORT" "Port number"
       :default 8080
       :parse-fn #(Integer/parseInt %)
-      :validate [#(< 0 % 0x10000) "Port must be 1-65535"]]
+      :validate [#(< 0 % 0x10000) "Port must be 1-65535"]
+      :id :port]
    ["-t" "--slow-request MS" "slow request warning threshold in ms"
       :default 10000
-      :parse-fn #(Integer/parseInt %)]
+      :parse-fn #(Integer/parseInt %)
+      
+      :id :slow-request-warning]
+    ["-L" "--log-level" 
+       :default :info 
+       :parse-fn keyword 
+       :id :log-level]
     ["-h" "--help"
-      :id :help])
+      :id :help]])
 
 (defn -main [& args]
    (let [conf (parse-opts args command-line-rules)]
@@ -33,7 +40,9 @@
                (println (:errors conf))
                1)
          :else
-            (server/start-server 
-               (select-keys (:options conf)
-                  [:port]))
-            0)))
+            (do
+               (println (str " opts " (:options conf)))
+               (server/start-server 
+                  (select-keys (:options conf)
+                     [:port :slow-request-warning :log-level]))
+               0))))

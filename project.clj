@@ -35,7 +35,7 @@
            
    :repl-options 
       {:init-ns laundry.server
-       :init (do (println "Init") (go))
+       :init (println "Now (go)")
        :timeout 900000 ; 90s, needed for slow machines
        }
        

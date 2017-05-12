@@ -1,7 +1,7 @@
 Test pdf/a conversion running under nsjail, using system gs for now
 - apt-get install ghostscript pax-utils # pax-utils for lddtree
 - bash build-scripts/nsjail.bash
-- run strace on /usr/bin/gs -dPDFA -dBATCH -dNOPAUSE -sProcessColorModel=DeviceCMYK -sDEVICE=pdfwrite -sPDFACompatibilityPolicy=1 -sOutputFile=pdfa.pdf in.pdf
+- using some sample input pdf, run strace -f -eopen /usr/bin/gs -dPDFA -dBATCH -dNOPAUSE -sProcessColorModel=DeviceCMYK -sDEVICE=pdfwrite -sPDFACompatibilityPolicy=1 -sOutputFile=pdfa.pdf input.pdf
 - grep -v ENOENT gs-strace.out | cut -d \" -f 2  | sort | uniq | egrep '^/(etc|lib|var|usr|bin)/' | while read fn; do test -f "$fn" && echo "$fn"; done > chroot-files
 - echo /usr/bin/gs >> chroot-files
 - lddtree -l /usr/bin/gs >> chroot-files

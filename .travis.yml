@@ -2,4 +2,7 @@ language: clojure
 
 sudo: required
 
+jdk:
+ - oraclejdk8
+
 script: lein uberjar

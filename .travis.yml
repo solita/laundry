@@ -3,7 +3,7 @@ language: clojure
 sudo: required
 
 jdk:
- - openjdk8
+ - openjdk7
  - oraclejdk8
 
 script:

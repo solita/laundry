@@ -1,0 +1,19 @@
+#!/bin/sh
+
+set -eu
+
+INPUT=$1
+ALGORITHM=$2
+
+case $ALGORITHM
+in
+   sha256)
+      OUT=$(sha256sum $INPUT)
+      echo $OUT | sed -e 's/ .*//'
+      ;;
+   *)
+      echo wat
+      exit 1
+esac
+
+exit 0

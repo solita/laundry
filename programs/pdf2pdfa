@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+set -eu
+set -x
+input_pdf_path=$1
+output_pdf_path=$2
+chroot_tar_path=gs-chroot_v2.tar
+chroot_tar_url=https://haltp.org/f/gs-chroot_v2.tar.gz
+gschroot_dir=`mktemp --tmpdir --directory pdf2pdfa-chroot-XXXXXX`
+gstmp_dir=`mktemp --tmpdir --directory pdf2pdfa-tmp-XXXXXX`
+
+trap "rm -rf $gschroot_dir" EXIT
+test -f $chroot_tar_path || {
+   wget -O $chroot_tar_path.not $chroot_tar_url
+   sha256sum $chroot_tar_path.not | grep -q 7d6a62496c56caac97cf2c9a17797597f405e8b2bdc923d1530eeba9d2c2cbe3 && mv $chroot_tar_path.not $chroot_tar_path
+}
+   
+tar -C $gschroot_dir -xf $chroot_tar_path
+cp $input_pdf_path $gstmp_dir/input.pdf
+nsjail -B /dev/urandom -B $gstmp_dir:/tmp -Mo --chroot $gschroot_dir  -- /usr/bin/gs -dPDFA -dBATCH -dNOPAUSE -sProcessColorModel=DeviceCMYK -sDEVICE=pdfwrite -sPDFACompatibilityPolicy=1 -sOutputFile=/tmp/output.pdf /tmp/input.pdf
+cp $gstmp_dir/output.pdf "$2"
+exit 0

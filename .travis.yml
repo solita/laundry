@@ -5,4 +5,9 @@ sudo: required
 jdk:
  - oraclejdk8
 
-script: lein uberjar
+jobs:
+  include:
+    - stage: build
+    - script: lein uberjar
+    - stage: test
+    - script: test/test.sh

@@ -3,6 +3,9 @@ language: clojure
 sudo: required
 
 jdk:
+ # - openjdk8 enable this once it is available
  - oraclejdk8
 
-script: lein uberjar
+script:
+ - lein uberjar
+ - test/test.sh

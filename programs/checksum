@@ -2,13 +2,13 @@
 
 set -eu
 
-INPUT=$1
+TEMPFILE=$1
 ALGORITHM=$2
 
 case $ALGORITHM
 in
    sha256)
-      OUT=$(sha256sum $INPUT)
+      OUT=$(sha256sum "$TEMPFILE")
       echo $OUT | sed -e 's/ .*//'
       ;;
    *)

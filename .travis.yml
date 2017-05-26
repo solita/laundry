@@ -3,11 +3,9 @@ language: clojure
 sudo: required
 
 jdk:
+ - openjdk8
  - oraclejdk8
 
-jobs:
-  include:
-    - stage: build
-      script: lein uberjar
-    - stage: test
-      script: test/test.sh
+script:
+ - lein uberjar
+ - test/test.sh

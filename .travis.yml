@@ -8,6 +8,6 @@ jdk:
 jobs:
   include:
     - stage: build
-    - script: lein uberjar
+      script: lein uberjar
     - stage: test
-    - script: test/test.sh
+      script: test/test.sh

@@ -20,6 +20,9 @@
     ["-C" "--checksum-command COMMAND" "compute a checksum"
        :default "/opt/laundry/bin/checksum"
        :id :checksum-command]
+    ["-P" "--pdf2pdfa-command COMMAND" "command for PDF/A conversion"
+       :default "/opt/laundry/bin/pdf2pdfa"
+       :id :pdf2pdfa-command]
     ["-L" "--log-level" "choose log level"
        :default :info 
        :parse-fn keyword 
@@ -50,5 +53,5 @@
                (server/start-server 
                   (select-keys (:options conf)
                      [:port :slow-request-warning :log-level :temp-directory 
-                      :checksum-command]))
+                      :checksum-command :pdf2pdfa-command]))
                0))))

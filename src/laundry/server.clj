@@ -24,6 +24,7 @@
     :slow-request-warning s/Num
     :temp-directory s/Str
     :checksum-command s/Str
+    :pdf2pdfa-command s/Str
     :log-level (s/enum :debug :info)})
 
 (defonce config (atom nil))
@@ -174,6 +175,8 @@
       {:slow-request-warning 500
        :port 9001
        :temp-directory "/tmp"
+       :checksum-command "programs/checksum"
+       :pdf2pdfa-command "programs/pdf2pdfa"
        :log-level :info}))
 
 (defn go []

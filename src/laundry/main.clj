@@ -10,12 +10,17 @@
       :parse-fn #(Integer/parseInt %)
       :validate [#(< 0 % 0x10000) "Port must be 1-65535"]
       :id :port]
-   ["-t" "--slow-request MS" "slow request warning threshold in ms"
+   ["-t" "--temporary-directory" "directory for holding temporary data"
+      :default "/tmp"
+      :id :temp-directory]
+   ["-S" "--slow-request MS" "slow request warning threshold in ms"
       :default 10000
       :parse-fn #(Integer/parseInt %)
-      
       :id :slow-request-warning]
-    ["-L" "--log-level" 
+    ["-C" "--checksum-command COMMAND" "compute a checksum"
+       :default "/opt/laundry/bin/checksum"
+       :id :checksum-command]
+    ["-L" "--log-level" "choose log level"
        :default :info 
        :parse-fn keyword 
        :id :log-level]
@@ -44,5 +49,6 @@
                (println (str " opts " (:options conf)))
                (server/start-server 
                   (select-keys (:options conf)
-                     [:port :slow-request-warning :log-level]))
+                     [:port :slow-request-warning :log-level :temp-directory 
+                      :checksum-command]))
                0))))

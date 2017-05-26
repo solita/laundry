@@ -22,6 +22,8 @@
 (s/defschema LaundryConfig
    {:port s/Num
     :slow-request-warning s/Num
+    :temp-directory s/Str
+    :checksum-command s/Str
     :log-level (s/enum :debug :info)})
 
 (defonce config (atom nil))
@@ -39,16 +41,31 @@
    ([key default]
       (get @config key default)))
 
-
 (defn not-ok [res]
    (status (ok res) 500))
 
 (defn not-there [res]
    (status (ok res) 404))
 
+(s/defn temp-file-input-stream [path :- s/Str]
+   (let [input (io/input-stream (io/file path))]
+      (proxy [java.io.FilterInputStream] [input]
+         (close []
+            (proxy-super close)
+            (io/delete-file path)))))
 
 ;;; Handler
 
+(s/defschema DigestAlgorithm
+   (s/enum "sha256"))
+
+(s/defn api-checksum [tempfile :- java.io.File, digest :- DigestAlgorithm]
+   (let [res (sh (get-config :checksum-command) (.getAbsolutePath tempfile) digest)]
+      (.delete tempfile)
+      (if (= (:exit res) 0)
+         (ok (:out res))
+         (not-ok "digest computation failed"))))
+ 
 (def api-handler
    (api
       {:swagger
@@ -71,6 +88,16 @@
             :summary "get current laundry configuration"
             :return LaundryConfig
             (ok @config))
+         
+         (POST "/digest/sha256" []
+            :summary "compute a SHA256 digest for posted data"
+            :multipart-params [file :- upload/TempFileUpload]
+            :middleware [upload/wrap-multipart-params]
+            (let [tempfile (:tempfile file)
+                  filename (:filename file)]
+               (info "SHA256 received " filename "(" (:size file) "b)")
+               (.deleteOnExit tempfile)
+               (api-checksum tempfile "sha256")))
          
          (POST "/pdf2pdfa" []
             :summary "attempt to convert a PDF file to PDF/A"
@@ -146,6 +173,7 @@
    (start-server
       {:slow-request-warning 500
        :port 9001
+       :temp-directory "/tmp"
        :log-level :info}))
 
 (defn go []

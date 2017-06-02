@@ -1,0 +1,13 @@
+---
+
+- hosts: laundry-servers
+  vars:
+    - http_port: 9001
+  remote_user: root
+  tasks:
+    - name: install build-essential
+      apt: name=build-essential
+    - name: build nsjail
+      script: build-scripts/nsjail.bash
+    - name: install nsjail binary
+      copy: src="build-data/src/nsjail-1.3/nsjail" dest="/usr/local/bin/nsjail" mode="0755"

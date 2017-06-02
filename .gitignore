@@ -1,4 +1,7 @@
 laundry.log
 .lein-repl-history
 .nrepl-port
-target/
+target
+build-data
+gs-chroot_v2.tar
+tmp

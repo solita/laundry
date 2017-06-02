@@ -39,6 +39,7 @@ start_laundry() {
    echo "Starting laundry"
    mkdir -p tmp || exit 1
    alivep && return 0
+   test -f target/laundry.jar || die "no laundry.jar"
    java -jar target/laundry.jar \
       --port $PORT \
       --checksum-command programs/checksum \

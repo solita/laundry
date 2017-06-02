@@ -24,6 +24,7 @@
     :slow-request-warning s/Num
     :temp-directory s/Str
     :checksum-command s/Str
+    :pdf2pdfa-command s/Str
     :log-level (s/enum :debug :info)})
 
 (defonce config (atom nil))
@@ -58,6 +59,17 @@
 
 (s/defschema DigestAlgorithm
    (s/enum "sha256"))
+
+(s/defn api-pdf2pdfa [tempfile :- java.io.File]
+   (let [path (.getAbsolutePath tempfile)
+         out  (str (.getAbsolutePath tempfile) ".pdf")
+         res (sh (get-config :pdf2pdfa-command) path out)]
+      (.delete tempfile)
+      (if (= (:exit res) 0)
+         (content-type 
+            (ok (temp-file-input-stream out))
+             "application/pdf")
+         (not-ok "pdf2pdfa conversion failed"))))
 
 (s/defn api-checksum [tempfile :- java.io.File, digest :- DigestAlgorithm]
    (let [res (sh (get-config :checksum-command) (.getAbsolutePath tempfile) digest)]
@@ -107,7 +119,7 @@
                   filename (:filename file)]
                (info "PDF converter received " filename "(" (:size file) "b)")
                (.deleteOnExit tempfile) ;; cleanup if VM is terminated
-               (ok "not converting yet"))))))
+               (api-pdf2pdfa tempfile))))))
 
 (defn request-time-logger [handler]
    (fn [req]
@@ -174,6 +186,8 @@
       {:slow-request-warning 500
        :port 9001
        :temp-directory "/tmp"
+       :checksum-command "programs/checksum"
+       :pdf2pdfa-command "programs/pdf2pdfa"
        :log-level :info}))
 
 (defn go []

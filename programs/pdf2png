@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+echo  $@ > /tmp/pdf2png
+set -e
+
+INPUT=$1
+OUTPUT=$2
+
+programs/gs-jail "$INPUT" "$OUTPUT" "/usr/bin/gs -dSAFER -dBATCH -dNOPAUSE -sDEVICE=png16m -dGraphicsAlphaBits=4 -dTextAlphaBits=4 -sPageList=1 -sOutputFile=/tmp/output /tmp/input"
+

@@ -5,6 +5,9 @@ HOST=http://localhost:$PORT
 LAUNDRYPID=
 START=yes
 
+# temporary manul conversion to track down a failure at travis
+programs/pdf2txt test/testcases/hypno.pdf /tmp/out.txt && cat /tmp/out.txt
+
 alivep() {
     curl -s $HOST/api/alive | grep -q yes
 }

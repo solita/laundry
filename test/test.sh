@@ -43,6 +43,8 @@ start_laundry() {
    java -jar target/laundry.jar \
       --port $PORT \
       --checksum-command programs/checksum \
+      --pdf2txt-command programs/pdf2txt \
+      --pdf2png-command programs/pdf2png \
       > laundry.log &
    LAUNDRYPID=$!
    wait_for alivep
@@ -55,6 +57,24 @@ test_checksum() {
    RESPONSE=$(cat tmp/response)
    cat tmp/testdata.txt | sha256sum | grep -q "$RESPONSE" || die "bad result"
    echo " $RESPONSE ok"
+}
+
+test_pdf2txt() {
+   echo -n "Testing pdf2txt:"
+   echo -n " converting"
+   curl -sf -F file=@test/testcases/hypno.pdf -X POST "$HOST/api/pdf2txt" > tmp/response.txt || die "conversion failed"
+   echo -n ", checking"
+   grep -q 'All glory to the hypnotoad\.' tmp/response.txt || die "no glory to the hypnotoad in tmp/response.txt"
+   echo ", ok"
+}
+
+test_pdf2png() {
+   echo -n "Testing pdf2png:"
+   echo -n " converting"
+   curl -sf -F file=@test/testcases/hypno.pdf -X POST "$HOST/api/pdf-preview" > tmp/response.png || die "conversion failed"
+   echo -n ", checking"
+   file tmp/response.png | grep -q 'PNG' || die "tmp/response.png does not look like a png file"
+   echo ", ok"
 }
 
 usage() {
@@ -93,6 +113,8 @@ main() {
    
    # Actual tests 
    test_checksum
+   test_pdf2txt
+   test_pdf2png
    
    echo "Tests OK"
 }

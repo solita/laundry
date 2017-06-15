@@ -25,6 +25,8 @@
     :temp-directory s/Str
     :checksum-command s/Str
     :pdf2pdfa-command s/Str
+    :pdf2png-command s/Str
+    :pdf2txt-command s/Str
     :log-level (s/enum :debug :info)})
 
 (defonce config (atom nil))
@@ -60,6 +62,7 @@
 (s/defschema DigestAlgorithm
    (s/enum "sha256"))
 
+;; pdf/a converter
 (s/defn api-pdf2pdfa [tempfile :- java.io.File]
    (let [path (.getAbsolutePath tempfile)
          out  (str (.getAbsolutePath tempfile) ".pdf")
@@ -70,6 +73,32 @@
             (ok (temp-file-input-stream out))
              "application/pdf")
          (not-ok "pdf2pdfa conversion failed"))))
+
+;; pdf → txt conversion
+(s/defn api-pdf2txt [tempfile :- java.io.File]
+   (let [path (.getAbsolutePath tempfile)
+         out  (str (.getAbsolutePath tempfile) ".txt")
+         res (sh (get-config :pdf2txt-command) path out)]
+      (.delete tempfile)
+      (if (= (:exit res) 0)
+         (content-type 
+            (ok (temp-file-input-stream out))
+             "text/plain")
+         (not-ok "pdf2txt conversion failed"))))
+
+;; previewer of first page
+(s/defn api-pdf2png [tempfile :- java.io.File]
+   (let [path (.getAbsolutePath tempfile)
+         out  (str (.getAbsolutePath tempfile) ".png")
+         res (sh (get-config :pdf2png-command) path out)]
+      (.delete tempfile)
+      (if (= (:exit res) 0)
+         (content-type 
+            (ok (temp-file-input-stream out))
+             "image/png")
+         (do
+            (warn "pdf preview failed: " res)
+            (not-ok "pdf preview failed")))))
 
 (s/defn api-checksum [tempfile :- java.io.File, digest :- DigestAlgorithm]
    (let [res (sh (get-config :checksum-command) (.getAbsolutePath tempfile) digest)]
@@ -111,6 +140,26 @@
                (.deleteOnExit tempfile)
                (api-checksum tempfile "sha256")))
          
+         (POST "/pdf-preview" []
+            :summary "attempt to convert first page of a PDF to PNG"
+            :multipart-params [file :- upload/TempFileUpload]
+            :middleware [upload/wrap-multipart-params]
+            (let [tempfile (:tempfile file)
+                  filename (:filename file)]
+               (info "PDF previewer received " filename "(" (:size file) "b)")
+               (.deleteOnExit tempfile) ;; cleanup if VM is terminated
+               (api-pdf2png tempfile)))
+         
+         (POST "/pdf2txt" []
+            :summary "attempt to convert a PDF file to TXT"
+            :multipart-params [file :- upload/TempFileUpload]
+            :middleware [upload/wrap-multipart-params]
+            (let [tempfile (:tempfile file)
+                  filename (:filename file)]
+               (info "PDF2TXT converter received " filename "(" (:size file) "b)")
+               (.deleteOnExit tempfile) ;; cleanup if VM is terminated
+               (api-pdf2txt tempfile)))
+         
          (POST "/pdf2pdfa" []
             :summary "attempt to convert a PDF file to PDF/A"
             :multipart-params [file :- upload/TempFileUpload]
@@ -120,6 +169,7 @@
                (info "PDF converter received " filename "(" (:size file) "b)")
                (.deleteOnExit tempfile) ;; cleanup if VM is terminated
                (api-pdf2pdfa tempfile))))))
+         
 
 (defn request-time-logger [handler]
    (fn [req]
@@ -188,6 +238,8 @@
        :temp-directory "/tmp"
        :checksum-command "programs/checksum"
        :pdf2pdfa-command "programs/pdf2pdfa"
+       :pdf2png-command "programs/pdf2png"
+       :pdf2txt-command "programs/pdf2txt"
        :log-level :info}))
 
 (defn go []

@@ -23,6 +23,12 @@
     ["-P" "--pdf2pdfa-command COMMAND" "command for PDF/A conversion"
        :default "/opt/laundry/bin/pdf2pdfa"
        :id :pdf2pdfa-command]
+    ["-X" "--pdf2png-command COMMAND" "command for PDF preview"
+       :default "/opt/laundry/bin/pdf2png"
+       :id :pdf2png-command]
+    ["-T" "--pdf2txt-command COMMAND" "command for PDF to text conversion"
+       :default "/opt/laundry/bin/pdf2txt"
+       :id :pdf2txt-command]
     ["-L" "--log-level" "choose log level"
        :default :info 
        :parse-fn keyword 
@@ -53,5 +59,6 @@
                (server/start-server 
                   (select-keys (:options conf)
                      [:port :slow-request-warning :log-level :temp-directory 
-                      :checksum-command :pdf2pdfa-command]))
+                      :checksum-command :pdf2pdfa-command :pdf2png-command 
+                      :pdf2txt-command]))
                0))))

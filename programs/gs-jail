@@ -10,9 +10,9 @@ COMMAND=$3
 echo "$@" > /tmp/gsjail
 
 # unprivileged user clone is needed
-echo "checking or attempting to set kernel.unprivileged_userns_clone to 1"
-/sbin/sysctl -a | grep kernel.unprivileged_userns_clone | grep -q 1 || sudo /sbin/sysctl kernel.unprivileged_userns_clone=1
-/sbin/sysctl kernel.unprivileged_userns_clone
+# echo "checking or attempting to set kernel.unprivileged_userns_clone to 1"
+# /sbin/sysctl -a | grep kernel.unprivileged_userns_clone | grep -q 1 || sudo /sbin/sysctl kernel.unprivileged_userns_clone=1
+# /sbin/sysctl kernel.unprivileged_userns_clone
 
 # download a temporary gs-chroot image
 chroot_tar_path=gs-chroot_v2.tar

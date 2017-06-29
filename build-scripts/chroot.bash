@@ -38,5 +38,4 @@ echo $executable >> $mytmp/chroot-files
 echo /usr/share/fonts >> $mytmp/chroot-files
 lddtree -l $executable >> $mytmp/chroot-files
 tar -C / --dereference --files-from $mytmp/chroot-files -cf $mytmp/chroot.tar
-mkdir $mytmp/staging-chroot
-tar -C $mytmp/staging-chroot -xf $mytmp/chroot.tar
+cp $mytmp/chroot.tar chroot.tar

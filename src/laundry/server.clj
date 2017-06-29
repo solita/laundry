@@ -1,5 +1,5 @@
 (ns laundry.server
-   (:require [compojure.api.sweet :refer :all]
+   (:require [compojure.api.sweet :as sweet :refer :all]
              [ring.util.http-response :refer [ok status content-type] :as resp]
              [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
              [ring.adapter.jetty :as jetty]
@@ -9,6 +9,7 @@
              [taoensso.timbre.appenders.core :as appenders]
              [clojure.java.shell :refer [sh]]
              [pantomime.mime :refer [mime-type-of]]
+             [laundry.pdf :as pdf]
              [clojure.string :as string]
              [clojure.set :as set]
              [clojure.java.io :as io]
@@ -62,114 +63,49 @@
 (s/defschema DigestAlgorithm
    (s/enum "sha256"))
 
-;; pdf/a converter
-(s/defn api-pdf2pdfa [tempfile :- java.io.File]
-   (let [path (.getAbsolutePath tempfile)
-         out  (str (.getAbsolutePath tempfile) ".pdf")
-         res (sh (get-config :pdf2pdfa-command) path out)]
-      (.delete tempfile)
-      (if (= (:exit res) 0)
-         (content-type 
-            (ok (temp-file-input-stream out))
-             "application/pdf")
-         (not-ok "pdf2pdfa conversion failed"))))
-
-;; pdf → txt conversion
-(s/defn api-pdf2txt [tempfile :- java.io.File]
-   (let [path (.getAbsolutePath tempfile)
-         out  (str (.getAbsolutePath tempfile) ".txt")
-         res (sh (get-config :pdf2txt-command) path out)]
-      (.delete tempfile)
-      (if (= (:exit res) 0)
-         (content-type 
-            (ok (temp-file-input-stream out))
-             "text/plain")
-         (not-ok "pdf2txt conversion failed"))))
-
-;; previewer of first page
-(s/defn api-pdf2png [tempfile :- java.io.File]
-   (let [path (.getAbsolutePath tempfile)
-         out  (str (.getAbsolutePath tempfile) ".png")
-         res (sh (get-config :pdf2png-command) path out)]
-      (.delete tempfile)
-      (if (= (:exit res) 0)
-         (content-type 
-            (ok (temp-file-input-stream out))
-             "image/png")
-         (do
-            (warn "pdf preview failed: " res)
-            (not-ok "pdf preview failed")))))
-
 (s/defn api-checksum [tempfile :- java.io.File, digest :- DigestAlgorithm]
    (let [res (sh (get-config :checksum-command) (.getAbsolutePath tempfile) digest)]
       (.delete tempfile)
       (if (= (:exit res) 0)
          (ok (:out res))
          (not-ok "digest computation failed"))))
- 
-(def api-handler
-   (api
-      {:swagger
-         {:ui "/api-docs"
-          :spec "/swagger.json"
-          :data {:info {:title "Laundry API"
-                          :description ""}}}}
 
-      (undocumented
-        (GET "/" []
-          (resp/temporary-redirect "/index.html")))
+(defn make-api-handler [env]
+   (let [pdf-api (pdf/make-pdf-routes env)]
+      (api
+         {:swagger
+            {:ui "/api-docs"
+             :spec "/swagger.json"
+             :data {:info {:title "Laundry API"
+                             :description ""}}}}
+   
+         (undocumented
+           (GET "/" []
+             (resp/temporary-redirect "/index.html")))
 
-      (context "/api" []
-
-         (GET "/alive" []
-            :summary "check whether server is running"
-            (ok "yes"))
-
-         (GET "/config" []
-            :summary "get current laundry configuration"
-            :return LaundryConfig
-            (ok @config))
+            
+         (context "/api" []
+   
+            (GET "/alive" []
+               :summary "check whether server is running"
+               (ok "yes"))
+   
+            (GET "/config" []
+               :summary "get current laundry configuration"
+               :return LaundryConfig
+               (ok @config))
+            
+            pdf-api
          
-         (POST "/digest/sha256" []
-            :summary "compute a SHA256 digest for posted data"
-            :multipart-params [file :- upload/TempFileUpload]
-            :middleware [upload/wrap-multipart-params]
-            (let [tempfile (:tempfile file)
-                  filename (:filename file)]
-               (info "SHA256 received " filename "(" (:size file) "b)")
-               (.deleteOnExit tempfile)
-               (api-checksum tempfile "sha256")))
-         
-         (POST "/pdf-preview" []
-            :summary "attempt to convert first page of a PDF to PNG"
-            :multipart-params [file :- upload/TempFileUpload]
-            :middleware [upload/wrap-multipart-params]
-            (let [tempfile (:tempfile file)
-                  filename (:filename file)]
-               (info "PDF previewer received " filename "(" (:size file) "b)")
-               (.deleteOnExit tempfile) ;; cleanup if VM is terminated
-               (api-pdf2png tempfile)))
-         
-         (POST "/pdf2txt" []
-            :summary "attempt to convert a PDF file to TXT"
-            :multipart-params [file :- upload/TempFileUpload]
-            :middleware [upload/wrap-multipart-params]
-            (let [tempfile (:tempfile file)
-                  filename (:filename file)]
-               (info "PDF2TXT converter received " filename "(" (:size file) "b)")
-               (.deleteOnExit tempfile) ;; cleanup if VM is terminated
-               (api-pdf2txt tempfile)))
-         
-         (POST "/pdf2pdfa" []
-            :summary "attempt to convert a PDF file to PDF/A"
-            :multipart-params [file :- upload/TempFileUpload]
-            :middleware [upload/wrap-multipart-params]
-            (let [tempfile (:tempfile file)
-                  filename (:filename file)]
-               (info "PDF converter received " filename "(" (:size file) "b)")
-               (.deleteOnExit tempfile) ;; cleanup if VM is terminated
-               (api-pdf2pdfa tempfile))))))
-         
+            (POST "/digest/sha256" []
+               :summary "compute a SHA256 digest for posted data"
+               :multipart-params [file :- upload/TempFileUpload]
+               :middleware [upload/wrap-multipart-params]
+               (let [tempfile (:tempfile file)
+                     filename (:filename file)]
+                  (info "SHA256 received " filename "(" (:size file) "b)")
+                  (.deleteOnExit tempfile)
+                  (api-checksum tempfile "sha256")))))))
 
 (defn request-time-logger [handler]
    (fn [req]
@@ -181,8 +117,8 @@
                   " took " elapsed "ms")))
          res)))
 
-(def handler
-  (-> api-handler
+(defn make-handler [env]
+  (-> (make-api-handler env)
       request-time-logger
       (wrap-defaults (-> (assoc-in site-defaults [:security :anti-forgery] false)
                          (assoc-in [:params :multipart] false)))))
@@ -218,9 +154,9 @@
       (get-config :log-level :info))
    (info "start-server, config " @config)
    ;; configure logging
-   (start-laundry handler
+   (start-laundry (make-handler conf)
       {:port (get-config :port 8080)
-              :join? false}))
+       :join? false}))
 
 
 ;;; Dev mode entry

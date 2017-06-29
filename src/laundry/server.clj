@@ -9,6 +9,7 @@
              [taoensso.timbre.appenders.core :as appenders]
              [clojure.java.shell :refer [sh]]
              [pantomime.mime :refer [mime-type-of]]
+             [laundry.pdf :as pdf]
              [clojure.string :as string]
              [clojure.set :as set]
              [clojure.java.io :as io]
@@ -62,44 +63,6 @@
 (s/defschema DigestAlgorithm
    (s/enum "sha256"))
 
-;; pdf/a converter
-(s/defn api-pdf2pdfa [env, tempfile :- java.io.File]
-   (let [path (.getAbsolutePath tempfile)
-         out  (str (.getAbsolutePath tempfile) ".pdf")
-         res (sh (:pdf2pdfa-command env) path out)]
-      (.delete tempfile)
-      (if (= (:exit res) 0)
-         (content-type 
-            (ok (temp-file-input-stream out))
-             "application/pdf")
-         (not-ok "pdf2pdfa conversion failed"))))
-
-;; pdf → txt conversion
-(s/defn api-pdf2txt [env, tempfile :- java.io.File]
-   (let [path (.getAbsolutePath tempfile)
-         out  (str (.getAbsolutePath tempfile) ".txt")
-         res (sh (:pdf2txt-command env) path out)]
-      (.delete tempfile)
-      (if (= (:exit res) 0)
-         (content-type 
-            (ok (temp-file-input-stream out))
-             "text/plain")
-         (not-ok "pdf2txt conversion failed"))))
-
-;; previewer of first page
-(s/defn api-pdf2png [env, tempfile :- java.io.File]
-   (let [path (.getAbsolutePath tempfile)
-         out  (str (.getAbsolutePath tempfile) ".png")
-         res (sh (:pdf2png-command env) path out)]
-      (.delete tempfile)
-      (if (= (:exit res) 0)
-         (content-type 
-            (ok (temp-file-input-stream out))
-             "image/png")
-         (do
-            (warn "pdf preview failed: " res)
-            (not-ok "pdf preview failed")))))
-
 (s/defn api-checksum [tempfile :- java.io.File, digest :- DigestAlgorithm]
    (let [res (sh (get-config :checksum-command) (.getAbsolutePath tempfile) digest)]
       (.delete tempfile)
@@ -107,41 +70,8 @@
          (ok (:out res))
          (not-ok "digest computation failed"))))
 
-(defn make-pdf-routes [env]
-   (sweet/context "/pdf" []
-      
-      (POST "/pdf-preview" []
-         :summary "attempt to convert first page of a PDF to PNG"
-         :multipart-params [file :- upload/TempFileUpload]
-         :middleware [upload/wrap-multipart-params]
-         (let [tempfile (:tempfile file)
-               filename (:filename file)]
-            (info "PDF previewer received " filename "(" (:size file) "b)")
-            (.deleteOnExit tempfile) ;; cleanup if VM is terminated
-            (api-pdf2png env tempfile)))
-         
-      (POST "/pdf2txt" []
-         :summary "attempt to convert a PDF file to TXT"
-         :multipart-params [file :- upload/TempFileUpload]
-         :middleware [upload/wrap-multipart-params]
-         (let [tempfile (:tempfile file)
-               filename (:filename file)]
-            (info "PDF2TXT converter received " filename "(" (:size file) "b)")
-            (.deleteOnExit tempfile) ;; cleanup if VM is terminated
-            (api-pdf2txt env tempfile)))
-         
-      (POST "/pdf2pdfa" []
-         :summary "attempt to convert a PDF file to PDF/A"
-         :multipart-params [file :- upload/TempFileUpload]
-         :middleware [upload/wrap-multipart-params]
-         (let [tempfile (:tempfile file)
-               filename (:filename file)]
-            (info "PDF converter received " filename "(" (:size file) "b)")
-            (.deleteOnExit tempfile) ;; cleanup if VM is terminated
-            (api-pdf2pdfa env tempfile)))))
-         
 (defn make-api-handler [env]
-   (let [pdf-api (make-pdf-routes env)]
+   (let [pdf-api (pdf/make-pdf-routes env)]
       (api
          {:swagger
             {:ui "/api-docs"

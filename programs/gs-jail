@@ -7,16 +7,13 @@ INPUT=$1
 OUTPUT=$2
 COMMAND=$3
 
-echo "$@" > /tmp/gsjail
-
 # unprivileged user clone is needed
 # echo "checking or attempting to set kernel.unprivileged_userns_clone to 1"
 # /sbin/sysctl -a | grep kernel.unprivileged_userns_clone | grep -q 1 || sudo /sbin/sysctl kernel.unprivileged_userns_clone=1
 # /sbin/sysctl kernel.unprivileged_userns_clone
 
 # download a temporary gs-chroot image
-chroot_tar_path=gs-chroot_v2.tar
-chroot_tar_url=https://haltp.org/f/gs-chroot_v2.tar.gz
+chroot_tar_path=chroot.tar
 gschroot_dir=`mktemp --tmpdir --directory pdf2pdfa-chroot-XXXXXX`
 gstmp_dir=`mktemp --tmpdir --directory pdf2pdfa-tmp-XXXXXX`
 
@@ -25,8 +22,8 @@ trap "rm -rf $gschroot_dir" EXIT
 
 # fetch the file system snapshot unless it's already available
 test -f $chroot_tar_path || {
-   wget -O $chroot_tar_path.not $chroot_tar_url
-   sha256sum $chroot_tar_path.not | grep -q 7d6a62496c56caac97cf2c9a17797597f405e8b2bdc923d1530eeba9d2c2cbe3 && mv $chroot_tar_path.not $chroot_tar_path
+   echo "no '$chroot_tar_path' file";
+   exit 1;
 }
 
 tar -C $gschroot_dir -xf $chroot_tar_path

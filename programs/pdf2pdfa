@@ -4,7 +4,7 @@ set -eu
 set -x
 input_pdf_path=$1
 output_pdf_path=$2
-chroot_tar_path=gs-chroot_v2.tar
+chroot_tar_path=chroot.tar
 chroot_tar_url=https://haltp.org/f/gs-chroot_v2.tar.gz
 gschroot_dir=`mktemp --tmpdir --directory pdf2pdfa-chroot-XXXXXX`
 gstmp_dir=`mktemp --tmpdir --directory pdf2pdfa-tmp-XXXXXX`

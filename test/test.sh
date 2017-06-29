@@ -49,6 +49,7 @@ start_laundry() {
       --checksum-command programs/checksum \
       --pdf2txt-command programs/pdf2txt \
       --pdf2png-command programs/pdf2png \
+      --pdf2pdfa-command programs/pdf2pdfa \
       > laundry.log &
    LAUNDRYPID=$!
    wait_for alivep
@@ -80,7 +81,17 @@ test_pdf2png() {
    curl -sf -F file=@test/testcases/hypno.pdf -X POST "$HOST/api/pdf/pdf-preview" > tmp/response.png || die "conversion failed"
    echo -n ", checking"
    file tmp/response.png | grep -q 'PNG' || die "tmp/response.png does not look like a png file"
-   echo ", ok"
+   echo ", ok (response is png)"
+}
+
+test_pdf2pdfa() {
+   echo -n "Testing pdf2pdfa:"
+   test -x $NSJAIL || { echo "no nsjail - skipping "; return 0; }
+   echo -n " converting"
+   curl -sf -F file=@test/testcases/hypno.pdf -X POST "$HOST/api/pdf/pdf2pdfa" > tmp/response.pdf || die "conversion failed"
+   echo -n ", checking"
+   file tmp/response.pdf | grep -q 'PDF' || die "tmp/response.pdf does not look like a pdf file"
+   echo ", ok (response is pdf)"
 }
 
 usage() {
@@ -120,7 +131,8 @@ main() {
    # Actual tests 
    test_checksum
    #test_pdf2txt
-   #test_pdf2png
+   test_pdf2png
+   test_pdf2pdfa
    
    echo "Tests OK"
 }

@@ -63,10 +63,10 @@
    (s/enum "sha256"))
 
 ;; pdf/a converter
-(s/defn api-pdf2pdfa [tempfile :- java.io.File]
+(s/defn api-pdf2pdfa [env, tempfile :- java.io.File]
    (let [path (.getAbsolutePath tempfile)
          out  (str (.getAbsolutePath tempfile) ".pdf")
-         res (sh (get-config :pdf2pdfa-command) path out)]
+         res (sh (:pdf2pdfa-command env) path out)]
       (.delete tempfile)
       (if (= (:exit res) 0)
          (content-type 
@@ -75,10 +75,10 @@
          (not-ok "pdf2pdfa conversion failed"))))
 
 ;; pdf → txt conversion
-(s/defn api-pdf2txt [tempfile :- java.io.File]
+(s/defn api-pdf2txt [env, tempfile :- java.io.File]
    (let [path (.getAbsolutePath tempfile)
          out  (str (.getAbsolutePath tempfile) ".txt")
-         res (sh (get-config :pdf2txt-command) path out)]
+         res (sh (:pdf2txt-command env) path out)]
       (.delete tempfile)
       (if (= (:exit res) 0)
          (content-type 
@@ -87,10 +87,10 @@
          (not-ok "pdf2txt conversion failed"))))
 
 ;; previewer of first page
-(s/defn api-pdf2png [tempfile :- java.io.File]
+(s/defn api-pdf2png [env, tempfile :- java.io.File]
    (let [path (.getAbsolutePath tempfile)
          out  (str (.getAbsolutePath tempfile) ".png")
-         res (sh (get-config :pdf2png-command) path out)]
+         res (sh (:pdf2png-command env) path out)]
       (.delete tempfile)
       (if (= (:exit res) 0)
          (content-type 
@@ -118,7 +118,7 @@
                filename (:filename file)]
             (info "PDF previewer received " filename "(" (:size file) "b)")
             (.deleteOnExit tempfile) ;; cleanup if VM is terminated
-            (api-pdf2png tempfile)))
+            (api-pdf2png env tempfile)))
          
       (POST "/pdf2txt" []
          :summary "attempt to convert a PDF file to TXT"
@@ -128,7 +128,7 @@
                filename (:filename file)]
             (info "PDF2TXT converter received " filename "(" (:size file) "b)")
             (.deleteOnExit tempfile) ;; cleanup if VM is terminated
-            (api-pdf2txt tempfile)))
+            (api-pdf2txt env tempfile)))
          
       (POST "/pdf2pdfa" []
          :summary "attempt to convert a PDF file to PDF/A"
@@ -138,7 +138,7 @@
                filename (:filename file)]
             (info "PDF converter received " filename "(" (:size file) "b)")
             (.deleteOnExit tempfile) ;; cleanup if VM is terminated
-            (api-pdf2pdfa tempfile)))))
+            (api-pdf2pdfa env tempfile)))))
          
 (defn make-api-handler [env]
    (let [pdf-api (make-pdf-routes env)]

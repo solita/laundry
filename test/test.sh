@@ -10,7 +10,7 @@ NSJAIL=/usr/local/bin/nsjail
 programs/pdf2txt test/testcases/hypno.pdf /tmp/out.txt && cat /tmp/out.txt
 
 alivep() {
-    curl -s $HOST/api/alive | grep -q yes
+    curl -s $HOST/alive | grep -q yes
 }
 
 die() {
@@ -58,7 +58,7 @@ start_laundry() {
 test_checksum() {
    date > tmp/testdata.txt
    echo -n "Computing SHA256:"
-   curl -sf -F file=@tmp/testdata.txt -X POST "$HOST/api/digest/sha256" > tmp/response || die "upload failed"
+   curl -sf -F file=@tmp/testdata.txt -X POST "$HOST/digest/sha256" > tmp/response || die "upload failed"
    RESPONSE=$(cat tmp/response)
    cat tmp/testdata.txt | sha256sum | grep -q "$RESPONSE" || die "bad result"
    echo " $RESPONSE ok"
@@ -68,7 +68,7 @@ test_pdf2txt() {
    echo -n "Testing pdf2txt:"
    test -x $NSJAIL || { echo "no nsjail - skipping"; return 0; }
    echo -n " converting"
-   curl -sf -F file=@test/testcases/hypno.pdf -X POST "$HOST/api/pdf/pdf2txt" > tmp/response.txt || die "conversion failed"
+   curl -sf -F file=@test/testcases/hypno.pdf -X POST "$HOST/pdf/pdf2txt" > tmp/response.txt || die "conversion failed"
    echo -n ", checking"
    grep -q 'All glory to the hypnotoad\.' tmp/response.txt || die "no glory to the hypnotoad in tmp/response.txt"
    echo ", ok"
@@ -78,7 +78,7 @@ test_pdf2png() {
    echo -n "Testing pdf2png:"
    test -x $NSJAIL || { echo "no nsjail - skipping "; return 0; }
    echo -n " converting"
-   curl -sf -F file=@test/testcases/hypno.pdf -X POST "$HOST/api/pdf/pdf-preview" > tmp/response.png || die "conversion failed"
+   curl -sf -F file=@test/testcases/hypno.pdf -X POST "$HOST/pdf/pdf-preview" > tmp/response.png || die "conversion failed"
    echo -n ", checking"
    file tmp/response.png | grep -q 'PNG' || die "tmp/response.png does not look like a png file"
    echo ", ok (response is png)"
@@ -88,7 +88,7 @@ test_pdf2pdfa() {
    echo -n "Testing pdf2pdfa:"
    test -x $NSJAIL || { echo "no nsjail - skipping "; return 0; }
    echo -n " converting"
-   curl -sf -F file=@test/testcases/hypno.pdf -X POST "$HOST/api/pdf/pdf2pdfa" > tmp/response.pdf || die "conversion failed"
+   curl -sf -F file=@test/testcases/hypno.pdf -X POST "$HOST/pdf/pdf2pdfa" > tmp/response.pdf || die "conversion failed"
    echo -n ", checking"
    file tmp/response.pdf | grep -q 'PDF' || die "tmp/response.pdf does not look like a pdf file"
    echo ", ok (response is pdf)"

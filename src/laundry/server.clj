@@ -10,6 +10,8 @@
              [clojure.java.shell :refer [sh]]
              [pantomime.mime :refer [mime-type-of]]
              [laundry.pdf :as pdf]
+             [laundry.digest :as digest]
+             [laundry.machines :as machines]
              [clojure.string :as string]
              [clojure.set :as set]
              [clojure.java.io :as io]
@@ -20,6 +22,7 @@
 (s/defschema Status 
    (s/enum "ok" "error"))
 
+;; cannot be used for now, because the schema is extensible
 (s/defschema LaundryConfig
    {:port s/Num
     :slow-request-warning s/Num
@@ -35,7 +38,7 @@
 (defn timestamp []
    (.getTime (java.util.Date.)))
    
-(s/defn set-config! [new-configuration :- LaundryConfig]
+(s/defn set-config! [new-configuration]
    (debug "setting config to" new-configuration)
    (reset! config new-configuration))
 
@@ -60,52 +63,30 @@
 
 ;;; Handler
 
-(s/defschema DigestAlgorithm
-   (s/enum "sha256"))
 
-(s/defn api-checksum [tempfile :- java.io.File, digest :- DigestAlgorithm]
-   (let [res (sh (get-config :checksum-command) (.getAbsolutePath tempfile) digest)]
-      (.delete tempfile)
-      (if (= (:exit res) 0)
-         (ok (:out res))
-         (not-ok "digest computation failed"))))
-
-(defn make-api-handler [env]
-   (let [pdf-api (pdf/make-pdf-routes env)]
-      (api
-         {:swagger
-            {:ui "/api-docs"
-             :spec "/swagger.json"
-             :data {:info {:title "Laundry API"
-                             :description ""}}}}
+    
+(defn make-api-handler [api-calls env]
+   (apply api
+      (concat
+         [ {:swagger
+               {:ui "/api-docs"
+                :spec "/swagger.json"
+                :data {:info {:title "Laundry API"
+                                :description ""}}}}
    
-         (undocumented
-           (GET "/" []
-             (resp/temporary-redirect "/index.html")))
-
-            
-         (context "/api" []
-   
+            (undocumented
+              (GET "/" []
+                (resp/temporary-redirect "/index.html")))
+         
             (GET "/alive" []
-               :summary "check whether server is running"
-               (ok "yes"))
-   
+                  :summary "check whether server is running"
+                  (ok "yes"))
+               
             (GET "/config" []
                :summary "get current laundry configuration"
-               :return LaundryConfig
-               (ok @config))
+               (ok @config))]
+        api-calls)))
             
-            pdf-api
-         
-            (POST "/digest/sha256" []
-               :summary "compute a SHA256 digest for posted data"
-               :multipart-params [file :- upload/TempFileUpload]
-               :middleware [upload/wrap-multipart-params]
-               (let [tempfile (:tempfile file)
-                     filename (:filename file)]
-                  (info "SHA256 received " filename "(" (:size file) "b)")
-                  (.deleteOnExit tempfile)
-                  (api-checksum tempfile "sha256")))))))
 
 (defn request-time-logger [handler]
    (fn [req]
@@ -117,8 +98,8 @@
                   " took " elapsed "ms")))
          res)))
 
-(defn make-handler [env]
-  (-> (make-api-handler env)
+(defn make-handler [api env]
+  (-> (make-api-handler api env)
       request-time-logger
       (wrap-defaults (-> (assoc-in site-defaults [:security :anti-forgery] false)
                          (assoc-in [:params :multipart] false)))))
@@ -141,22 +122,23 @@
    (when server
      (info "Laundry is running at port" (get-config :port))))
 
-(s/defn ^:always-validate start-server [conf :- LaundryConfig]
+(s/defn ^:always-validate start-server [conf]
    ;; update config
    (set-config! conf)
-   ;; configure logging accordingly
-   (timbre/merge-config!
-      {:appenders
-         {:spit
-            (appenders/spit-appender
-               {:fname (get-config :logfile "laundry.log")})}})
-   (timbre/set-level!
-      (get-config :log-level :info))
-   (info "start-server, config " @config)
-   ;; configure logging
-   (start-laundry (make-handler conf)
-      {:port (get-config :port 8080)
-       :join? false}))
+   (let [api (machines/generate-apis conf)]
+      ;; configure logging accordingly
+      (timbre/merge-config!
+         {:appenders
+            {:spit
+               (appenders/spit-appender
+                  {:fname (get-config :logfile "laundry.log")})}})
+      (timbre/set-level!
+         (get-config :log-level :info))
+      (info "start-server, config " @config)
+      ;; configure logging
+      (start-laundry (make-handler api conf)
+         {:port (get-config :port 8080)
+          :join? false})))
 
 
 ;;; Dev mode entry

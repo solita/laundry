@@ -13,7 +13,7 @@
    (status (ok res) 500))
 
 (machines/add-command-line-rule!
-    ["-C" "--checksum-command COMMAND" "compute a checksum"
+    [nil "--checksum-command COMMAND" "compute a checksum"
        :default "/opt/laundry/bin/checksum"
        :id :checksum-command])
     
@@ -39,4 +39,3 @@
                (info "SHA256 received " filename "(" (:size file) "b)")
                (.deleteOnExit tempfile)
                (api-checksum env tempfile "sha256"))))))
-         

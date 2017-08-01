@@ -62,17 +62,17 @@
             (not-ok "pdf preview failed")))))
 
 (machines/add-command-line-rule!
-   ["-P" "--pdf2pdfa-command COMMAND" "command for PDF/A conversion"
+   [nil "--pdf2pdfa-command COMMAND" "command for PDF/A conversion"
       :default "/opt/laundry/bin/pdf2pdfa"
       :id :pdf2pdfa-command])
    
 (machines/add-command-line-rule!
-   ["-X" "--pdf2png-command COMMAND" "command for PDF preview"
+   [nil "--pdf2png-command COMMAND" "command for PDF preview"
       :default "/opt/laundry/bin/pdf2png"
       :id :pdf2png-command])
    
 (machines/add-command-line-rule!
-   ["-T" "--pdf2txt-command COMMAND" "command for PDF to text conversion"
+   [nil "--pdf2txt-command COMMAND" "command for PDF to text conversion"
       :default "/opt/laundry/bin/pdf2txt"
       :id :pdf2txt-command])
 

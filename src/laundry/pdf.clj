@@ -27,7 +27,7 @@
 (s/defn api-pdf2pdfa [env, tempfile :- java.io.File]
    (let [path (.getAbsolutePath tempfile)
          out  (str (.getAbsolutePath tempfile) ".pdf")
-         res (sh (:pdf2pdfa-command env) path out)]
+         res (sh (str (:tools env) "/bin/pdf2pdfa") path out)] 
       (.delete tempfile)
       (if (= (:exit res) 0)
          (content-type 
@@ -37,9 +37,10 @@
 
 ;; pdf → txt conversion
 (s/defn api-pdf2txt [env, tempfile :- java.io.File]
+   (info "Running, tools are at " (:tools env))
    (let [path (.getAbsolutePath tempfile)
          out  (str (.getAbsolutePath tempfile) ".txt")
-         res (sh (:pdf2txt-command env) path out)]
+         res (sh (str (:tools env) "/bin/pdf2txt") path out)]
       (.delete tempfile)
       (if (= (:exit res) 0)
          (content-type 
@@ -60,21 +61,6 @@
          (do
             (warn "pdf preview failed: " res)
             (not-ok "pdf preview failed")))))
-
-(machines/add-command-line-rule!
-   [nil "--pdf2pdfa-command COMMAND" "command for PDF/A conversion"
-      :default "/opt/laundry/bin/pdf2pdfa"
-      :id :pdf2pdfa-command])
-   
-(machines/add-command-line-rule!
-   [nil "--pdf2png-command COMMAND" "command for PDF preview"
-      :default "/opt/laundry/bin/pdf2png"
-      :id :pdf2png-command])
-   
-(machines/add-command-line-rule!
-   [nil "--pdf2txt-command COMMAND" "command for PDF to text conversion"
-      :default "/opt/laundry/bin/pdf2txt"
-      :id :pdf2txt-command])
 
 (machines/add-api-generator! 
    (fn [env] 

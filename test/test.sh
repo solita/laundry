@@ -6,9 +6,6 @@ LAUNDRYPID=
 START=yes
 NSJAIL=/usr/local/bin/nsjail
 
-# temporary manul conversion to track down a failure at travis
-programs/pdf2txt test/testcases/hypno.pdf /tmp/out.txt && cat /tmp/out.txt
-
 alivep() {
     curl -s $HOST/alive | grep -q yes
 }
@@ -46,10 +43,7 @@ start_laundry() {
    test -f target/laundry.jar || die "no laundry.jar"
    java -jar target/laundry.jar \
       --port $PORT \
-      --checksum-command programs/checksum \
-      --pdf2txt-command programs/pdf2txt \
-      --pdf2png-command programs/pdf2png \
-      --pdf2pdfa-command programs/pdf2pdfa \
+      --tools /opt/laundry \
       > laundry.log &
    LAUNDRYPID=$!
    wait_for alivep

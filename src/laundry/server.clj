@@ -22,15 +22,11 @@
 (s/defschema Status 
    (s/enum "ok" "error"))
 
-;; cannot be used for now, because the schema is extensible
 (s/defschema LaundryConfig
    {:port s/Num
     :slow-request-warning s/Num
     :temp-directory s/Str
-    :checksum-command s/Str
-    :pdf2pdfa-command s/Str
-    :pdf2png-command s/Str
-    :pdf2txt-command s/Str
+    :tools s/Str
     :log-level (s/enum :debug :info)})
 
 (defonce config (atom nil))
@@ -154,10 +150,6 @@
       {:slow-request-warning 500
        :port 9001
        :temp-directory "/tmp"
-       :checksum-command "programs/checksum"
-       :pdf2pdfa-command "programs/pdf2pdfa"
-       :pdf2png-command "programs/pdf2png"
-       :pdf2txt-command "programs/pdf2txt"
        :tools "/opt/laundry"
        :log-level :info}))
 

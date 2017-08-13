@@ -21,7 +21,7 @@
    (s/enum "sha256"))
 
 (s/defn api-checksum [env, tempfile :- java.io.File, digest :- DigestAlgorithm]
-   (let [res (sh (:checksum-command env) (.getAbsolutePath tempfile) digest)]
+   (let [res (sh (str (:tools env) "/bin/checksum") (.getAbsolutePath tempfile) digest)]
       (.delete tempfile)
       (if (= (:exit res) 0)
          (ok (:out res))

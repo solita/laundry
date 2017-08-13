@@ -6,7 +6,7 @@ GCCINFRA=ftp://gcc.gnu.org/pub/gcc/infrastructure/
 THREADS=4
 OUT=/opt/laundry
 
-everything: $(OUT)/bin/pdf2png $(OUT)/bin/gs $(OUT)/bin/pdf2txt $(OUT)/bin/pdf2pdfa
+everything: $(OUT)/bin/pdf2png $(OUT)/bin/gs $(OUT)/bin/pdf2txt $(OUT)/bin/pdf2pdfa $(OUT)/bin/checksum
 
 $(OUT)/bin/asan: $(OUT)/bin/gcc
 	mkdir -p $(OUT)/bin
@@ -26,6 +26,9 @@ $(OUT)/bin/pdf2pdfa: pdf2pdfa
 	
 $(OUT)/bin/pdf2txt: pdf2txt
 	cp pdf2txt $(OUT)/bin
+	
+$(OUT)/bin/checksum: checksum
+	cp checksum $(OUT)/bin
 	
 $(OUT)/bin/gcc: tmp/gcc-6.3.0.tar.gz
 	# check dependencies

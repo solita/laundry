@@ -2,6 +2,7 @@
    (:require
       [laundry.server :as server]
       [laundry.machines :as machines]
+      [clojure.java.io :as io]
       [clojure.tools.cli :refer [parse-opts]])
    (:gen-class))
 
@@ -16,16 +17,15 @@
       :id :port])
    
 (machines/add-command-line-rule!
-      ["-t" "--temporary-directory" "directory for holding temporary data"
-         :default "/tmp"
-         :id :temp-directory])
+     ["-t" "--tools DIR" "External tools directory"
+      :default "/opt/laundry"
+      :validate [(fn [x] (.isDirectory (io/file (str x "/bin")))) "Argument directory must have at least a bin/ subdirectory"]])
       
 (machines/add-command-line-rule!
       ["-S" "--slow-request MS" "slow request warning threshold in ms"
          :default 10000
          :parse-fn #(Integer/parseInt %)
          :id :slow-request-warning])
-      
     
 (machines/add-command-line-rule!
     ["-L" "--log-level" "choose log level"
@@ -33,6 +33,11 @@
        :parse-fn keyword 
        :id :log-level])
     
+(machines/add-command-line-rule!
+      ["-T" "--temporary-directory" "directory for holding temporary data"
+         :default "/tmp"
+         :id :temp-directory])
+      
 (defn -main [& args]
    (let [conf (parse-opts args (deref machines/command-line-rules))
          opts (:options conf)]

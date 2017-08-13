@@ -51,7 +51,7 @@
 (s/defn api-pdf2png [env, tempfile :- java.io.File]
    (let [path (.getAbsolutePath tempfile)
          out  (str (.getAbsolutePath tempfile) ".png")
-         res (sh (:pdf2png-command env) path out)]
+         res (sh (str (:tools env) "/bin/pdf2png") path out)]
       (.delete tempfile)
       (if (= (:exit res) 0)
          (content-type 

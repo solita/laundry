@@ -1,8 +1,28 @@
 #!/usr/bin/env bash
 
-set -e
-
+TOOLBIN=$(dirname $0)
 INPUT=$1
 OUTPUT=$2
+CACHE=/tmp/pdf2txt
 
-programs/gs-jail "$INPUT" "$OUTPUT" "/usr/bin/gs -dPDFA -dBATCH -dNOPAUSE -sProcessColorModel=DeviceCMYK -sDEVICE=pdfwrite -sPDFACompatibilityPolicy=1 -sOutputFile=/tmp/output /tmp/input"
+mkdir -p "$CACHE"
+
+CSUM=$(sha1sum "$INPUT" | sed -e 's/ .*//')
+
+cp "$INPUT" "$CACHE/$CSUM.pdf"
+
+test -f "$CACHE/$CSUM-pdfa.pdf" || firejail \
+   --noprofile \
+   --private \
+   --read-write="$CACHE" \
+   --read-only=/opt \
+   --read-only=/usr \
+   --net=none \
+   --caps.drop=all \
+   --shell=none \
+   "$TOOLBIN/gs" -dPDFA -dBATCH -dNOPAUSE -sProcessColorModel=DeviceCMYK -sDEVICE=pdfwrite -sPDFACompatibilityPolicy=1 -sOutputFile="$CACHE/$CSUM-pdfa.pdf" "$CACHE/$CSUM.pdf"
+
+rm "$CACHE/$CSUM.pdf"
+
+cp "$CACHE/$CSUM-pdfa.pdf" "$OUTPUT"
+

@@ -1,12 +1,28 @@
 #!/usr/bin/env bash
 
-echo  $@ > /tmp/pdf2png
-set -e
-
+TOOLBIN=$(dirname $0)
 INPUT=$1
 OUTPUT=$2
+CACHE=/tmp/pdf2txt
 
-# -dFirstPage=1 -dLastPage=5 
+mkdir -p "$CACHE"
 
-programs/gs-jail "$INPUT" "$OUTPUT" "/usr/bin/gs -dBATCH -dNOPAUSE -dSAFER -sDEVICE=txtwrite -sOutputFile=/tmp/output /tmp/input"
+CSUM=$(sha1sum "$INPUT" | sed -e 's/ .*//')
+
+cp "$INPUT" "$CACHE/$CSUM.pdf"
+
+test -f "$CACHE/$CSUM.txt" || firejail \
+   --noprofile \
+   --private \
+   --read-write="$CACHE" \
+   --read-only=/opt \
+   --read-only=/usr \
+   --net=none \
+   --caps.drop=all \
+   --shell=none \
+   "$TOOLBIN/gs" -dBATCH -dNOPAUSE -dSAFER -sDEVICE=txtwrite -sOutputFile="$CACHE/$CSUM.txt" "$CACHE/$CSUM.pdf"
+
+rm "$CACHE/$CSUM.pdf"
+
+cp "$CACHE/$CSUM.txt" "$OUTPUT"
 

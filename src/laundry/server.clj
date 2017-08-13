@@ -158,6 +158,7 @@
        :pdf2pdfa-command "programs/pdf2pdfa"
        :pdf2png-command "programs/pdf2png"
        :pdf2txt-command "programs/pdf2txt"
+       :tools "/opt/laundry"
        :log-level :info}))
 
 (defn go []

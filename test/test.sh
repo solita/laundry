@@ -130,7 +130,7 @@ main() {
    
    # Actual tests 
    test_checksum
-   #test_pdf2txt
+   test_pdf2txt
    test_pdf2png
    test_pdf2pdfa
    

@@ -65,8 +65,8 @@ tmp/ghostscript.tar.gz:
 
 $(OUT)/bin/gs: tmp/ghostscript.tar.gz $(OUT)/bin/asan $(OUT)/bin/asan++
 	cd tmp && tar -zxf ghostscript.tar.gz
-	cd tmp/ghostscript-9.21 && CC=$(OUT)/bin/asan CXX=$(OUT)/bin/asan++ ./configure --prefix=$(OUT) 
-	cd tmp/ghostscript-9.21 && make -j4 install
+	cd tmp/ghostscript-9.21 && CC=$(OUT)/bin/asan CXX=$(OUT)/bin/asan++ LD_LIBRARY_PATH=$(OUT)/lib:$(OUT)/lib64  ./configure --prefix=$(OUT) 
+	cd tmp/ghostscript-9.21 && CC=$(OUT)/bin/asan CXX=$(OUT)/bin/asan++ LD_LIBRARY_PATH=$(OUT)/lib:$(OUT)/lib64  make -j4 install
 	
 clean:
 	rm -rf tmp

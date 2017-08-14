@@ -3,5 +3,5 @@ laundry.log
 .nrepl-port
 target
 build-data
-gs-chroot_v2.tar
+programs/tools
 tmp

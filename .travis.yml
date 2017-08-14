@@ -9,5 +9,5 @@ jdk:
 script:
  - lein uberjar
  - git clone https://github.com/netblue30/firejail.git && cd firejail && ./configure && make && sudo make install && cd ..
- - cd programs && date && make OUT=$(pwd)/tools 2>&1 | tee log | tail -n 100 && date && cd ..
+ - cd programs && date && make OUT=$(pwd)/tools 2>&1 | tee log | cat -n | grep 00 && date && cd ..
  - test/test.sh

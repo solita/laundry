@@ -19,15 +19,19 @@ $(OUT)/bin/asan++: $(OUT)/bin/asan
 	chmod +x $(OUT)/bin/asan++
 
 $(OUT)/bin/pdf2png: pdf2png
+	mkdir -p $(OUT)/bin
 	cp pdf2png $(OUT)/bin
 	
 $(OUT)/bin/pdf2pdfa: pdf2pdfa
+	mkdir -p $(OUT)/bin
 	cp pdf2pdfa $(OUT)/bin
 	
 $(OUT)/bin/pdf2txt: pdf2txt
+	mkdir -p $(OUT)/bin
 	cp pdf2txt $(OUT)/bin
 	
 $(OUT)/bin/checksum: checksum
+	mkdir -p $(OUT)/bin
 	cp checksum $(OUT)/bin
 	
 $(OUT)/bin/gcc: tmp/gcc-6.3.0.tar.gz
@@ -37,6 +41,7 @@ $(OUT)/bin/gcc: tmp/gcc-6.3.0.tar.gz
 	zip
 	unzip
 	# compile
+	mkdir -p tmp
 	cd tmp && tar -zxf gcc-6.3.0.tar.gz
 	-rm -rfv tmp/gcc-6.3.0/gmp* tmp/gcc-6.3.0/isl* tmp/gcc-6.3.0/mpc* tmp/gcc-6.3.0/mpfr* 
 	cd tmp/gcc-6.3.0 && curl $(GCCINFRA)/$(MPFR).tar.bz2 | tee mpfr.tar.bz2 | sha256sum | grep c7e75a08a8d49d2082e4caee1591a05d11b9d5627514e678f02d66a124bcf2ba && tar -jxvf mpfr.tar.bz2 && mv $(MPFR) mpfr
@@ -53,6 +58,7 @@ tmp/gcc-6.3.0.tar.gz:
 	mv tmp/gcc.tar.gz tmp/gcc-6.3.0.tar.gz
 
 tmp/ghostscript.tar.gz:
+	mkdir -p tmp
 	curl -L "https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs921/ghostscript-9.21.tar.gz" > tmp/gs 
 	sha256sum tmp/gs | grep 02bceadbc4dddeb6f2eec9c8b1623d945d355ca11b8b4df035332b217d58ce85
 	mv tmp/gs tmp/ghostscript.tar.gz

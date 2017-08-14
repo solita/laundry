@@ -7,7 +7,7 @@ jdk:
  - oraclejdk8
 
 script:
- - sudo apt-get install firejail
  - lein uberjar
+ - git clone https://github.com/netblue30/firejail.git && cd firejail && ./configure && make && sudo make install && cd ..
  - cd programs && make OUT=$(pwd)/tools
  - test/test.sh

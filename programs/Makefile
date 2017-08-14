@@ -38,8 +38,8 @@ $(OUT)/bin/gcc: tmp/gcc-6.3.0.tar.gz
 	# check dependencies
 	curl --version
 	bzip2 --version
-	zip
-	unzip
+	zip --version
+	unzip -v
 	# compile
 	mkdir -p tmp
 	cd tmp && tar -zxf gcc-6.3.0.tar.gz

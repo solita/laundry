@@ -4,7 +4,8 @@ PORT=9001
 HOST=http://localhost:$PORT
 LAUNDRYPID=
 START=yes
-NSJAIL=/usr/local/bin/nsjail
+FIREJAIL=/usr/local/bin/firejail
+TOOLS=$(pwd)/programs/tools
 
 alivep() {
     curl -s $HOST/alive | grep -q yes
@@ -43,7 +44,7 @@ start_laundry() {
    test -f target/laundry.jar || die "no laundry.jar"
    java -jar target/laundry.jar \
       --port $PORT \
-      --tools /opt/laundry \
+      --tools $TOOLS \
       > laundry.log &
    LAUNDRYPID=$!
    wait_for alivep
@@ -60,7 +61,7 @@ test_checksum() {
 
 test_pdf2txt() {
    echo -n "Testing pdf2txt:"
-   test -x $NSJAIL || { echo "no nsjail - skipping"; return 0; }
+   test -x $FIREJAIL || { echo "no firejail - skipping"; return 0; }
    echo -n " converting"
    curl -sf -F file=@test/testcases/hypno.pdf -X POST "$HOST/pdf/pdf2txt" > tmp/response.txt || die "conversion failed"
    echo -n ", checking"
@@ -70,7 +71,7 @@ test_pdf2txt() {
 
 test_pdf2png() {
    echo -n "Testing pdf2png:"
-   test -x $NSJAIL || { echo "no nsjail - skipping "; return 0; }
+   test -x $FIREJAIL || { echo "no firejail - skipping "; return 0; }
    echo -n " converting"
    curl -sf -F file=@test/testcases/hypno.pdf -X POST "$HOST/pdf/pdf-preview" > tmp/response.png || die "conversion failed"
    echo -n ", checking"
@@ -80,7 +81,6 @@ test_pdf2png() {
 
 test_pdf2pdfa() {
    echo -n "Testing pdf2pdfa:"
-   test -x $NSJAIL || { echo "no nsjail - skipping "; return 0; }
    echo -n " converting"
    curl -sf -F file=@test/testcases/hypno.pdf -X POST "$HOST/pdf/pdf2pdfa" > tmp/response.pdf || die "conversion failed"
    echo -n ", checking"

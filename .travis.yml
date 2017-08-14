@@ -7,5 +7,7 @@ jdk:
  - oraclejdk8
 
 script:
+ - sudo apt-get install firejail
  - lein uberjar
+ - cd programs && make OUT=$(pwd)/tools
  - test/test.sh

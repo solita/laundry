@@ -5,6 +5,8 @@ INPUT=$1
 OUTPUT=$2
 CACHE=/tmp/pdf2pdfa
 
+export LD_LIBRARY_PATH=$(dirname $TOOLBIN)/lib64
+
 mkdir -p "$CACHE"
 
 CSUM=$(sha1sum "$INPUT" | sed -e 's/ .*//')

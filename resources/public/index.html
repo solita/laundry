@@ -15,7 +15,21 @@ function previewer() {
    xhr.onload = function(e) {
       var urlsource= window.URL || window.webkitURL;
       var bloburl = urlsource.createObjectURL(this.response);
-      document.getElementById("preview-data").src = bloburl;
+      //document.getElementById("preview-data").src = bloburl;
+      window.open(bloburl);
+   }
+   xhr.send(formData);
+}
+function enpdfa() {
+   var form = document.getElementById("archive");
+   var formData = new FormData(form);
+   var xhr = new XMLHttpRequest();
+   xhr.open("POST", "/pdf/pdf2pdfa", true);
+   xhr.responseType = "blob";
+   xhr.onload = function(e) {
+      var urlsource= window.URL || window.webkitURL;
+      var bloburl = urlsource.createObjectURL(this.response);
+      window.open(bloburl);
    }
    xhr.send(formData);
 }
@@ -27,12 +41,19 @@ function previewer() {
    <p><ul>
       <li><a href="/api-docs">Swagger API</a>
    </ul>
+   
    <hr>
-   <p>PDF preview test: <form id="preview" method="POST" action="/pdf/pdf-preview">
+   <p>PDF preview<form id="preview">
    <input type="file" name="file">
    <input type="button" value="preview!" onclick="previewer()">
    </form>
    <img id="preview-data">
+   
+   <hr>
+   <p>PDF/A conversion<form id="archive">
+   <input type="file" name="file">
+   <input type="button" value="archivable!" onclick="enpdfa()">
+   </form>
    <hr>
    
 </body>

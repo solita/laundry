@@ -1,2 +1,39 @@
-
-ohai
+<html>
+<head>
+<style>
+body { background-color: #fcfaf4 } 
+a { color: #098809; text-decoration: none }
+a:hover { color: #098809; text-decoration: underline }
+</style>
+<script>
+function previewer() {
+   var form = document.getElementById("preview");
+   var formData = new FormData(form);
+   var xhr = new XMLHttpRequest();
+   xhr.open("POST", "/pdf/pdf-preview", true);
+   xhr.responseType = "blob";
+   xhr.onload = function(e) {
+      var urlsource= window.URL || window.webkitURL;
+      var bloburl = urlsource.createObjectURL(this.response);
+      document.getElementById("preview-data").src = bloburl;
+   }
+   xhr.send(formData);
+}
+</script>
+<title>Laundry</title>
+</head>
+<body>
+   <h1>Laundry</h1>
+   <p><ul>
+      <li><a href="/api-docs">Swagger API</a>
+   </ul>
+   <hr>
+   <p>PDF preview test: <form id="preview" method="POST" action="/pdf/pdf-preview">
+   <input type="file" name="file">
+   <input type="button" value="preview!" onclick="previewer()">
+   </form>
+   <img id="preview-data">
+   <hr>
+   
+</body>
+</html>

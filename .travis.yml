@@ -10,4 +10,7 @@ script:
  - lein uberjar
  - git clone https://github.com/netblue30/firejail.git && cd firejail && ./configure && make && sudo make install && cd ..
  - curl https://haltp.org/f/laundry.tar.gz | sudo tar -C /opt -zxf -
+ - sudo chown -R /opt/laundry $(whoami)
+ - test -x /opt/laundry/bin/pdf2png && echo pdf2png is executable
+ - /opt/laundry/bin/pdf2txt test/testcases/hypno.pdf /tmp/out.txt && cat /tmp/out.txt
  - test/test.sh

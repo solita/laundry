@@ -5,7 +5,7 @@ HOST=http://localhost:$PORT
 LAUNDRYPID=
 START=yes
 FIREJAIL=/usr/local/bin/firejail
-TOOLS=$(pwd)/programs/tools
+TOOLS=/opt/laundry
 
 alivep() {
     curl -s $HOST/alive | grep -q yes
@@ -118,6 +118,8 @@ parse_args() {
 
 main() {
    parse_args "$@" || return 1
+   
+   test -d "$TOOLS/bin" || die "no tools at $TOOLS"
    
    # Laundry startup and initial state logging
    start_laundry

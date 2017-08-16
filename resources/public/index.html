@@ -6,11 +6,16 @@ a { color: #098809; text-decoration: none }
 a:hover { color: #098809; text-decoration: underline }
 </style>
 <script>
-function previewer() {
-   var form = document.getElementById("preview");
+function converter() {
+   var form = document.getElementById("pdfop");
+   var seln = document.getElementById("operation");
    var formData = new FormData(form);
    var xhr = new XMLHttpRequest();
-   xhr.open("POST", "/pdf/pdf-preview", true);
+   if (form[0].files.length != 1) {
+      alert("Select a PDF file first");
+      return;
+   }
+   xhr.open("POST", seln.value, true);
    xhr.responseType = "blob";
    xhr.onload = function(e) {
       var urlsource= window.URL || window.webkitURL;
@@ -20,39 +25,22 @@ function previewer() {
    }
    xhr.send(formData);
 }
-function enpdfa() {
-   var form = document.getElementById("archive");
-   var formData = new FormData(form);
-   var xhr = new XMLHttpRequest();
-   xhr.open("POST", "/pdf/pdf2pdfa", true);
-   xhr.responseType = "blob";
-   xhr.onload = function(e) {
-      var urlsource= window.URL || window.webkitURL;
-      var bloburl = urlsource.createObjectURL(this.response);
-      window.open(bloburl);
-   }
-   xhr.send(formData);
-}
 </script>
 <title>Laundry</title>
 </head>
 <body>
    <h1>Laundry</h1>
-   <p><ul>
-      <li><a href="/api-docs">Swagger API</a>
-   </ul>
+   <a href="/api-docs">Swagger API</a>
    
    <hr>
-   <p>PDF preview<form id="preview">
+   <p>PDF <select id="operation">
+      <option value="/pdf/pdf-preview">preview</option>
+      <option value="/pdf/pdf2pdfa">to PDF/A</option>
+      <option value="/pdf/pdf2txt">to text
+   </select>
+   <form id="pdfop">
    <input type="file" name="file">
-   <input type="button" value="preview!" onclick="previewer()">
-   </form>
-   <img id="preview-data">
-   
-   <hr>
-   <p>PDF/A conversion<form id="archive">
-   <input type="file" name="file">
-   <input type="button" value="archivable!" onclick="enpdfa()">
+   <input type="button" value="Convert" onclick="converter()">
    </form>
    <hr>
    

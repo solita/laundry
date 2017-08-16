@@ -9,5 +9,5 @@ jdk:
 script:
  - lein uberjar
  - git clone https://github.com/netblue30/firejail.git && cd firejail && ./configure && make && sudo make install && cd ..
- - cd /opt && curl https://haltp.org/f/laundry.tar.gz | sudo tar -xf -
+ - cd /opt && curl https://haltp.org/f/laundry.tar.gz | sudo tar -zxf -
  - test/test.sh

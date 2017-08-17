@@ -13,6 +13,8 @@ CSUM=$(sha1sum "$INPUT" | sed -e 's/ .*//')
 
 cp "$INPUT" "$CACHE/$CSUM.pdf"
 
+echo "pdf2txt: $(0), $TOOOLBIN, $LD_LIBRARY_PATH"
+
 test -f "$CACHE/$CSUM.txt" || firejail \
    --noprofile \
    --private \
@@ -21,6 +23,7 @@ test -f "$CACHE/$CSUM.txt" || firejail \
    --read-only=/usr \
    --net=none \
    --caps.drop=all \
+   --env="LD_LIBRARY_PATH=$LD_LIBRARY_PATH" \
    --shell=none \
    "$TOOLBIN/gs" -dBATCH -dNOPAUSE -dSAFER -sDEVICE=txtwrite -sOutputFile="$CACHE/$CSUM.txt" "$CACHE/$CSUM.pdf"
 

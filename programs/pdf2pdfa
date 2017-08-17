@@ -22,6 +22,7 @@ test -f "$CACHE/$CSUM-pdfa.pdf" || firejail \
    --net=none \
    --caps.drop=all \
    --shell=none \
+   --env="LD_LIBRARY_PATH=$LD_LIBRARY_PATH" \
    "$TOOLBIN/gs" -dPDFA -dBATCH -dNOPAUSE -sProcessColorModel=DeviceCMYK -sDEVICE=pdfwrite -sPDFACompatibilityPolicy=1 -sOutputFile="$CACHE/$CSUM-pdfa.pdf" "$CACHE/$CSUM.pdf"
 
 rm "$CACHE/$CSUM.pdf"

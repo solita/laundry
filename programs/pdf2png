@@ -20,6 +20,7 @@ test -f /tmp/preview/$CSUM.png || firejail \
    --private \
    --read-write=/tmp/preview \
    --read-only=/opt \
+   --env="LD_LIBRARY_PATH=$LD_LIBRARY_PATH" \
    --read-only=/usr \
    --net=none \
    --caps.drop=all \

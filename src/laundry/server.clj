@@ -11,6 +11,7 @@
              [pantomime.mime :refer [mime-type-of]]
              [laundry.pdf :as pdf]
              [laundry.digest :as digest]
+             [laundry.test :as test]
              [laundry.machines :as machines]
              [clojure.string :as string]
              [clojure.set :as set]

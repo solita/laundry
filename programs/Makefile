@@ -6,7 +6,7 @@ GCCINFRA=ftp://gcc.gnu.org/pub/gcc/infrastructure/
 THREADS=4
 OUT=/opt/laundry
 
-everything: $(OUT)/bin/pdf2png $(OUT)/bin/gs $(OUT)/bin/pdf2txt $(OUT)/bin/pdf2pdfa $(OUT)/bin/checksum
+everything: $(OUT)/bin/pdf2png $(OUT)/bin/gs $(OUT)/bin/pdf2txt $(OUT)/bin/pdf2pdfa $(OUT)/bin/checksum $(OUT)/sbin/firejail $(OUT)/bin/access-test $(OUT)/bin/sandbox-access-test.sh
 
 $(OUT)/bin/asan: $(OUT)/bin/gcc
 	mkdir -p $(OUT)/bin
@@ -21,6 +21,14 @@ $(OUT)/bin/asan++: $(OUT)/bin/asan
 $(OUT)/bin/pdf2png: pdf2png
 	mkdir -p $(OUT)/bin
 	cp pdf2png $(OUT)/bin
+
+$(OUT)/bin/access-test: access-test
+	mkdir -p $(OUT)/bin
+	cp access-test $(OUT)/bin
+
+$(OUT)/bin/sandbox-access-test.sh: sandbox-access-test.sh
+	mkdir -p $(OUT)/bin
+	cp sandbox-access-test.sh $(OUT)/bin
 	
 $(OUT)/bin/pdf2pdfa: pdf2pdfa
 	mkdir -p $(OUT)/bin
@@ -50,6 +58,16 @@ $(OUT)/bin/gcc: tmp/gcc-6.3.0.tar.gz
 	cd tmp/gcc-6.3.0 && curl $(GCCINFRA)/$(MPC).tar.gz | tee mpc.tar.gz | sha256sum | grep e664603757251fd8a352848276497a4c79b7f8b21fd8aedd5cc0598a38fee3e4 && tar -zxvf mpc.tar.gz && mv $(MPC) mpc
 	cd tmp/gcc-6.3.0 && ./configure --disable-multilib --prefix=$(OUT) && nice -15 make -j$(THREADS) && make install
 	$(OUT)/bin/gcc --version | grep 6\.3\.0
+
+tmp/firejail: 
+	mkdir -p tmp
+	cd tmp && git clone https://github.com/netblue30/firejail.git
+	
+tmp/firejail/src/firejail: tmp/firejail
+	cd tmp/firejail && ./configure --prefix=$(OUT) && make
+
+$(OUT)/sbin/firejail: tmp/firejail/src/firejail
+	cd tmp/firejail && make install
 
 tmp/gcc-6.3.0.tar.gz:
 	mkdir -p tmp

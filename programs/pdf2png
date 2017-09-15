@@ -6,26 +6,28 @@ TOOLBIN=$(dirname $0)
 INPUT=$1
 OUTPUT=$2
 
+CACHE=/tmp/pdf2png
+
 export LD_LIBRARY_PATH=$(dirname $TOOLBIN)/lib64
 
-mkdir -p /tmp/preview
+mkdir -p $CACHE
 
 CSUM=$(sha1sum "$INPUT" | sed -e 's/ .*//')
 
-cp "$INPUT" /tmp/preview/$CSUM.pdf
+cp "$INPUT" $CACHE/$CSUM.pdf
 
 # some room for race here
-test -f /tmp/preview/$CSUM.png || firejail \
+test -f $CACHE/$CSUM.png || firejail \
    --noprofile \
    --private \
-   --read-write=/tmp/preview \
+   --read-write=$CACHE \
    --read-only=/opt \
    --env="LD_LIBRARY_PATH=$LD_LIBRARY_PATH" \
    --read-only=/usr \
    --net=none \
    --caps.drop=all \
    --shell=none \
-   $TOOLBIN/gs -dSAFER -dBATCH -dNOPAUSE -sDEVICE=png16m -dGraphicsAlphaBits=4 -dTextAlphaBits=4 -sPageList=1 -sOutputFile="/tmp/preview/$CSUM.png" "/tmp/preview/$CSUM.pdf"
+   $TOOLBIN/gs -dSAFER -dBATCH -dNOPAUSE -sDEVICE=png16m -dGraphicsAlphaBits=4 -dTextAlphaBits=4 -sPageList=1 -sOutputFile="$CACHE/$CSUM.png" "$CACHE/$CSUM.pdf"
 
-cp /tmp/preview/$CSUM.png "$OUTPUT"
+cp $CACHE/$CSUM.png "$OUTPUT"
 

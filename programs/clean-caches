@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# fail on any error
+set -e
+
+NOW=$(date +%s)
+
+CACHES="/tmp/pdf2pdfa /tmp/pdf2png"
+
+# load limits from laundry later
+MAXFILEACCESS=172800
+
+test $# -eq 0 || CACHES=$@
+
+flush_line() {
+	local LASTACCESS=$1
+	shift
+	local FILE="$@"
+	test -f "$FILE" || return
+	local ELAPSED=$(expr "$NOW" - "$LASTACCESS")
+	test "$ELAPSED" -gt "$MAXFILEACCESS" && rm -v "$FILE" || true
+}
+
+flush_cache() {
+	echo "Flushing $1"
+	stat -c '%X %n' "$1"/* | while read LINE; do flush_line $LINE;done
+}
+
+echo "Cleaning cache directories: $CACHES"
+for CACHE in $CACHES
+do
+	flush_cache $CACHE
+done
+

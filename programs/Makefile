@@ -6,7 +6,7 @@ GCCINFRA=ftp://gcc.gnu.org/pub/gcc/infrastructure/
 THREADS=4
 OUT=/opt/laundry
 
-everything: $(OUT)/bin/pdf2png $(OUT)/bin/gs $(OUT)/bin/pdf2txt $(OUT)/bin/pdf2pdfa $(OUT)/bin/checksum $(OUT)/sbin/firejail $(OUT)/bin/access-test $(OUT)/bin/sandbox-access-test.sh
+install: $(OUT)/bin/pdf2png $(OUT)/bin/gs $(OUT)/bin/pdf2txt $(OUT)/bin/pdf2pdfa $(OUT)/bin/checksum $(OUT)/sbin/firejail $(OUT)/bin/access-test $(OUT)/bin/sandbox-access-test.sh $(OUT)/bin/clean-caches
 
 $(OUT)/bin/asan: $(OUT)/bin/gcc
 	mkdir -p $(OUT)/bin
@@ -22,6 +22,10 @@ $(OUT)/bin/pdf2png: pdf2png
 	mkdir -p $(OUT)/bin
 	cp pdf2png $(OUT)/bin
 
+$(OUT)/bin/clean-caches: clean-caches
+	mkdir -p $(OUT)/bin
+	cp clean-caches $(OUT)/bin
+	
 $(OUT)/bin/access-test: access-test
 	mkdir -p $(OUT)/bin
 	cp access-test $(OUT)/bin

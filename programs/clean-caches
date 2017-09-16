@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # fail on any error
 set -e
@@ -6,29 +6,48 @@ set -e
 NOW=$(date +%s)
 
 CACHES="/tmp/pdf2pdfa /tmp/pdf2png"
+LOGFILE=$HOME/clean-caches.log
+
+NREMOVED=0
+BREMOVED=0
 
 # load limits from laundry later
-MAXFILEACCESS=172800
+# MAXFILEACCESS=172800
+MAXFILEACCESS=10
 
 test $# -eq 0 || CACHES=$@
 
+log() {
+   echo "$(date +"%Y.%m.%d %H:%M:%S"): $@" | tee -a $LOGFILE
+}
+
+remove_file() {
+   NREMOVED=$(expr $NREMOVED + 1)
+   BREMOVED=$(expr $BREMOVED + $(stat -c "%s" "$1"))
+   rm "$1"
+}
+
 flush_line() {
-	local LASTACCESS=$1
-	shift
-	local FILE="$@"
-	test -f "$FILE" || return
-	local ELAPSED=$(expr "$NOW" - "$LASTACCESS")
-	test "$ELAPSED" -gt "$MAXFILEACCESS" && rm -v "$FILE" || true
+   local LASTACCESS=$1
+   shift
+   local FILE="$@"
+   test -f "$FILE" || return
+   local ELAPSED=$(expr "$NOW" - "$LASTACCESS")
+   test "$ELAPSED" -gt "$MAXFILEACCESS" && remove_file "$FILE" || true
 }
 
 flush_cache() {
-	echo "Flushing $1"
-	stat -c '%X %n' "$1"/* | while read LINE; do flush_line $LINE;done
+   test -d "$1" || { log "warning: $1 does not exist"; return; }
+   log flushing $1
+   stat -c '%X %n' "$1"/* | while read LINE; do flush_line $LINE;done
 }
 
-echo "Cleaning cache directories: $CACHES"
+log "cleaning $CACHES, access limit $MAXFILEACCESS"
+
 for CACHE in $CACHES
 do
-	flush_cache $CACHE
+   flush_cache $CACHE 
 done
+
+log "all done. $BREMOVED bytes / $NREMOVED files removed"
 

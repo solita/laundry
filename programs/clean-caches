@@ -12,8 +12,7 @@ NREMOVED=0
 BREMOVED=0
 
 # load limits from laundry later
-# MAXFILEACCESS=172800
-MAXFILEACCESS=10
+MAXFILEACCESS=172800
 
 test $# -eq 0 || CACHES=$@
 

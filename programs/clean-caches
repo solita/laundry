@@ -13,6 +13,7 @@ BREMOVED=0
 
 # load limits from laundry later
 MAXFILEACCESS=172800
+MAXCACHEMB=256
 
 log() {
    echo "$(date +"%Y.%m.%d %H:%M:%S"): $@" | tee -a $LOGFILE
@@ -33,6 +34,8 @@ flush_line() {
    test "$ELAPSED" -gt "$MAXFILEACCESS" && remove_file "$FILE" || true
 }
 
+# todo operation: fold over entries in acces time order, and start removing when cache is full or last access time limit is hit
+
 flush_cache() {
    test -d "$1" || { log "warning: $1 does not exist"; return; }
    log flushing $1
@@ -51,7 +54,10 @@ args:
  -h | --help: show this help
  -t | --max-access-time [$MAXFILEACCESS]:
     maximum number of seconds since last file access
-    after which the file is considered to be removable" 
+    after which the file is considered to be removable
+ -s | --max-cache-size [$MAXCACHEMB]:
+    maximum size of each cache directory in megabytes
+    oldest files are removed once this limit is hit"
 echo "Default cache-dirs are: $CACHES"
 }
 
@@ -61,6 +67,7 @@ parse_args() {
       return
    fi
    ARG=$1
+   echo "ARG $ARG"
    case "$ARG" in
      (-t|--max-access-time)
         MAXFILEACCESS=$2
@@ -68,11 +75,19 @@ parse_args() {
         shift 2
         parse_args $@
         ;;
+     (-s|--max-cache-size)
+        MAXCACHEMB=$2
+        check_natnum "$1" "$MAXCACHESIZE"
+        shift 2
+        parse_args $@
+        ;;
      (-h|--help)
+        echo BOOM
         show_help
         exit 0
         ;;
      (*)
+        echo LOL
         CACHES="$@"
         ;;
    esac

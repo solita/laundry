@@ -11,35 +11,39 @@ LOGFILE=$HOME/clean-caches.log
 NREMOVED=0
 BREMOVED=0
 
-# load limits from laundry later
 MAXFILEACCESS=172800
 MAXCACHEMB=256
+
+set_max_cache_mb() {
+   MAXCACHEMB=$1
+   MAXCACHEBYTES=$(expr 1048576 "*" $MAXCACHEMB)
+}
 
 log() {
    echo "$(date +"%Y.%m.%d %H:%M:%S"): $@" | tee -a $LOGFILE
 }
 
 remove_file() {
-   NREMOVED=$(expr $NREMOVED + 1)
-   BREMOVED=$(expr $BREMOVED + $(stat -c "%s" "$1"))
+   test -f "$1" || return
    rm "$1"
 }
 
 flush_line() {
    local LASTACCESS=$1
    shift
+   local FILESIZE=$1
+   shift
    local FILE="$@"
    test -f "$FILE" || return
    local ELAPSED=$(expr "$NOW" - "$LASTACCESS")
-   test "$ELAPSED" -gt "$MAXFILEACCESS" && remove_file "$FILE" || true
+   test "$ELAPSED" -lt "$MAXFILEACCESS" || remove_file "$FILE"
+   test "$FILESIZE" -lt "$MAXCACHEBYTES" || remove_file "$FILE"
 }
-
-# todo operation: fold over entries in acces time order, and start removing when cache is full or last access time limit is hit
 
 flush_cache() {
    test -d "$1" || { log "warning: $1 does not exist"; return; }
    log flushing $1
-   stat -c '%X %n' "$1"/* | while read LINE; do flush_line $LINE;done
+   stat -c '%X %s %n' "$1"/* | sort -r | while read LINE; do flush_line $LINE; done
 }
 
 check_natnum() {
@@ -67,7 +71,6 @@ parse_args() {
       return
    fi
    ARG=$1
-   echo "ARG $ARG"
    case "$ARG" in
      (-t|--max-access-time)
         MAXFILEACCESS=$2
@@ -77,7 +80,7 @@ parse_args() {
         ;;
      (-s|--max-cache-size)
         MAXCACHEMB=$2
-        check_natnum "$1" "$MAXCACHESIZE"
+        check_natnum "$1" "$MAXCACHEMB"
         shift 2
         parse_args $@
         ;;
@@ -87,7 +90,6 @@ parse_args() {
         exit 0
         ;;
      (*)
-        echo LOL
         CACHES="$@"
         ;;
    esac
@@ -95,12 +97,17 @@ parse_args() {
 
 parse_args $@
 
-log "cleaning $CACHES, access limit $MAXFILEACCESS"
+set_max_cache_mb $MAXCACHEMB
+
+log "cleaning $CACHES, access limit ${MAXFILEACCESS}s, size limit ${MAXCACHEMB}MB"
 
 for CACHE in $CACHES
 do
+   INITIAL=$(du -bh "$CACHE" | sed -e 's/[ \t].*//')
    flush_cache $CACHE 
+   CLEAN=$(du -bh "$CACHE" | sed -e 's/[ \t].*//')
+   log "$CACHE $INITIAL -> $CLEAN"
 done
 
-log "all done. $BREMOVED bytes / $NREMOVED files removed"
+log "all done"
 

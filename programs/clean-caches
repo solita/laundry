@@ -14,8 +14,6 @@ BREMOVED=0
 # load limits from laundry later
 MAXFILEACCESS=172800
 
-test $# -eq 0 || CACHES=$@
-
 log() {
    echo "$(date +"%Y.%m.%d %H:%M:%S"): $@" | tee -a $LOGFILE
 }
@@ -40,6 +38,47 @@ flush_cache() {
    log flushing $1
    stat -c '%X %n' "$1"/* | while read LINE; do flush_line $LINE;done
 }
+
+check_natnum() {
+   echo $2 | grep -q "^[0-9][0-9]*$" && return
+   echo "Argument of $1 should be a natural number, but was '$2'"
+   exit 1
+}
+
+show_help() {
+   echo "Usage: clean-caches [arg].. [cache-dir] ...
+args:
+ -h | --help: show this help
+ -t | --max-access-time [$MAXFILEACCESS]:
+    maximum number of seconds since last file access
+    after which the file is considered to be removable" 
+echo "Default cache-dirs are: $CACHES"
+}
+
+parse_args() {
+   if [ 0 = $# ]
+   then
+      return
+   fi
+   ARG=$1
+   case "$ARG" in
+     (-t|--max-access-time)
+        MAXFILEACCESS=$2
+        check_natnum "$1" "$MAXFILEACCESS"
+        shift 2
+        parse_args $@
+        ;;
+     (-h|--help)
+        show_help
+        exit 0
+        ;;
+     (*)
+        CACHES="$@"
+        ;;
+   esac
+}
+
+parse_args $@
 
 log "cleaning $CACHES, access limit $MAXFILEACCESS"
 

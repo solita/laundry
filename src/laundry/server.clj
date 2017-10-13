@@ -13,44 +13,21 @@
              [laundry.digest :as digest]
              [laundry.test :as test]
              [laundry.machines :as machines]
+             [laundry.config :as config]
+             [laundry.schemas :refer :all]
+             [laundry.cache :as cache]
              [clojure.string :as string]
              [clojure.set :as set]
              [clojure.java.io :as io]
              [clojure.pprint :refer [pprint]]
              [cheshire.core :as json]
-             [ring.util.codec :as codec]))
-
-(s/defschema Status 
-   (s/enum "ok" "error"))
-
-(s/defschema LaundryConfig
-   {:port s/Num
-    :slow-request-warning s/Num
-    :temp-directory s/Str
-    :tools s/Str
-    :log-level (s/enum :debug :info)})
-
-(defonce config (atom nil))
+             [ring.util.codec :as codec])
+   (:import 
+      [java.io File]))
 
 (defn timestamp []
    (.getTime (java.util.Date.)))
    
-(s/defn set-config! [new-configuration]
-   (debug "setting config to" new-configuration)
-   (reset! config new-configuration))
-
-(defn get-config
-   ([key]
-      (get-config key nil))
-   ([key default]
-      (get @config key default)))
-
-(defn not-ok [res]
-   (status (ok res) 500))
-
-(defn not-there [res]
-   (status (ok res) 404))
-
 (s/defn temp-file-input-stream [path :- s/Str]
    (let [input (io/input-stream (io/file path))]
       (proxy [java.io.FilterInputStream] [input]
@@ -59,10 +36,8 @@
             (io/delete-file path)))))
 
 ;;; Handler
-
-
     
-(defn make-api-handler [api-calls env]
+(s/defn make-api-handler [api-calls, env :- LaundryConfig]
    (apply api
       (concat
          [ {:swagger
@@ -78,24 +53,24 @@
             (GET "/alive" []
                   :summary "check whether server is running"
                   (ok "yes"))
-               
+            
             (GET "/config" []
                :summary "get current laundry configuration"
-               (ok @config))]
+               (ok (config/current)))
+            ]
         api-calls)))
-            
 
 (defn request-time-logger [handler]
    (fn [req]
       (let [start (timestamp)
             res (handler req)
             elapsed (- (timestamp) start)]
-         (if (> elapsed (get-config :slow-request-warning 10000))
+         (if (> elapsed (config/read :slow-request-warning 10000))
             (warn (str "slow request: " (:uri req) 
                   " took " elapsed "ms")))
          res)))
 
-(defn make-handler [api env]
+(s/defn make-handler [api env :- LaundryConfig]
   (-> (make-api-handler api env)
       request-time-logger
       (wrap-defaults (-> (assoc-in site-defaults [:security :anti-forgery] false)
@@ -117,24 +92,24 @@
    (stop-server)
    (reset! server (jetty/run-jetty handler conf))
    (when server
-     (info "Laundry is running at port" (get-config :port))))
+     (info "Laundry is running at port" (config/read :port))))
 
-(s/defn ^:always-validate start-server [conf]
+(s/defn ^:always-validate start-server [conf :- LaundryConfig] 
    ;; update config
-   (set-config! conf)
+   (config/set! conf)
    (let [api (machines/generate-apis conf)]
       ;; configure logging accordingly
       (timbre/merge-config!
          {:appenders
             {:spit
                (appenders/spit-appender
-                  {:fname (get-config :logfile "laundry.log")})}})
+                  {:fname (config/read :logfile "laundry.log")})}})
       (timbre/set-level!
-         (get-config :log-level :info))
-      (info "start-server, config " @config)
+         (config/read :log-level :info))
+      (info "start-server, config " (config/current))
       ;; configure logging
       (start-laundry (make-handler api conf)
-         {:port (get-config :port 8080)
+         {:port (config/read :port 8080)
           :join? false})))
 
 

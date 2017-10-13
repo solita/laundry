@@ -33,10 +33,6 @@
        :parse-fn keyword 
        :id :log-level])
     
-(machines/add-command-line-rule!
-      ["-T" "--temporary-directory" "directory for holding temporary data"
-         :default "/tmp"
-         :id :temp-directory])
       
 (defn -main [& args]
    (let [conf (parse-opts args (deref machines/command-line-rules))

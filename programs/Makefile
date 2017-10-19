@@ -92,6 +92,7 @@ $(OUT)/bin/gs: tmp/ghostscript.tar.gz $(OUT)/bin/asan $(OUT)/bin/asan++
 
 $(OUT)/bin/lein:
 	curl https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein > $(OUT)/bin/lein
+	chmod +x $(OUT)/bin/lein
 
 clean:
 	rm -rf tmp

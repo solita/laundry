@@ -49,7 +49,7 @@ $(OUT)/bin/checksum: checksum
 $(OUT)/bin/gcc: tmp/gcc-6.3.0.tar.gz
 	# check dependencies
 	curl --version
-	bzip2 --version
+	bzip2 --help
 	zip --version
 	unzip -v
 	# compile

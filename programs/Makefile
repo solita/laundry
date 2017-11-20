@@ -6,7 +6,7 @@ GCCINFRA=ftp://gcc.gnu.org/pub/gcc/infrastructure/
 THREADS=4
 OUT=/opt/laundry
 
-install: $(OUT)/bin/pdf2png $(OUT)/bin/gs $(OUT)/bin/pdf2txt $(OUT)/bin/pdf2pdfa $(OUT)/bin/checksum $(OUT)/sbin/firejail $(OUT)/bin/access-test $(OUT)/bin/sandbox-access-test.sh $(OUT)/bin/clean-caches $(OUT)/bin/lein
+install: $(OUT)/bin/pdf2png $(OUT)/bin/gs $(OUT)/bin/pdf2txt $(OUT)/bin/pdf2pdfa $(OUT)/bin/checksum $(OUT)/sbin/firejail $(OUT)/bin/access-test $(OUT)/bin/sandbox-access-test.sh $(OUT)/bin/clean-caches $(OUT)/bin/lein $(OUT)/bin/convert
 
 $(OUT)/bin/asan: $(OUT)/bin/gcc
 	mkdir -p $(OUT)/bin
@@ -88,11 +88,21 @@ tmp/ghostscript.tar.gz:
 $(OUT)/bin/gs: tmp/ghostscript.tar.gz $(OUT)/bin/asan $(OUT)/bin/asan++
 	cd tmp && tar -zxf ghostscript.tar.gz
 	cd tmp/ghostscript-9.21 && CC=$(OUT)/bin/asan CXX=$(OUT)/bin/asan++ LD_LIBRARY_PATH=$(OUT)/lib:$(OUT)/lib64  ./configure --prefix=$(OUT) 
-	cd tmp/ghostscript-9.21 && CC=$(OUT)/bin/asan CXX=$(OUT)/bin/asan++ LD_LIBRARY_PATH=$(OUT)/lib:$(OUT)/lib64  make -j4 install
+	cd tmp/ghostscript-9.21 && CC=$(OUT)/bin/asan CXX=$(OUT)/bin/asan++ LD_LIBRARY_PATH=$(OUT)/lib:$(OUT)/lib64  make -j$(THREADS) install
 
 $(OUT)/bin/lein:
 	curl https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein > $(OUT)/bin/lein
 	chmod +x $(OUT)/bin/lein
+
+$(OUT)/bin/convert: tmp/ImageMagick $(OUT)/bin/asan $(OUT)/bin/asan++
+	cd tmp/ImageMagick && LD_LIBRARY_PATH=$(OUT)/lib64 CC=$(OUT)/bin/asan CXX=$(OUT)/bin/asan++ ./configure --prefix=$(OUT) && make -j$(THREADS) && make install
+
+tmp/ImageMagick:
+	# we trust in https for this one, since the content varies
+	mkdir -p tmp
+	-rm -rf tmp/ImageMagick-*
+	cd tmp && curl https://www.imagemagick.org/download/ImageMagick.tar.gz | tar -zxf -
+	cd tmp && ln -s ImageMagick-* ImageMagick
 
 clean:
 	rm -rf tmp

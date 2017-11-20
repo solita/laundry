@@ -69,14 +69,14 @@ test_pdf2txt() {
    echo ", ok"
 }
 
-test_pdf2png() {
-   echo -n "Testing pdf2png:"
+test_pdf2jpeg() {
+   echo -n "Testing pdf2jpeg:"
    test -x $FIREJAIL || { echo "no firejail - skipping "; return 0; }
    echo -n " converting"
-   curl -sf -F file=@test/testcases/hypno.pdf -X POST "$HOST/pdf/pdf-preview" > tmp/response.png || die "conversion failed"
+   curl -sf -F file=@test/testcases/hypno.pdf -X POST "$HOST/pdf/pdf-preview" > tmp/response.jpeg || die "conversion failed"
    echo -n ", checking"
-   file tmp/response.png | grep -q 'PNG' || die "tmp/response.png does not look like a png file"
-   echo ", ok (response is png)"
+   file tmp/response.jpeg | grep -q 'JPEG' || die "tmp/response.jpeg does not look like a jpeg file"
+   echo ", ok (response is jpeg)"
 }
 
 test_pdf2pdfa() {
@@ -127,7 +127,7 @@ main() {
    # Actual tests 
    test_checksum
    test_pdf2txt
-   test_pdf2png
+   test_pdf2jpeg
    test_pdf2pdfa
    
    echo "Tests OK"

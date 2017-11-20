@@ -6,7 +6,7 @@ GCCINFRA=ftp://gcc.gnu.org/pub/gcc/infrastructure/
 THREADS=4
 OUT=/opt/laundry
 
-install: $(OUT)/bin/pdf2png $(OUT)/bin/gs $(OUT)/bin/pdf2txt $(OUT)/bin/pdf2pdfa $(OUT)/bin/checksum $(OUT)/sbin/firejail $(OUT)/bin/access-test $(OUT)/bin/sandbox-access-test.sh $(OUT)/bin/clean-caches $(OUT)/bin/lein $(OUT)/bin/convert
+install: $(OUT)/bin/pdf2jpeg $(OUT)/bin/gs $(OUT)/bin/pdf2txt $(OUT)/bin/pdf2pdfa $(OUT)/bin/checksum $(OUT)/sbin/firejail $(OUT)/bin/access-test $(OUT)/bin/sandbox-access-test.sh $(OUT)/bin/clean-caches $(OUT)/bin/lein $(OUT)/bin/convert
 
 $(OUT)/bin/asan: $(OUT)/bin/gcc
 	mkdir -p $(OUT)/bin
@@ -18,9 +18,9 @@ $(OUT)/bin/asan++: $(OUT)/bin/asan
 	cat $(OUT)/bin/asan | sed -e 's/gcc/g++/' > $(OUT)/bin/asan++
 	chmod +x $(OUT)/bin/asan++
 
-$(OUT)/bin/pdf2png: pdf2png
+$(OUT)/bin/pdf2jpeg: pdf2jpeg
 	mkdir -p $(OUT)/bin
-	cp pdf2png $(OUT)/bin
+	cp pdf2jpeg $(OUT)/bin
 
 $(OUT)/bin/clean-caches: clean-caches
 	mkdir -p $(OUT)/bin

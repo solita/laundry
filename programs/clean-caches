@@ -5,7 +5,7 @@ set -e
 
 NOW=$(date +%s)
 
-CACHES="/tmp/pdf2pdfa /tmp/pdf2png"
+CACHES="/tmp/pdf2pdfa /tmp/pdf2jpeg"
 LOGFILE=$HOME/clean-caches.log
 
 NREMOVED=0

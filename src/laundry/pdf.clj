@@ -49,15 +49,15 @@
          (not-ok "pdf2txt conversion failed"))))
 
 ;; previewer of first page
-(s/defn api-pdf2png [env, tempfile :- java.io.File]
+(s/defn api-pdf2jpeg [env, tempfile :- java.io.File]
    (let [path (.getAbsolutePath tempfile)
-         out  (str (.getAbsolutePath tempfile) ".png")
-         res (sh (str (:tools env) "/bin/pdf2png") path out)]
+         out  (str (.getAbsolutePath tempfile) ".jpeg")
+         res (sh (str (:tools env) "/bin/pdf2jpeg") path out)]
       (.delete tempfile)
       (if (= (:exit res) 0)
          (content-type 
             (ok (temp-file-input-stream out))
-             "image/png")
+             "image/jpeg")
          (do
             (warn "pdf preview failed: " res)
             (not-ok "pdf preview failed")))))
@@ -74,7 +74,7 @@
                   filename (:filename file)]
                (info "PDF previewer received " filename "(" (:size file) "b)")
                (.deleteOnExit tempfile) ;; cleanup if VM is terminated
-               (api-pdf2png env tempfile)))
+               (api-pdf2jpeg env tempfile)))
             
          (POST "/pdf2txt" []
             :summary "attempt to convert a PDF file to TXT"

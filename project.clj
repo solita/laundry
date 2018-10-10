@@ -6,7 +6,7 @@
        [metosin/potpuri "0.4.0"]
        [ring/ring "1.5.0"]
        [ring/ring-defaults "0.2.1"]
-       [metosin/compojure-api "1.2.0-alpha2"]
+       [metosin/compojure-api "1.1.11"]
        [metosin/ring-http-response "0.8.0"]
        [metosin/ring-swagger "0.22.14"]
        [metosin/ring-swagger-ui "2.2.5-0"]

@@ -7,7 +7,7 @@ echo "Using $buildroot for build data"
 mkdir -p "$buildroot"
 cd "$buildroot"
 
-tarball_url=https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs921/ghostscript-9.21.tar.gz
+tarball_url=https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs925/ghostscript-9.25.tar.gz
 
 
 tarball_basename="${tarball_url##*/}"

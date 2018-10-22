@@ -8,18 +8,17 @@ mkdir -p "$buildroot"
 cd "$buildroot"
 
 
+# can't use releases, because the kafel is a git subproject and it doesn't have releases
 
-
-tarball_url=https://github.com/google/nsjail/archive/1.3.tar.gz
-
-tarball_basename=nsjail-"${tarball_url##*/}"
-mkdir -p downloads
-cd downloads
-test -f $tarball_basename || wget -O $tarball_basename $tarball_url
-cd -
+nsjail_version=2.7
 mkdir -p src
-tar -C src -zxf "downloads/$tarball_basename"
-cd src/nsjail-*
+cd src
+test -d nsjail-$nsjail_version || {
+  git clone --recurse-submodules --single-branch --branch $nsjail_version https://github.com/google/nsjail.git nsjail-$nsjail_version
+  
+}
+cd -
+cd src/nsjail-$nsjail_version
 make clean || true
 # todo: add kafel for bpf depends on bison & flex
 make

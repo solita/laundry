@@ -1,5 +1,5 @@
 (ns laundry.digest
-   (:require [compojure.api.sweet :as sweet :refer :all]
+  (:require [compojure.api.sweet :as sweet :refer :all]
              [ring.util.http-response :refer [ok status content-type] :as resp]
              [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
              [ring.swagger.upload :as upload]
@@ -8,9 +8,6 @@
              [clojure.java.shell :refer [sh]]
              [laundry.machines :as machines]
              [clojure.java.io :as io]))
-
-(defn not-ok [res]
-   (status (ok res) 500))
 
 ;(machines/add-command-line-rule!
 ;    [nil "--checksum-command COMMAND" "compute a checksum"
@@ -25,7 +22,7 @@
       (.delete tempfile)
       (if (= (:exit res) 0)
          (ok (:out res))
-         (not-ok "digest computation failed"))))
+         (machines/badness-resp "digest computation failed"))))
 
 (machines/add-api-generator! 
    (fn [env] 

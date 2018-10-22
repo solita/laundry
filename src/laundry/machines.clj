@@ -1,6 +1,6 @@
 (ns laundry.machines
    (:require 
-      [ring.util.http-response :as resp]))
+      [ring.util.http-response :as htresp]))
 
 (defonce command-line-rules (atom []))
 
@@ -23,11 +23,13 @@
 
 ;; response helpers commonly used by machines 
 
-(defn not-ok [res]
-   (resp/status (resp/ok res) 500))
-   
-(defn not-there [res]
-   (resp/status (resp/ok res) 404))
+(defn badness-resp [msg]
+  (htresp/content-type (htresp/internal-server-error (str msg))
+                       "text/plain"))
 
-(def ok resp/ok)
+(defn not-there-resp [msg]
+  (htresp/content-type (htresp/internal-server-error (str msg))
+                       "text/plain"))
+
+(def ok htresp/ok)
 

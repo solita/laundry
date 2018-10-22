@@ -17,18 +17,6 @@
            (fr.opensagres.poi.xwpf.converter.pdf PdfConverter PdfOptions)))
 
 
-;; (defn debug-tiedostosta-bytearray! [filename]
-;;   (FileUtils/readFileToByteArray (io/file filename)))
-
-;; (defn debug-bytearraysta-tiedosto! [bytearray filename]
-;;   (FileUtils/writeByteArrayToFile (io/file filename) bytearray))
-
-;; (defn debug-docx->pdf [source-path]
-;;   (let [docx-bytes (debug-tiedostosta-bytearray! source-path)
-;;         pdf-result (docx->pdf source-path docx-bytes)]
-;;     (println (pr-str pdf-result))
-;;     (debug-bytearraysta-tiedosto! (:bytes pdf-result) "debug-docxconv.pdf")))
-
 (defn- tiedostopaate->pdf [filename]
   (string/replace-first filename #"(?i)\.(\w*)" ".pdf"))
 
@@ -56,10 +44,6 @@
            :mime  "application/pdf"
            :bytes (.toByteArray final-bytesink)})))))
 
-(defn badness-resp [msg]
-  (htresp/content-type (htresp/internal-server-error (str msg))
-                       "text/plain"))
-
 (s/defn api-docx2pdf [env, tempfile :- java.io.File]
   (let [res (docx->pdf "file.docx" (io/input-stream tempfile))]
       (.delete tempfile) ;; todo: move to finally block
@@ -67,7 +51,7 @@
         (htresp/content-type 
          (htresp/ok (io/input-stream (:bytes res)))
          "application/pdf")
-         (badness-resp "docx2pdf conversion failed"))))
+         (machines/badness-resp "docx2pdf conversion failed"))))
 
 (machines/add-api-generator! 
    (fn [env] 

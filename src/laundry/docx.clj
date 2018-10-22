@@ -57,7 +57,7 @@
            :bytes (.toByteArray final-bytesink)})))))
 
 (defn badness-resp [msg]
-  (htresp/content-type (htresp/internal-server-error msg)
+  (htresp/content-type (htresp/internal-server-error (str msg))
                        "text/plain"))
 
 (s/defn api-docx2pdf [env, tempfile :- java.io.File]
@@ -76,7 +76,7 @@
             :summary "attempt to convert a .docx file to PDF"
             :multipart-params [file :- upload/TempFileUpload]
             :middleware [upload/wrap-multipart-params]
- -           (let [tempfile (:tempfile file)
+            (let [tempfile (:tempfile file)
                   filename (:filename file)]
                (info "PDF converter received " filename "(" (:size file) "b)")
                (.deleteOnExit tempfile) ;; cleanup if VM is terminated

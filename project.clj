@@ -12,7 +12,7 @@
        [com.taoensso/timbre "4.10.0"]]
    
    :source-paths ["src"]
-
+   :target-path "target/%s/"
    :profiles 
       {:dev 
        {:dependencies [[ring-mock "0.1.5"]

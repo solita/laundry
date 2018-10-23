@@ -8,12 +8,14 @@ mkdir -p "$buildroot"
 cd "$buildroot"
 
 tarball_url=https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs925/ghostscript-9.25.tar.gz
-
+required_hash=baafa64740b090bff50b220a6df3be95c46069b7e30f4b4effed28316e5b2389
 
 tarball_basename="${tarball_url##*/}"
 mkdir -p downloads
 cd downloads
 test -f $tarball_basename || wget $tarball_url
+observed_hash=$(sha256sum $tarball_basename | cut -f 1 -d " ")
+test $observed_hash = $required_hash || exit 1
 cd -
 export CC=clang
 export CXX=clang++

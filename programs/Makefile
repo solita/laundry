@@ -1,21 +1,19 @@
-GMP=gmp-4.3.2
-ISL=isl-0.15
-MPC=mpc-0.8.1
-MPFR=mpfr-2.4.2
-GCCINFRA=ftp://gcc.gnu.org/pub/gcc/infrastructure/
-THREADS=4
+NPROCS=$(shell getconf _NPROCESSORS_ONLN || echo 1)
 OUT=/opt/laundry
 
-install: $(OUT)/bin/pdf2jpeg $(OUT)/bin/gs $(OUT)/bin/pdf2txt $(OUT)/bin/pdf2pdfa $(OUT)/bin/checksum $(OUT)/sbin/firejail $(OUT)/bin/access-test $(OUT)/bin/sandbox-access-test.sh $(OUT)/bin/clean-caches $(OUT)/bin/lein $(OUT)/bin/convert
+install: $(OUT)/bin/pdf2jpeg $(OUT)/bin/gs $(OUT)/bin/pdf2txt $(OUT)/bin/pdf2pdfa $(OUT)/bin/checksum $(OUT)/sbin/firejail $(OUT)/bin/access-test $(OUT)/bin/sandbox-access-test.sh $(OUT)/bin/clean-caches $(OUT)/bin/lein $(OUT)/bin/convert docker-libre-image
 
-$(OUT)/bin/asan: $(OUT)/bin/gcc
+deps:
+	apt-get -y install libpng-dev libjpeg-dev build-essential clang wget unzip curl
+
+$(OUT)/bin/asan: deps /usr/bin/clang
 	mkdir -p $(OUT)/bin
 	echo '#!/bin/bash' > $(OUT)/bin/asan
-	echo 'exec $(OUT)/bin/gcc -fsanitize=address "$$@"' >> $(OUT)/bin/asan
+	echo 'exec /usr/bin/clang -fsanitize=address -fstack-protector-strong -Wformat -Werror=format-security "$$@"' >> $(OUT)/bin/asan
 	chmod +x $(OUT)/bin/asan
 
 $(OUT)/bin/asan++: $(OUT)/bin/asan
-	cat $(OUT)/bin/asan | sed -e 's/gcc/g++/' > $(OUT)/bin/asan++
+	cat $(OUT)/bin/asan | sed -e 's/clang/clang++/' > $(OUT)/bin/asan++
 	chmod +x $(OUT)/bin/asan++
 
 $(OUT)/bin/pdf2jpeg: pdf2jpeg
@@ -25,7 +23,7 @@ $(OUT)/bin/pdf2jpeg: pdf2jpeg
 $(OUT)/bin/clean-caches: clean-caches
 	mkdir -p $(OUT)/bin
 	cp clean-caches $(OUT)/bin
-	
+
 $(OUT)/bin/access-test: access-test
 	mkdir -p $(OUT)/bin
 	cp access-test $(OUT)/bin
@@ -33,76 +31,51 @@ $(OUT)/bin/access-test: access-test
 $(OUT)/bin/sandbox-access-test.sh: sandbox-access-test.sh
 	mkdir -p $(OUT)/bin
 	cp sandbox-access-test.sh $(OUT)/bin
-	
+
 $(OUT)/bin/pdf2pdfa: pdf2pdfa
 	mkdir -p $(OUT)/bin
 	cp pdf2pdfa $(OUT)/bin
-	
+
 $(OUT)/bin/pdf2txt: pdf2txt
 	mkdir -p $(OUT)/bin
 	cp pdf2txt $(OUT)/bin
-	
+
 $(OUT)/bin/checksum: checksum
 	mkdir -p $(OUT)/bin
 	cp checksum $(OUT)/bin
-	
-$(OUT)/bin/gcc: tmp/gcc-6.3.0.tar.gz
-	# check dependencies
-	curl --version
-	bzip2 --help
-	zip --version
-	unzip -v
-	# compile
-	mkdir -p tmp
-	cd tmp && tar -zxf gcc-6.3.0.tar.gz
-	-rm -rfv tmp/gcc-6.3.0/gmp* tmp/gcc-6.3.0/isl* tmp/gcc-6.3.0/mpc* tmp/gcc-6.3.0/mpfr* 
-	cd tmp/gcc-6.3.0 && curl $(GCCINFRA)/$(MPFR).tar.bz2 | tee mpfr.tar.bz2 | sha256sum | grep c7e75a08a8d49d2082e4caee1591a05d11b9d5627514e678f02d66a124bcf2ba && tar -jxvf mpfr.tar.bz2 && mv $(MPFR) mpfr
-	cd tmp/gcc-6.3.0 && curl $(GCCINFRA)/$(ISL).tar.bz2 | tee isl.tar.bz2 | sha256sum | grep 8ceebbf4d9a81afa2b4449113cee4b7cb14a687d7a549a963deb5e2a41458b6b && tar -jxvf isl.tar.bz2 && mv $(ISL) isl
-	cd tmp/gcc-6.3.0 && curl $(GCCINFRA)/$(GMP).tar.bz2 | tee gmp.tar.bz2 | sha256sum | grep 936162c0312886c21581002b79932829aa048cfaf9937c6265aeaa14f1cd1775 && tar -jxvf gmp.tar.bz2 && mv $(GMP) gmp
-	cd tmp/gcc-6.3.0 && curl $(GCCINFRA)/$(MPC).tar.gz | tee mpc.tar.gz | sha256sum | grep e664603757251fd8a352848276497a4c79b7f8b21fd8aedd5cc0598a38fee3e4 && tar -zxvf mpc.tar.gz && mv $(MPC) mpc
-	cd tmp/gcc-6.3.0 && ./configure --disable-multilib --prefix=$(OUT) && nice -15 make -j$(THREADS) && make install
-	$(OUT)/bin/gcc --version | grep 6\.3\.0
 
 tmp/firejail: 
 	mkdir -p tmp
-	cd tmp && git clone https://github.com/netblue30/firejail.git
-	
+	cd tmp && git clone https://github.com/netblue30/firejail.git && cd firejail && git checkout 8a898ef19a40d34098218a165558e71817b0f006 # 0.9.56-LTS-release
+
 tmp/firejail/src/firejail: tmp/firejail
 	cd tmp/firejail && ./configure --prefix=$(OUT) && make
 
 $(OUT)/sbin/firejail: tmp/firejail/src/firejail
 	cd tmp/firejail && make install
 
-tmp/gcc-6.3.0.tar.gz:
-	mkdir -p tmp
-	curl http://ftp.gnu.org/pub/gnu/gcc/gcc-6.3.0/gcc-6.3.0.tar.gz > tmp/gcc.tar.gz
-	sha256sum tmp/gcc.tar.gz | grep 02f9302a559fa2251595ca0bc1e937219eff2995a3802d7b31676fec2402beb4
-	mv tmp/gcc.tar.gz tmp/gcc-6.3.0.tar.gz
-
-tmp/ghostscript.tar.gz:
-	mkdir -p tmp
-	curl -L "https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs921/ghostscript-9.21.tar.gz" > tmp/gs 
-	sha256sum tmp/gs | grep 02bceadbc4dddeb6f2eec9c8b1623d945d355ca11b8b4df035332b217d58ce85
-	mv tmp/gs tmp/ghostscript.tar.gz
-
-$(OUT)/bin/gs: tmp/ghostscript.tar.gz $(OUT)/bin/asan $(OUT)/bin/asan++
-	cd tmp && tar -zxf ghostscript.tar.gz
-	cd tmp/ghostscript-9.21 && CC=$(OUT)/bin/asan CXX=$(OUT)/bin/asan++ LD_LIBRARY_PATH=$(OUT)/lib:$(OUT)/lib64  ./configure --prefix=$(OUT) 
-	cd tmp/ghostscript-9.21 && CC=$(OUT)/bin/asan CXX=$(OUT)/bin/asan++ LD_LIBRARY_PATH=$(OUT)/lib:$(OUT)/lib64  make -j$(THREADS) install
+$(OUT)/bin/gs:
+	cd .. && build-scripts/ghostscript.bash
+	cd ../build-data/src/ghostscript-9.25 && make install
 
 $(OUT)/bin/lein:
 	curl https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein > $(OUT)/bin/lein
 	chmod +x $(OUT)/bin/lein
 
 $(OUT)/bin/convert: tmp/ImageMagick $(OUT)/bin/asan $(OUT)/bin/asan++
-	cd tmp/ImageMagick && LD_LIBRARY_PATH=$(OUT)/lib64 CC=$(OUT)/bin/asan CXX=$(OUT)/bin/asan++ ./configure --prefix=$(OUT) && make -j$(THREADS) && make install
+	cd tmp/ImageMagick && LD_LIBRARY_PATH=$(OUT)/lib64 CC=$(OUT)/bin/asan CXX=$(OUT)/bin/asan++ ./configure --prefix=$(OUT) && make -j$(NPROCS) && make install
 
 tmp/ImageMagick:
 	# we trust in https for this one, since the content varies
 	mkdir -p tmp
 	-rm -rf tmp/ImageMagick-*
-	cd tmp && curl https://www.imagemagick.org/download/ImageMagick.tar.gz | tar -zxf -
+	wget -O tmp/imagemagick.tar.gz https://github.com/ImageMagick/ImageMagick/archive/7.0.8-13.tar.gz
+	sha256sum tmp/imagemagick.tar.gz | grep 1019e14efce520fa5287c955cf7c3a989dbba37545498677679d24d10a965795
+	cd tmp && tar -zxf imagemagick.tar.gz
 	cd tmp && ln -s ImageMagick-* ImageMagick
 
 clean:
 	rm -rf tmp
+
+docker-libre-image:
+	docker build -t libreconv - < Dockerfile.libreoffice

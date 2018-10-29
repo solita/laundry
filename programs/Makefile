@@ -4,7 +4,7 @@ OUT=/opt/laundry
 install: $(OUT)/bin/pdf2jpeg $(OUT)/bin/gs $(OUT)/bin/pdf2txt $(OUT)/bin/pdf2pdfa $(OUT)/bin/checksum $(OUT)/sbin/firejail $(OUT)/bin/access-test $(OUT)/bin/sandbox-access-test.sh $(OUT)/bin/clean-caches $(OUT)/bin/lein $(OUT)/bin/convert docker-libre-image
 
 deps:
-	apt-get -y install libpng-dev libjpeg-dev build-essential clang wget unzip curl
+	test `whoami` = root && apt-get -y install libpng-dev libjpeg-dev build-essential clang wget unzip curl || echo not root, skip deps
 
 $(OUT)/bin/asan: deps /usr/bin/clang
 	mkdir -p $(OUT)/bin

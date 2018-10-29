@@ -28,5 +28,5 @@ mkdir -p src
 tar -C src -zxf "downloads/$tarball_basename"
 cd src/ghostscript-*
 make clean || true
-./configure --prefix=/opt/laundry --without-x --with-divers=FILES --disable-cups --disable-gtk --disable-dbus > configure.out 2>&1
+./configure --prefix=/opt/laundry --without-x --with-drivers=FILES --disable-cups --disable-gtk --disable-dbus > configure.out 2>&1
 make -j $ncpus

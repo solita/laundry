@@ -12,7 +12,7 @@ env:
  - LD_LIBRARY_PATH=/opt/laundry/lib64
  
 script:
-  - cd docker-build && docker build -t laundrybuild && cd ..
+  - cd docker-build && docker build -t laundrybuild . && cd ..
   - cd programs && make docker-libre-image && cd ..
   - docker run --cap-add SYS_PTRACE -it  laundrybuild
   - docker run -i -e docconv_suffix=doc --rm --name convrun1 libreconv < test/testcases/test.doc > /tmp/docresult.pdf

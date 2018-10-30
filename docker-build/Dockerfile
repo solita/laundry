@@ -1,0 +1,11 @@
+# first, build:
+# docker build -t laundrybuild
+# then, run like: 
+# docker run --cap-add SYS_PTRACE -it  --name laundrybuild laundrybuild
+
+FROM ubuntu:latest
+RUN apt-get update && apt-get -y upgrade && apt-get -y install git make libpng-dev libjpeg-dev build-essential clang wget unzip curl && useradd -m laundrybuild && mkdir /opt/laundry && chown laundrybuild /opt/laundry
+# USER laundrybuild
+WORKDIR /home/laundrybuild
+ENV LAUNDRY_BUILD_BRANCH=docker-and-docx
+ENTRYPOINT su -c "git clone -b $LAUNDRY_BUILD_BRANCH https://github.com/solita/laundry.git" laundrybuild && cd laundry && cd programs && make deps && su -c make laundrybuild

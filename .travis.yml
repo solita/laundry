@@ -14,7 +14,7 @@ env:
 script:
   - cd docker-build && docker build -t laundrybuild . && cd ..
   - cd programs && make docker-libre-image && cd ..
-  - docker run --cap-add SYS_PTRACE -it  laundrybuild
+  - docker run --cap-add SYS_PTRACE -it -e LAUNDRY_BUILD_BRANCH=$TRAVIS_BRANCH laundrybuild
   - docker run -i -e docconv_suffix=doc --rm --name convrun1 libreconv < test/testcases/test.doc > /tmp/docresult.tar
   - tar --to-stdout -xf /tmp/docresult.tar out/document.pdf | file - | grep "PDF document"
 

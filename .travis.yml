@@ -15,7 +15,9 @@ script:
   - cd docker-build && docker build -t laundrybuild . && cd ..
   - cd programs && make docker-libre-image && cd ..
   - docker run --cap-add SYS_PTRACE -it  laundrybuild
-  - docker run -i -e docconv_suffix=doc --rm --name convrun1 libreconv < test/testcases/test.doc > /tmp/docresult.pdf
+  - docker run -i -e docconv_suffix=doc --rm --name convrun1 libreconv < test/testcases/test.doc > /tmp/docresult.tar
+  - tar --to-stdout -xf /tmp/docresult.tar out/document.pdf | file - | grep "PDF document"
+
 
 # - ldd /opt/laundry/bin/gs
 # - /opt/laundry/bin/pdf2txt test/testcases/hypno.pdf /tmp/out.txt && cat /tmp/out.txt

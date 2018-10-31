@@ -7,4 +7,4 @@ ENTRYPOINT set -u && cat > ~/document.$docconv_suffix &&             \
   --headless                                                         \
   --convert-to pdf:writer_pdf_Export                                 \
   --outdir ${HOME}/out                                               \
-  ~/document.$docconv_suffix > conv.out 2>&1 
+  ~/document.$docconv_suffix > conv.out 2>&1; tar -cf - conv.out out/*

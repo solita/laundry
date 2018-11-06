@@ -69,8 +69,8 @@ tmp/ImageMagick:
 	# we trust in https for this one, since the content varies
 	mkdir -p tmp
 	-rm -rf tmp/ImageMagick-*
-	wget -O tmp/imagemagick.tar.gz https://github.com/ImageMagick/ImageMagick/archive/7.0.8-13.tar.gz
-	sha256sum tmp/imagemagick.tar.gz | grep 1019e14efce520fa5287c955cf7c3a989dbba37545498677679d24d10a965795
+	wget -O tmp/imagemagick.tar.gz https://github.com/ImageMagick/ImageMagick/archive/7.0.8-14.tar.gz
+	sha256sum tmp/imagemagick.tar.gz | grep 0814f5599805ac7dfd6f46eefc7ea58c0a40dec6eb16b0a7ee0d499d3348e2c6
 	cd tmp && tar -zxf imagemagick.tar.gz
 	cd tmp && ln -s ImageMagick-* ImageMagick
 

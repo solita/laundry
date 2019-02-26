@@ -73,7 +73,7 @@ $(OUT)/sbin/firejail: tmp/firejail/src/firejail
 
 $(OUT)/bin/gs:
 	cd .. && build-scripts/ghostscript.bash
-	cd ../build-data/src/ghostscript-9.25 && make install
+	cd ../build-data/src/ghostscript-9.26 && make install
 
 $(OUT)/bin/lein:
 	curl https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein > $(OUT)/bin/lein

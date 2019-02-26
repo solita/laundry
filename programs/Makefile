@@ -3,8 +3,11 @@ OUT=/opt/laundry
 
 install: $(OUT)/bin/nsjail $(OUT)/bin/pdf2jpeg $(OUT)/bin/gs $(OUT)/bin/pdf2txt $(OUT)/bin/pdf2pdfa $(OUT)/bin/checksum $(OUT)/sbin/firejail $(OUT)/bin/access-test $(OUT)/bin/sandbox-access-test.sh $(OUT)/bin/clean-caches $(OUT)/bin/lein $(OUT)/bin/convert # docker-libre-image
 
-deps:
+deps: nsjail-deps
 	apt-get -y install libpng-dev libjpeg-dev build-essential clang wget unzip curl
+
+nsjail-deps:
+	apt-get -y install pkg-config bison flex libprotobuf-dev protbuf-compiler
 
 ## nsjail
 
@@ -16,7 +19,7 @@ nsjail/nsjail: nsjail
 	cd nsjail && make
 
 $(OUT)/bin/nsjail: nsjail/nsjail
-	dir -p $(OUT)/bin
+	mkdir -p $(OUT)/bin
 	cp -v nsjail/nsjail $(OUT)/bin
 
 

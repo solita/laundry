@@ -1,4 +1,4 @@
-z#!/usr/bin/env bash
+#!/usr/bin/env bash
 
 # This script can be used to export the built laundry conversion
 # programs (gs, imagemagick, etc) from inside the laundrybuild

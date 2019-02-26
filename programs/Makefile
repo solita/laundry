@@ -76,11 +76,9 @@ tmp/ImageMagick:
 	mkdir -p tmp
 	-rm -rf tmp/ImageMagick-*
 	wget -O tmp/imagemagick.tar.gz https://github.com/ImageMagick/ImageMagick/archive/7.0.8-27.tar.gz
-	sha256sum tmp/imagemagick.tar.gz | grep dcab981e664913b097cdac49d5049d071dc08dfda290a152ca7c0a12445dc793
+	sha256sum tmp/imagemagick.tar.gz | grep 94866968a447f8f92a969bf5342d612d05a64c71fc75e63bb2d8ecf887dc7fa2
 	cd tmp && tar -zxf imagemagick.tar.gz
 	cd tmp && ln -s ImageMagick-* ImageMagick
-
-
 
 clean:
 	rm -rf tmp

@@ -1,10 +1,24 @@
 NPROCS=$(shell getconf _NPROCESSORS_ONLN || echo 1)
 OUT=/opt/laundry
 
-install: $(OUT)/bin/pdf2jpeg $(OUT)/bin/gs $(OUT)/bin/pdf2txt $(OUT)/bin/pdf2pdfa $(OUT)/bin/checksum $(OUT)/sbin/firejail $(OUT)/bin/access-test $(OUT)/bin/sandbox-access-test.sh $(OUT)/bin/clean-caches $(OUT)/bin/lein $(OUT)/bin/convert # docker-libre-image
+install: $(OUT)/bin/nsjail $(OUT)/bin/pdf2jpeg $(OUT)/bin/gs $(OUT)/bin/pdf2txt $(OUT)/bin/pdf2pdfa $(OUT)/bin/checksum $(OUT)/sbin/firejail $(OUT)/bin/access-test $(OUT)/bin/sandbox-access-test.sh $(OUT)/bin/clean-caches $(OUT)/bin/lein $(OUT)/bin/convert # docker-libre-image
 
 deps:
-	test `whoami` = root && apt-get -y install libpng-dev libjpeg-dev build-essential clang wget unzip curl || echo not root, skip deps
+	apt-get -y install libpng-dev libjpeg-dev build-essential clang wget unzip curl
+
+## nsjail
+
+nsjail:
+	git clone https://github.com/google/nsjail.git
+	cd nsjail && git checkout 2.8
+
+nsjail/nsjail: nsjail
+	cd nsjail && make
+
+$(OUT)/bin/nsjail: nsjail/nsjail
+	dir -p $(OUT)/bin
+	cp -v nsjail/nsjail $(OUT)/bin
+
 
 $(OUT)/bin/asan: deps /usr/bin/clang
 	mkdir -p $(OUT)/bin
@@ -73,6 +87,8 @@ tmp/ImageMagick:
 	sha256sum tmp/imagemagick.tar.gz | grep 0814f5599805ac7dfd6f46eefc7ea58c0a40dec6eb16b0a7ee0d499d3348e2c6
 	cd tmp && tar -zxf imagemagick.tar.gz
 	cd tmp && ln -s ImageMagick-* ImageMagick
+
+
 
 clean:
 	rm -rf tmp

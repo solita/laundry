@@ -41,8 +41,8 @@ start_laundry() {
    echo "Starting laundry"
    mkdir -p tmp || exit 1
    alivep && return 0
-   test -f target/laundry.jar || die "no laundry.jar"
-   java -jar target/laundry.jar \
+   test -f target/uberjar/laundry.jar || die "no laundry.jar"
+   java -jar target/uberjar/laundry.jar \
       --port $PORT \
       --tools $TOOLS \
       > laundry.log &

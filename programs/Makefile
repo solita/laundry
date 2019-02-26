@@ -23,7 +23,7 @@ $(OUT)/bin/nsjail: nsjail/nsjail
 	cp -v nsjail/nsjail $(OUT)/bin
 
 
-$(OUT)/bin/asan: deps /usr/bin/clang
+$(OUT)/bin/asan: /usr/bin/clang
 	mkdir -p $(OUT)/bin
 	echo '#!/bin/bash' > $(OUT)/bin/asan
 	echo 'exec /usr/bin/clang -fsanitize=address -fstack-protector-strong -Wformat -Werror=format-security "$$@"' >> $(OUT)/bin/asan

@@ -1,3 +1,4 @@
+# This is an auxiliary container that is used to build the binaries that will go into the deployed laundry.
 # first, build:
 # docker build -t laundrybuild
 # then, run like: 

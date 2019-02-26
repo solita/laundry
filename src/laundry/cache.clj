@@ -22,7 +22,7 @@
       (if (= 0 (:exit res))
          (machines/ok (:out res))
          ;; not outputting error to avoid exposing unintentional data
-         (machines/not-ok "cache cleanup failed"))))
+         (machines/badness-resp "cache cleanup failed"))))
 
 (machines/add-command-line-rule!
       ["-T" "--temporary-directory" "directory for holding temporary data"

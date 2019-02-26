@@ -1,0 +1,11 @@
+FROM ubuntu:18.04
+RUN useradd -m docconv && apt-get update && apt-get -y upgrade && apt-get -y install libreoffice-writer
+USER docconv
+WORKDIR /home/docconv
+ENTRYPOINT set -u && cat > /home/docconv/document.$docconv_suffix && \
+  mkdir -p /home/docconv/out &&  umask 077 &&                        \
+  soffice                                                            \
+  --headless                                                         \
+  --convert-to pdf:writer_pdf_Export                                 \
+  --outdir /home/docconv/out                                         \
+  /home/docconv/document.$docconv_suffix > conv.out 2>&1; tar -cf - conv.out out/*; ls -la . out >> conv.out

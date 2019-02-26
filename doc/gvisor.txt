@@ -1,0 +1,18 @@
+How to run under gvisor:
+
+ - gvisor provides the "runsc" binary, and provides documentation on how to configure docker to use it.
+ - below is a suitable /etc/docker/daemon.json as an example.
+ - notably userns support had to be taken out - note absence of "userns": "default" or similar entry.
+
+{
+  "bip": "xx.xx.xx.xx/24",
+  "runtimes": {
+      "runsc": {
+           "path": "/usr/local/bin/runsc",
+            "runtimeArgs": [
+                "--platform=kvm"
+            ]
+
+       }
+  }
+}

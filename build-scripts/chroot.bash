@@ -31,7 +31,7 @@ executable=`which $1`
 mybin=$mytmp/bin
 PATH=$PATH:$mybin
 mkdir $mybin
-cp ./build-data/src/nsjail-1.?/nsjail $mybin/
+cp ./build-data/src/nsjail-[123].*/nsjail $mybin/
 
 require nsjail
 echo $executable >> $mytmp/chroot-files

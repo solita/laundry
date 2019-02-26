@@ -3,6 +3,10 @@
 # docker build -t laundrybuild .
 # then, run like: 
 # docker run --cap-add SYS_PTRACE -it  --name laundrybuild laundrybuild
+#
+# To debug the build interactiely, start this container like:
+# docker run --cap-add SYS_PTRACE -it  --name laundrybuild --entrypoint=/bin/bash laundrybuild
+# and then run the commands in ENTRYPOINT manually.
 
 FROM ubuntu:18.04
 RUN apt-get update && apt-get -y upgrade && apt-get -y install git make unzip && useradd -m laundrybuild && mkdir /opt/laundry && chown laundrybuild /opt/laundry

@@ -29,4 +29,9 @@ tar -C src -zxf "downloads/$tarball_basename"
 cd src/ghostscript-*
 make clean || true
 ./configure --prefix=/opt/laundry --without-x --with-drivers=FILES --disable-cups --disable-gtk --disable-dbus > configure.out 2>&1
-make -j $ncpus
+if make -j $ncpus 2>&1 > make.out; then
+    echo "make successful, not printing build log"
+else
+    echo "make failed, log:"
+    cat make.out
+fi

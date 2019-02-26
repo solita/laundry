@@ -17,7 +17,7 @@
            (fr.opensagres.poi.xwpf.converter.pdf PdfConverter PdfOptions)))
 
 
-(defn- tiedostopaate->pdf [filename]
+(defn- filename-as-pdf-suffix [filename]
   (string/replace-first filename #"(?i)\.(\w*)" ".pdf"))
 
 (defn docx->pdf [filename-info input-juttu]
@@ -40,7 +40,7 @@
               final-bytesink (ByteArrayOutputStream.)]
           (-> (PdfConverter/getInstance) (.convert new-doc final-bytesink (PdfOptions/create)))
           (.close new-doc)
-          {:name  (tiedostopaate->pdf filename-info)
+          {:name  (filename-as-pdf-suffix filename-info)
            :mime  "application/pdf"
            :bytes (.toByteArray final-bytesink)})))))
 

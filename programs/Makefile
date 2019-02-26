@@ -7,7 +7,7 @@ deps: nsjail-deps
 	apt-get -y install libpng-dev libjpeg-dev build-essential clang wget unzip curl
 
 nsjail-deps:
-	apt-get -y install pkg-config bison flex libprotobuf-dev protbuf-compiler
+	apt-get -y install pkg-config bison flex libprotobuf-dev protobuf-compiler
 
 ## nsjail
 

@@ -1,0 +1,12 @@
+# after running the dockerbuild image,
+# get laundry-opt.tar from dockerbuild container by:
+# docker cp laundrybuild:/opt/laundry - > laundry-opt.tar
+# then build this image like so:
+# docker build -f Dockerfile.programs-runtime -t laundry-programs  .
+
+FROM ubuntu:latest
+RUN apt update && apt -y install libgomp1 libjpeg8 libomp5 && useradd -m docconv
+COPY laundry-opt.tar /laundry-opt.tar
+RUN tar -C /opt -xf /laundry-opt.tar
+WORKDIR /home/docconv
+USER docconv

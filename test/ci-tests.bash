@@ -12,7 +12,7 @@ if [ ! -f $CI_CACHE/laundrybuild.tar ]; then
 fi
 docker load < $CI_CACHE/laundrybuild.tar
 
-docker run --cap-add SYS_PTRACE -it -e LAUNDRY_BUILD_BRANCH=$TRAVIS_BRANCH laundrybuild
+docker run --cap-add SYS_PTRACE -it --name laundrybuild -e LAUNDRY_BUILD_BRANCH=$TRAVIS_BRANCH laundrybuild
 
 pushd docker-build
   bash export-opt.bash laundrybuild laundry-opt.tgz

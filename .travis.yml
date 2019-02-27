@@ -1,4 +1,4 @@
-	language: clojure
+language: clojure
 
 sudo: required
 

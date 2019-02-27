@@ -33,7 +33,7 @@ script:
   - tar --to-stdout -xf /tmp/docresult.tar out/document.pdf | file - | grep "PDF document"
   - docker run -i -e docconv_suffix=docx --rm --name convrun1 libreconv < test/testcases/test.docx > /tmp/docxresult.tar
   - tar --to-stdout -xf /tmp/docxresult.tar out/document.pdf | file - | grep "PDF document"
-  - tar -C /opt -xzf laundry-build/laundry-opt.tgz && test/test.sh
+  - tar -C /opt -xzf docker-build/laundry-opt.tgz && test/test.sh
 
 # - ldd /opt/laundry/bin/gs
 # - /opt/laundry/bin/pdf2txt test/testcases/hypno.pdf /tmp/out.txt && cat /tmp/out.txt

@@ -11,12 +11,13 @@ cache:
   directories:
     - $HOME/.m2
     - $HOME/travis-cache
+    - $HOME/build-data/downloads
 
 jdk:
  - openjdk9
 
 env:
- - LD_LIBRARY_PATH=/opt/laundry/lib64 CI_CACHE=$HOME/travis-cache
+ - LD_LIBRARY_PATH=/opt/laundry/lib64 CI_CACHE=$HOME/travis-cache DOWNLOAD_DIR=$HOME/travis-cache
 
 # should move the below to a separate script file
 

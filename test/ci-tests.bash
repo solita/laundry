@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -u -e -x
+set -euxo pipefail
 
 # clojure build (to check but also because we run the uberjar later in the e2e test.sh)
 lein uberjar

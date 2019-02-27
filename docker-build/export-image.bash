@@ -13,7 +13,7 @@ if [ -z "$outfilename" -o "$outfilename" = "-h" ]; then
     exit 0
 fi
 
-set -u -e
+set -euxo pipefail
 
 if [ -f "$outfilename" ]; then
     echo NOTICE: Overwriting existing file.

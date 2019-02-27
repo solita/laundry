@@ -19,7 +19,7 @@ pushd docker-build
 popd
 
 # xxx move test.sh to a later stage once it's debugged
-tar -C /opt -xzf docker-build/laundry-opt.tgz && test/test.sh
+tar -C /opt -xzf docker-build/laundry-opt.tgz && env LAUNDRY_DOCKER_RUNTIME=runc test/test.sh
 
 pushd docker-build
   docker build -f Dockerfile.programs-runtime -t laundry-programs  .

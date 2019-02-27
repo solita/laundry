@@ -20,7 +20,7 @@ env:
 
 script:
   - lein uberjar
-  - if [ ! -f ~/travis-cache/laundrybuild.tar ]; then cd docker-build && docker build -t laundrybuild . && cd .. && mkdir ~/travis-cache && docker save laundrybuild > ~/travis-cache/laundrybuild.tar; done
+  - if [ ! -f ~/travis-cache/laundrybuild.tar ]; then cd docker-build && docker build -t laundrybuild . && cd .. && mkdir ~/travis-cache && docker save laundrybuild > ~/travis-cache/laundrybuild.tar; fi
   - docker load < ~/travis-cache/laundrybuild.tar
   - docker run --cap-add SYS_PTRACE -it -e LAUNDRY_BUILD_BRANCH=$TRAVIS_BRANCH laundrybuild
   - cd docker-build && bash export-opt.bash laundrybuild laundry-opt.tgz && cd ..

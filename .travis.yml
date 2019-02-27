@@ -4,16 +4,23 @@ sudo: required
 
 services: docker
 
+cache:
+  directories:
+    - $HOME/travis-cache
+
 jdk:
  # - openjdk8 enable this once it is available
  - oraclejdk8
 
 env:
  - LD_LIBRARY_PATH=/opt/laundry/lib64
- 
+
+# should move the below to a separate script file
+
 script:
   - lein uberjar
-  - cd docker-build && docker build -t laundrybuild . && cd ..
+  - if [ ! -f ~/travis-cache/laundrybuild.tar ]; then cd docker-build && docker build -t laundrybuild . && cd .. && mkdir ~/travis-cache && docker save laundrybuild > ~/travis-cache/laundrybuild.tar; done
+  - docker load < ~/travis-cache/laundrybuild.tar
   - docker run --cap-add SYS_PTRACE -it -e LAUNDRY_BUILD_BRANCH=$TRAVIS_BRANCH laundrybuild
   - cd docker-build && bash export-opt.bash laundrybuild laundry-opt.tgz && cd ..
   - cd dokcer-build && docker build -f Dockerfile.programs-runtime -t laundry-programs  . && cd ..

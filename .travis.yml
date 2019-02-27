@@ -17,23 +17,9 @@ jdk:
 
 env:
  - LD_LIBRARY_PATH=/opt/laundry/lib64
+ - CI_CACHE=$HOME/travis-cache
 
 # should move the below to a separate script file
 
 script:
-  - lein uberjar
-  - if [ ! -f ~/travis-cache/laundrybuild.tar ]; then cd docker-build && docker build -t laundrybuild . && cd .. && docker save laundrybuild > ~/travis-cache/laundrybuild.tar; fi
-  - docker load < ~/travis-cache/laundrybuild.tar
-  - docker run --cap-add SYS_PTRACE -it -e LAUNDRY_BUILD_BRANCH=$TRAVIS_BRANCH laundrybuild
-  - cd docker-build && bash export-opt.bash laundrybuild laundry-opt.tgz && cd ..
-  - cd dokcer-build && docker build -f Dockerfile.programs-runtime -t laundry-programs  . && cd ..
-  - LAUNDRY_DOCKER_RUNTIME=runc programs/pdf2pdfa test/testcases/hypno.pdf /tmp/hypno-pdfa.pdf && file /tmp/hypno-pdfa.pdf | grep "PDF document"
-  - cd programs && make docker-libre-image && cd ..
-  - docker run -i -e docconv_suffix=doc --rm --name convrun1 libreconv < test/testcases/test.doc > /tmp/docresult.tar
-  - tar --to-stdout -xf /tmp/docresult.tar out/document.pdf | file - | grep "PDF document"
-  - docker run -i -e docconv_suffix=docx --rm --name convrun1 libreconv < test/testcases/test.docx > /tmp/docxresult.tar
-  - tar --to-stdout -xf /tmp/docxresult.tar out/document.pdf | file - | grep "PDF document"
-  - tar -C /opt -xzf docker-build/laundry-opt.tgz && test/test.sh
-
-# - ldd /opt/laundry/bin/gs
-# - /opt/laundry/bin/pdf2txt test/testcases/hypno.pdf /tmp/out.txt && cat /tmp/out.txt
+  - test/ci-tests.bash

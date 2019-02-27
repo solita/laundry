@@ -1,4 +1,5 @@
 language: clojure
+lein: 2.8.3
 
 sudo: required
 
@@ -12,8 +13,7 @@ cache:
     - $HOME/travis-cache
 
 jdk:
- # - openjdk8 enable this once it is available
- - oraclejdk8
+ - openjdk9
 
 env:
  - LD_LIBRARY_PATH=/opt/laundry/lib64

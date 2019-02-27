@@ -7,3 +7,4 @@ docker build -t laundrybuild .
 docker run --cap-add SYS_PTRACE -it -e LAUNDRY_BUILD_BRANCH= --name laundrybuild laundrybuild
 bash export-opt.bash laundrybuild laundry-opt.tgz
 docker build -f Dockerfile.programs-runtime -t laundry-programs  .
+docker build -t libreconv -f - < Dockerfile.libreoffice 

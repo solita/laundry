@@ -23,6 +23,7 @@ tar -C /opt -xzf docker-build/laundry-opt.tgz && test/test.sh
 
 pushd docker-build
   docker build -f Dockerfile.programs-runtime -t laundry-programs  .
+  docker build -t libreconv - < Dockerfile.libreoffice
 popd
 
 

@@ -70,7 +70,7 @@ $(OUT)/bin/lein:
 	chmod +x $(OUT)/bin/lein
 
 $(OUT)/bin/convert: tmp/ImageMagick $(OUT)/bin/asan $(OUT)/bin/asan++
-	cd tmp/ImageMagick && LD_LIBRARY_PATH=$(OUT)/lib64 CC=$(OUT)/bin/asan CXX=$(OUT)/bin/asan++ ./configure --prefix=$(OUT) && make -j$(NPROCS) && make install
+	cd tmp/ImageMagick && LD_LIBRARY_PATH=$(OUT)/lib64 CC=$(OUT)/bin/asan CXX=$(OUT)/bin/asan++ ./configure --prefix=$(OUT) --enable-hdri=yes && make -j$(NPROCS) && make install
 
 tmp/ImageMagick:
 	mkdir -p tmp

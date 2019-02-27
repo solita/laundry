@@ -6,7 +6,7 @@
 
 FROM ubuntu:18.04
 RUN apt update && apt -y install libgomp1 libjpeg8 libomp5 && useradd -m docconv
-COPY laundry-opt.tar /laundry-opt.tar
-RUN tar -C /opt -xf /laundry-opt.tar
+COPY laundry-opt.tgz /laundry-opt.tgz
+RUN tar -C /opt -xzf /laundry-opt.tgz
 WORKDIR /home/docconv
 USER docconv

@@ -16,11 +16,15 @@ docker run --cap-add SYS_PTRACE -it -e LAUNDRY_BUILD_BRANCH=$TRAVIS_BRANCH laund
 
 pushd docker-build
   bash export-opt.bash laundrybuild laundry-opt.tgz
-  docker build -f Dockerfile.programs-runtime -t laundry-programs  .
 popd
 
 # xxx move test.sh to a later stage once it's debugged
 tar -C /opt -xzf docker-build/laundry-opt.tgz && test/test.sh
+
+pushd docker-build
+  docker build -f Dockerfile.programs-runtime -t laundry-programs  .
+popd
+
 
 env LAUNDRY_DOCKER_RUNTIME=runc programs/pdf2pdfa test/testcases/hypno.pdf /tmp/hypno-pdfa.pdf && file /tmp/hypno-pdfa.pdf | grep "PDF document"
 

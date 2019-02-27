@@ -28,10 +28,6 @@ env LAUNDRY_DOCKER_RUNTIME=runc programs/pdf2pdfa test/testcases/hypno.pdf /tmp/
 
 tar -C /opt -xzf docker-build/laundry-opt.tgz && env LAUNDRY_DOCKER_RUNTIME=runc test/test.sh
 
-pushd programs
-  make docker-libre-image
-popd
-
 docker run -i -e docconv_suffix=doc --rm --name convrun1 libreconv < test/testcases/test.doc > /tmp/docresult.tar
 tar --to-stdout -xf /tmp/docresult.tar out/document.pdf | file - | grep "PDF document"
 docker run -i -e docconv_suffix=docx --rm --name convrun1 libreconv < test/testcases/test.docx > /tmp/docxresult.tar

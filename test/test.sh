@@ -119,7 +119,7 @@ parse_args() {
 main() {
    parse_args "$@" || return 1
    
-   test -d "$TOOLS/bin" || die "no tools at $TOOLS: `ls -ld $TOOLS/bin 2>&1"
+   test -d "$TOOLS/bin" || die "no tools at $TOOLS: `ls -ld $TOOLS/bin 2>&1`"
 
    # Laundry startup and initial state logging
    start_laundry

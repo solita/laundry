@@ -18,9 +18,6 @@ pushd docker-build
   bash export-opt.bash laundrybuild laundry-opt.tgz
 popd
 
-# xxx move test.sh to a later stage once it's debugged
-tar -C /opt -xzf docker-build/laundry-opt.tgz && env LAUNDRY_DOCKER_RUNTIME=runc test/test.sh
-
 pushd docker-build
   docker build -f Dockerfile.programs-runtime -t laundry-programs  .
   docker build -t libreconv - < Dockerfile.libreoffice
@@ -28,6 +25,8 @@ popd
 
 
 env LAUNDRY_DOCKER_RUNTIME=runc programs/pdf2pdfa test/testcases/hypno.pdf /tmp/hypno-pdfa.pdf && file /tmp/hypno-pdfa.pdf | grep "PDF document"
+
+tar -C /opt -xzf docker-build/laundry-opt.tgz && env LAUNDRY_DOCKER_RUNTIME=runc test/test.sh
 
 pushd programs
   make docker-libre-image

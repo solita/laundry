@@ -1,14 +1,26 @@
-How to run under gvisor:
+#!/usr/bin/env bash
+# How to install gvisor as a container runtime in your Docker setup:
+# 
+# - gvisor provides the "runsc" binary, and provides documentation on how to configure docker to use it.
+# - below is a suitable /etc/docker/daemon.json as an example.
+# - notably userns support had to be taken out - note absence of "userns": "default" or similar entry.
+#
+# note! when run as-is, this will overwrite your docker configuration file.
 
- - gvisor provides the "runsc" binary, and provides documentation on how to configure docker to use it.
- - below is a suitable /etc/docker/daemon.json as an example.
- - notably userns support had to be taken out - note absence of "userns": "default" or similar entry.
 
+set -euxo pipefail
+
+RUNSC_PATH=/opt/laundry/bin/runsc
+
+wget -O $RUNSC_PATH https://storage.googleapis.com/gvisor/releases/nightly/2019-02-28/runsc
+chmod +x $RUNSC_PATH
+
+cat > /etc/docker/daemon.json <<EOT
 {
-  "bip": "xx.xx.xx.xx/24",
+  "bip": "10.222.55.1/24",
   "runtimes": {
       "runsc": {
-           "path": "/usr/local/bin/runsc",
+           "path": "$RUNSC_PATH",
             "runtimeArgs": [
                 "--platform=kvm"
             ]
@@ -16,3 +28,4 @@ How to run under gvisor:
        }
   }
 }
+EOT

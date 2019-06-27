@@ -79,6 +79,12 @@ tmp/ImageMagick:
 	cd tmp && tar -zxf imagemagick.tar.gz
 	cd tmp && ln -s ImageMagick-* ImageMagick
 
+/usr/local/bin/runsc:
+	wget -O /usr/local/bin/runsc.new https://storage.googleapis.com/gvisor/releases/nightly/2019-06-26/runsc
+	sha512sum /usr/local/bin/runsc.new | grep 639666d962a23560bf14f9db4ce275478e96d0b7db5a8f37b49c675d2558a6a9ca6d42d80b25c099c2850c3e464cf962a459d30d80744a00bd0f13ff26b33381
+	chmod +x /usr/local/bin/runsc.new
+	mv  /usr/local/bin/runsc.new  /usr/local/bin/runsc
+
 clean:
 	rm -rf tmp
 

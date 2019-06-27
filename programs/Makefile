@@ -22,7 +22,6 @@ $(OUT)/bin/nsjail: nsjail/nsjail
 	mkdir -p $(OUT)/bin
 	cp -v nsjail/nsjail $(OUT)/bin
 
-
 $(OUT)/bin/asan: /usr/bin/clang
 	mkdir -p $(OUT)/bin
 	echo '#!/bin/bash' > $(OUT)/bin/asan
@@ -63,7 +62,7 @@ $(OUT)/bin/checksum: checksum
 
 $(OUT)/bin/gs:
 	cd .. && build-scripts/ghostscript.bash
-	cd ../build-data/src/ghostscript-9.26 && make install
+	cd ../build-data/src/ghostscript-9.27 && make install
 
 $(OUT)/bin/lein:
 	curl https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein > $(OUT)/bin/lein
@@ -75,8 +74,8 @@ $(OUT)/bin/convert: tmp/ImageMagick $(OUT)/bin/asan $(OUT)/bin/asan++
 tmp/ImageMagick:
 	mkdir -p tmp
 	-rm -rf tmp/ImageMagick-*
-	wget -O tmp/imagemagick.tar.gz https://github.com/ImageMagick/ImageMagick/archive/7.0.8-27.tar.gz
-	sha256sum tmp/imagemagick.tar.gz | grep 94866968a447f8f92a969bf5342d612d05a64c71fc75e63bb2d8ecf887dc7fa2
+	wget -O tmp/imagemagick.tar.gz https://github.com/ImageMagick/ImageMagick/archive/7.0.8-50.tar.gz
+	sha256sum tmp/imagemagick.tar.gz | grep fffeae12ea1a727b206f428c4d25c1ee7580f9b19e707ffa36e3a643b99f3f9e
 	cd tmp && tar -zxf imagemagick.tar.gz
 	cd tmp && ln -s ImageMagick-* ImageMagick
 

@@ -7,7 +7,6 @@
              [schema.core :as s]
              [clojure.java.shell :as shell]
              [laundry.machines :as machines]
-             [pantomime.mime :refer [mime-type-of]]
              [clojure.string :as string]
              [clojure.set :as set]
              [clojure.java.io :as io]

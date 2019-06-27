@@ -7,7 +7,6 @@
              [schema.core :as s]
              [taoensso.timbre :as timbre :refer [trace debug info warn]]
              [taoensso.timbre.appenders.core :as appenders]
-             [laundry.docx :as docx]
              [laundry.pdf :as pdf]
              [laundry.digest :as digest]
              [laundry.test :as test]

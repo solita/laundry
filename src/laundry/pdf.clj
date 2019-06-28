@@ -42,7 +42,7 @@
 (s/defn api-pdf2txt [env, tempfile :- java.io.File]
    (info "Running, tools are at " (:tools env))
    (let [path (.getAbsolutePath tempfile)
-         out  (str (.getAbsolutePath tempfile) ".txt")
+         out  (str path ".txt")
          res (shell-out! (str (:tools env) "/bin/pdf2txt") path out)]
       (.delete tempfile)
       (if (= (:exit res) 0)

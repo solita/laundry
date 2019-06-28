@@ -5,7 +5,7 @@
              [ring.swagger.upload :as upload]
              [taoensso.timbre :as timbre :refer [trace debug info warn]]
              [schema.core :as s]
-             [clojure.java.shell :as shell]
+             [laundry.util :refer [shell-out!]]
              [laundry.machines :as machines]
              [clojure.string :as string]
              [clojure.set :as set]

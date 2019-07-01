@@ -8,7 +8,6 @@
        [clj-http "3.9.1"]
        [hiccup "1.0.5"]
        [enlive "1.1.6"]
-       [com.novemberain/pantomime "2.10.0"]
        [org.clojure/tools.cli "0.4.1"]
        [com.fzakaria/slf4j-timbre "0.3.12"]
        [com.taoensso/timbre "4.10.0"]

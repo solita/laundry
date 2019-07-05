@@ -1,7 +1,7 @@
 NPROCS=$(shell getconf _NPROCESSORS_ONLN || echo 1)
 OUT=/opt/laundry
 
-install: $(OUT)/bin/nsjail $(OUT)/bin/pdf2jpeg $(OUT)/bin/gs $(OUT)/bin/pdf2txt $(OUT)/bin/pdf2pdfa $(OUT)/bin/checksum $(OUT)/bin/access-test $(OUT)/bin/sandbox-access-test.sh $(OUT)/bin/clean-caches $(OUT)/bin/lein $(OUT)/bin/convert
+install: $(OUT)/bin/nsjail $(OUT)/bin/pdf2jpeg $(OUT)/bin/gs $(OUT)/bin/pdf2txt $(OUT)/bin/pdf2pdfa $(OUT)/bin/docx2pdf $(OUT)/bin/checksum $(OUT)/bin/access-test $(OUT)/bin/sandbox-access-test.sh $(OUT)/bin/clean-caches $(OUT)/bin/lein $(OUT)/bin/convert
 
 deps: nsjail-deps
 	apt-get -y install libpng-dev libjpeg-dev build-essential clang wget unzip curl
@@ -52,6 +52,10 @@ $(OUT)/bin/sandbox-access-test.sh: sandbox-access-test.sh
 $(OUT)/bin/pdf2pdfa: pdf2pdfa
 	mkdir -p $(OUT)/bin
 	cp pdf2pdfa $(OUT)/bin
+
+$(OUT)/bin/docx2pdf: docx2pdf
+	mkdir -p $(OUT)/bin
+	cp docx2pdf $(OUT)/bin
 
 $(OUT)/bin/pdf2txt: pdf2txt
 	mkdir -p $(OUT)/bin

@@ -5,9 +5,8 @@
              [ring.swagger.upload :as upload]
              [taoensso.timbre :as timbre :refer [trace debug info warn]]
              [schema.core :as s]
-             [clojure.java.shell :as shell]
+             [laundry.util :refer [shell-out!]]
              [laundry.machines :as machines]
-             [pantomime.mime :refer [mime-type-of]]
              [clojure.string :as string]
              [clojure.set :as set]
              [clojure.java.io :as io]
@@ -21,13 +20,6 @@
             (proxy-super close)
             (io/delete-file path)))))
 
-
-(defn shell-out! [binary-path input-path output-path]
-  (try
-    (info "exception resistant sh invocation attmept!" )
-    (shell/sh binary-path input-path output-path)
-    (catch java.io.IOException ex ;; sometimes throws instead of reutrning error, contrary to docs
-      {:out "" :err "" :exit 10000 :exception ex})))
 
 (defn badness-resp [msg]
   (htresp/content-type (htresp/internal-server-error msg)
@@ -50,7 +42,7 @@
 (s/defn api-pdf2txt [env, tempfile :- java.io.File]
    (info "Running, tools are at " (:tools env))
    (let [path (.getAbsolutePath tempfile)
-         out  (str (.getAbsolutePath tempfile) ".txt")
+         out  (str path ".txt")
          res (shell-out! (str (:tools env) "/bin/pdf2txt") path out)]
       (.delete tempfile)
       (if (= (:exit res) 0)

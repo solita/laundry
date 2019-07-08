@@ -21,9 +21,9 @@
         res (shell-out! (str (:tools env) "/bin/docx2pdf")
                         in-path out-path)]
       (.delete tempfile) ;; todo: move to finally block
-      (if (:bytes res)
+      (if (= (:exit res) 0)
         (htresp/content-type 
-         (htresp/ok (io/input-stream (:bytes res)))
+         (htresp/ok (io/input-stream (io/file out-path)))
          "application/pdf")
          (machines/badness-resp "docx2pdf conversion failed"))))
 

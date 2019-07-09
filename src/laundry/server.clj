@@ -9,6 +9,7 @@
              [taoensso.timbre.appenders.core :as appenders]
              [laundry.docx :as docx]
              [laundry.pdf :as pdf]
+             [laundry.image :as image]
              [laundry.digest :as digest]
              [laundry.test :as test]
              [laundry.machines :as machines]
@@ -125,7 +126,7 @@
       {:slow-request-warning 500
        :port 9001
        :temp-directory "/tmp"
-       :tools "/opt/laundry"
+       :tools "."
        :log-level :info}))
 
 (defn go []

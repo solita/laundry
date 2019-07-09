@@ -93,7 +93,7 @@
             :summary "attempt to convert a PDF file to PDF/A"
             :multipart-params [file :- upload/TempFileUpload]
             :middleware [upload/wrap-multipart-params]
- -           (let [tempfile (:tempfile file)
+            (let [tempfile (:tempfile file)
                   filename (:filename file)]
                (info "PDF converter received " filename "(" (:size file) "b)")
                (.deleteOnExit tempfile) ;; cleanup if VM is terminated

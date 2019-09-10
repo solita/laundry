@@ -9,5 +9,6 @@
     :slow-request-warning s/Num
     :temp-directory s/Str
     :tools s/Str
+    :basic-auth-password (s/maybe (s/pred fn?))
     :log-level (s/enum :debug :info)})
 

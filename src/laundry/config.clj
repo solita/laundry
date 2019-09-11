@@ -1,18 +1,8 @@
 (ns laundry.config
-   (:require 
+   (:require [laundry.schemas :refer [LaundryConfig]]
              [schema.core :as s]
              [taoensso.timbre :as timbre :refer [trace debug info warn]]
              [taoensso.timbre.appenders.core :as appenders]))
-
-(s/defschema Status 
-   (s/enum "ok" "error"))
-
-(s/defschema LaundryConfig
-   {:port s/Num
-    :slow-request-warning s/Num
-    :temp-directory s/Str
-    :tools s/Str
-    :log-level (s/enum :debug :info)})
 
 (defonce config (atom nil))
 

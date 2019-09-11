@@ -15,6 +15,16 @@
       :parse-fn #(Integer/parseInt %)
       :validate [#(< 0 % 0x10000) "Port must be 1-65535"]
       :id :port])
+
+(machines/add-command-line-rule!
+     ["-k" "--api-key-file FILE" "File name"
+      :default nil
+      :parse-fn (fn [x] ;; obfuscation against printing/logging the config
+                  (let [pw (when x
+                             (clojure.string/trim-newline (slurp x)))]
+                    (fn []
+                      pw)))
+      :id :basic-auth-password])
    
 (machines/add-command-line-rule!
      ["-t" "--tools DIR" "External tools directory"

@@ -4,14 +4,14 @@
        [prismatic/schema "1.1.9"]
        [ring/ring "1.7.0"]
        [ring/ring-defaults "0.3.2"]
+       [ring-basic-authentication "1.0.5"]
        [metosin/compojure-api "1.1.11"]
        [clj-http "3.9.1"]
        [hiccup "1.0.5"]
        [enlive "1.1.6"]
        [org.clojure/tools.cli "0.4.1"]
        [com.fzakaria/slf4j-timbre "0.3.12"]
-       [com.taoensso/timbre "4.10.0"]
-       [fr.opensagres.xdocreport/fr.opensagres.poi.xwpf.converter.pdf "2.0.1" :exclusions [org.apache.xmlbeans/xmlbeans]]]
+       [com.taoensso/timbre "4.10.0"]]
    
    :source-paths ["src"]
    :target-path "target/%s/"

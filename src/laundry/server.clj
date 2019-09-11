@@ -2,6 +2,7 @@
    (:require [compojure.api.sweet :as sweet :refer :all]
              [ring.util.http-response :refer [ok status content-type] :as resp]
              [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
+             [ring.middleware.basic-authentication :refer [wrap-basic-authentication]]
              [ring.adapter.jetty :as jetty]
              [ring.swagger.upload :as upload]
              [schema.core :as s]
@@ -52,12 +53,7 @@
          
             (GET "/alive" []
                   :summary "check whether server is running"
-                  (ok "yes"))
-            
-            (GET "/config" []
-               :summary "get current laundry configuration"
-               (ok (config/current)))
-            ]
+                  (ok "yes"))]
         api-calls)))
 
 (defn request-time-logger [handler]
@@ -71,10 +67,17 @@
          res)))
 
 (s/defn make-handler [api env :- LaundryConfig]
-  (-> (make-api-handler api env)
-      request-time-logger
-      (wrap-defaults (-> (assoc-in site-defaults [:security :anti-forgery] false)
-                         (assoc-in [:params :multipart] false)))))
+  (let [configured-password ((or (config/read :basic-auth-password) (fn []) nil))
+        authless-handler (-> (make-api-handler api env)
+                             request-time-logger
+                             (wrap-defaults (-> (assoc-in site-defaults [:security :anti-forgery] false)
+                                                (assoc-in [:params :multipart] false))))]
+    (if (nil? configured-password)
+      authless-handler
+      ; else
+      (wrap-basic-authentication authless-handler
+                                 (fn auth-ok? [user-name provided-password]
+                                   (and (= "laundry-api" user-name) (= provided-password configured-password)))))))
 
 ;;; Startup and shutdown
 
@@ -127,7 +130,8 @@
        :port 9001
        :temp-directory "/tmp"
        :tools "."
-       :log-level :info}))
+       :log-level :info
+       :basic-auth-password nil}))
 
 (defn go []
    (info "Go!")

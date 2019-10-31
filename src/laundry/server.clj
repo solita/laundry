@@ -56,6 +56,14 @@
                   (ok "yes"))]
         api-calls)))
 
+(defn laundry-path-stripper [handler]
+  ;; accommodate getting served requests with /laundry prefix
+  ;; for when we are behind a non-rewriting load balancer serving also other paths.
+  ;; (AWS case)
+  (fn [req]
+    (let [new-req (update req :uri #(clojure.string/replace % #"^/laundry" ""))]
+      (handler new-req))))
+
 (defn request-time-logger [handler]
    (fn [req]
       (let [start (timestamp)
@@ -70,6 +78,7 @@
   (let [configured-password ((or (config/read :basic-auth-password) (fn []) nil))
         authless-handler (-> (make-api-handler api env)
                              request-time-logger
+                             laundry-path-stripper
                              (wrap-defaults (-> (assoc-in site-defaults [:security :anti-forgery] false)
                                                 (assoc-in [:params :multipart] false))))]
     (if (nil? configured-password)

@@ -60,6 +60,15 @@ $(OUT)/bin/pdf2txt: pdf2txt
 	mkdir -p $(OUT)/bin
 	cp pdf2txt $(OUT)/bin
 
+$(OUT)/bin/jpeg2jpeg: jpeg2jpeg
+        mkdir -p $(OUT)/bin
+        cp jpeg2jpeg $(OUT)/bin
+
+$(OUT)/bin/png2png: png2png
+        mkdir -p $(OUT)/bin
+        cp png2png $(OUT)/bin
+
+
 $(OUT)/bin/checksum: checksum
 	mkdir -p $(OUT)/bin
 	cp checksum $(OUT)/bin

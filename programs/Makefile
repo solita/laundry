@@ -61,12 +61,12 @@ $(OUT)/bin/pdf2txt: pdf2txt
 	cp pdf2txt $(OUT)/bin
 
 $(OUT)/bin/jpeg2jpeg: jpeg2jpeg
-        mkdir -p $(OUT)/bin
-        cp jpeg2jpeg $(OUT)/bin
+	mkdir -p $(OUT)/bin
+	cp jpeg2jpeg $(OUT)/bin
 
 $(OUT)/bin/png2png: png2png
-        mkdir -p $(OUT)/bin
-        cp png2png $(OUT)/bin
+	mkdir -p $(OUT)/bin
+	cp png2png $(OUT)/bin
 
 
 $(OUT)/bin/checksum: checksum

@@ -6,7 +6,7 @@
        [enlive "1.1.6"]
        [hiccup "1.0.5"]
        [metosin/compojure-api "1.1.11"]
-       [org.clojure/clojure "1.9.0"]
+       [org.clojure/clojure "1.10.1"]
        [org.clojure/tools.cli "0.4.1"]
        [prismatic/schema "1.1.9"]
        [ring-basic-authentication "1.0.5"]

@@ -13,8 +13,46 @@
     - group:
         name: docker
       notify: restart docker
+    - user:
+        name: laundry
+        append: yes
+        groups:
+          - docker
+    - file:
+        path: "{{ laundry_home }}"
+        state: directory
+        mode: 0700
+        owner: "{{ laundry_user }}"
+        group: "{{ laundry_user }}"
+    - copy:
+        src: "{{ laundry_uberjar }}"
+        dest: "{{ laundry_home }}/laundry.jar"
+        backup: yes
+        owner: "{{ laundry_user }}"
+        group: "{{ laundry_user }}"
+      notify: restart laundry
+    - set_fact:
+        api_key: "{{ lookup('password', '/dev/null chars=ascii_letters,digits,hexdigits') }}"
+    - name: Write API key if it does not exist
+      copy:
+        content: "{{ api_key }}\n"
+        dest: "{{ laundry_api_key_path }}"
+        force: no
+        mode: 0600
+        owner: "{{ laundry_user }}"
+        group: "{{ laundry_user }}"
+    - template:
+        src: laundry.service.j2
+        dest: /etc/systemd/system/laundry.service
+      notify: restart laundry
   handlers:
     - name: restart docker
       systemd:
         name: docker.service
+        state: restarted
+    - name: restart laundry
+      systemd:
+        daemon_reload: yes
+        enabled: yes
+        name: laundry.service
         state: restarted

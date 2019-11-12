@@ -1,0 +1,5 @@
+laundry_api_key_path: "{{ laundry_home }}/api-key.txt"
+laundry_home: /opt/laundry/app
+laundry_port: 8080
+laundry_uberjar: ../target/uberjar/laundry.jar
+laundry_user: laundry

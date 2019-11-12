@@ -1,4 +1,5 @@
 (ns laundry.config
+  (:refer-clojure :exclude [read])
   (:require
    [laundry.schemas :refer [LaundryConfig]]
    [schema.core :as s]

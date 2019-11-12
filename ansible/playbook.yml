@@ -1,0 +1,9 @@
+- hosts: all
+  become: yes
+  tasks:
+    - name: Install dependencies
+      yum:
+        name:
+          - docker
+          - git
+          - java-1.8.0-openjdk-headless

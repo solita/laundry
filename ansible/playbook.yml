@@ -7,3 +7,14 @@
           - docker
           - git
           - java-1.8.0-openjdk-headless
+    - systemd:
+        name: docker
+        enabled: yes
+    - group:
+        name: docker
+      notify: restart docker
+  handlers:
+    - name: restart docker
+      systemd:
+        name: docker.service
+        state: restarted

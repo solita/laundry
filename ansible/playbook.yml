@@ -13,6 +13,11 @@
     - group:
         name: docker
       notify: restart docker
+    - get_url:
+        url: "{{ gvisor_url }}"
+        dest: "{{ gvisor_binary_path }}"
+        checksum: "{{ gvisor_checksum }}"
+        mode: 0755
     - user:
         name: laundry
         append: yes

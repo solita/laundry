@@ -18,6 +18,21 @@
         dest: "{{ gvisor_binary_path }}"
         checksum: "{{ gvisor_checksum }}"
         mode: 0755
+    - name: Calculate checksum for docker daemon.json
+      stat:
+        path: /etc/docker/daemon.json
+      register: daemon_before
+    - name: Configure docker to use gvisor
+      command: /usr/local/bin/runsc install -- --platform=ptrace
+      changed_when: False
+    - name: Calculate checksum for docker daemon.json
+      stat:
+        path: /etc/docker/daemon.json
+      register: daemon_after
+    - debug:
+        msg: Docker daemon.json has been changed by runsc install
+      changed_when: daemon_before.stat.checksum != daemon_after.stat.checksum
+      notify: restart docker
     - user:
         name: laundry
         append: yes

@@ -1,0 +1,8 @@
+root = true
+
+[*]
+end_of_line = lf
+indent_style = space
+
+[*.clj]
+indent_size = 2

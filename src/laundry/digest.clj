@@ -3,6 +3,7 @@
    [clojure.java.io :as io]
    [clojure.java.shell :refer [sh]]
    [compojure.api.sweet :as sweet :refer :all]
+   [digest :as clj-digest]
    [laundry.machines :as machines]
    [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
    [ring.middleware.multipart-params :refer [wrap-multipart-params]]
@@ -14,12 +15,8 @@
 (s/defschema DigestAlgorithm
   (s/enum "sha256"))
 
-(s/defn api-checksum [env, tempfile :- java.io.File, digest :- DigestAlgorithm]
-  (let [res (sh (str (:tools env) "/bin/checksum") (.getAbsolutePath tempfile) digest)]
-    (.delete tempfile)
-    (if (= (:exit res) 0)
-      (ok (:out res))
-      (machines/badness-resp "digest computation failed"))))
+(s/defn api-checksum [tempfile :- java.io.File, algorithm :- DigestAlgorithm]
+  (ok (str (clj-digest/digest algorithm tempfile) "\n")))
 
 (machines/add-api-generator!
  (fn [env]
@@ -32,4 +29,4 @@
              filename (:filename file)]
          (info "SHA256 received " filename "(" (:size file) "b)")
          (.deleteOnExit tempfile)
-         (api-checksum env tempfile "sha256"))))))
+         (api-checksum tempfile "SHA-256"))))))

@@ -31,7 +31,7 @@
       (htresp/content-type
        (htresp/ok (temp-file-input-stream out-path))
        "image/png")
-      (badness-resp "png2png conversion failed"))))
+      (badness-resp "png2png conversion failed" res))))
 
 (s/defn api-jpeg2jpeg [env, tempfile :- java.io.File]
   (let [in-path (.getAbsolutePath tempfile)
@@ -43,7 +43,7 @@
       (htresp/content-type
        (htresp/ok (temp-file-input-stream out-path))
        "image/jpeg")
-      (badness-resp "jpeg2jpeg conversion failed"))))
+      (badness-resp "jpeg2jpeg conversion failed" res))))
 
 (machines/add-api-generator!
  (fn [env]

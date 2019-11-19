@@ -6,7 +6,7 @@
              [taoensso.timbre :as timbre :refer [trace debug info warn]]
              [schema.core :as s]
              [laundry.util :refer [shell-out!]]
-             [laundry.machines :as machines]
+             [laundry.machines :as machines :refer [badness-resp]]
              [clojure.string :as string]
              [clojure.set :as set]
              [clojure.java.io :as io]
@@ -20,10 +20,6 @@
             (proxy-super close)
             (io/delete-file path)))))
 
-
-(defn badness-resp [msg]
-  (htresp/content-type (htresp/internal-server-error msg)
-                       "text/plain"))
 
 (s/defn api-png2png [env, tempfile :- java.io.File]
   (let [in-path (.getAbsolutePath tempfile)

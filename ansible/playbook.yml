@@ -38,7 +38,7 @@
       register: daemon_after
     - debug:
         msg: Docker daemon.json has been changed by runsc install
-      changed_when: daemon_before.stat.checksum != daemon_after.stat.checksum
+      changed_when: "(not daemon_before.stat.exists) or (daemon_before.stat.checksum != daemon_after.stat.checksum)"
       notify: restart docker
     - file:
         path: "{{ laundry_home }}"

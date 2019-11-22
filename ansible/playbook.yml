@@ -1,18 +1,25 @@
 - hosts: all
   become: yes
+  vars:
+    docker_users:
+      - laundry
+    # https://github.com/geerlingguy/ansible-role-pip/issues/24
+    pip_package: python3-pip
+  pre_tasks:
+    - user:
+        name: laundry
+    # TODO Remove this when docker-ce packages are released officially for CentOS 8
+    - name: Install containerd.io manually as a workaround
+      yum:
+        name: https://download.docker.com/linux/centos/7/x86_64/stable/Packages/containerd.io-1.2.6-3.3.el7.x86_64.rpm
+  roles:
+    - geerlingguy.docker
   tasks:
     - name: Install dependencies
       yum:
         name:
-          - docker
           - git
           - java-1.8.0-openjdk-headless
-    - systemd:
-        name: docker
-        enabled: yes
-    - group:
-        name: docker
-      notify: restart docker
     - get_url:
         url: "{{ gvisor_url }}"
         dest: "{{ gvisor_binary_path }}"
@@ -33,11 +40,6 @@
         msg: Docker daemon.json has been changed by runsc install
       changed_when: daemon_before.stat.checksum != daemon_after.stat.checksum
       notify: restart docker
-    - user:
-        name: laundry
-        append: yes
-        groups:
-          - docker
     - file:
         path: "{{ laundry_home }}"
         state: directory

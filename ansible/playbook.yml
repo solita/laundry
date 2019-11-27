@@ -3,6 +3,8 @@
   vars:
     docker_users:
       - laundry
+    pip_install_packages:
+      - name: docker
     # https://github.com/geerlingguy/ansible-role-pip/issues/24
     pip_package: python3-pip
   pre_tasks:
@@ -14,6 +16,7 @@
         name: https://download.docker.com/linux/centos/7/x86_64/stable/Packages/containerd.io-1.2.6-3.3.el7.x86_64.rpm
   roles:
     - geerlingguy.docker
+    - geerlingguy.pip
   tasks:
     - name: Install dependencies
       yum:

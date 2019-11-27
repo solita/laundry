@@ -17,8 +17,7 @@
    :target-path "target/%s/"
    :profiles 
       {:dev 
-       {:dependencies [[ring-mock "0.1.5"]
-                       [org.clojure/clojurescript "1.9.293"]]
+       {:dependencies [[ring-mock "0.1.5"]]
           :resource-paths ["target/generated"]
           :plugins [[lein-cljsbuild "1.1.7"]]}
        :uberjar 

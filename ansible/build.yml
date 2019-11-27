@@ -53,3 +53,20 @@
           name: libreconv
           source: local
       when: not stat_tarball_libreconv.stat.exists
+    - name: Check whether docker programs image needs to be built
+      stat:
+        path: "{{ docker_tarball_programs }}"
+      register: stat_tarball_programs
+    - block:
+      - docker_image:
+          build:
+            dockerfile: Dockerfile.programs-runtime
+            path: "{{ docker_build_dir }}"
+            pull: yes
+          name: laundry-programs
+          source: build
+      - docker_image:
+          archive_path: "{{ docker_tarball_programs }}"
+          name: laundry-programs
+          source: local
+      when: not stat_tarball_programs.stat.exists

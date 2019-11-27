@@ -1,5 +1,7 @@
 docker_tarball_libreconv: ../target/libreconv.tar
+docker_tarball_programs: ../target/laundry-programs.tar
 docker_tarball_libreconv_dst: /opt/laundry/libreconv.tar
+docker_tarball_programs_dst: /opt/laundry/laundry-programs.tar
 laundry_api_key_path: "{{ laundry_home }}/api-key.txt"
 laundry_home: /opt/laundry/app
 laundry_port: 8080

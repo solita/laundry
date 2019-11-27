@@ -74,10 +74,19 @@
       copy:
         src: "{{ docker_tarball_libreconv }}"
         dest: "{{ docker_tarball_libreconv_dst }}"
+    - name: Copy docker programs image tarball to destination
+      copy:
+        src: "{{ docker_tarball_programs }}"
+        dest: "{{ docker_tarball_programs_dst }}"
     - name: Load libreconv image to docker
       docker_image:
         name: libreconv
         load_path: "{{ docker_tarball_libreconv_dst }}"
+        source: load
+    - name: Load programs image to docker
+      docker_image:
+        name: laundry-programs
+        load_path: "{{ docker_tarball_programs_dst }}"
         source: load
   handlers:
     - name: restart docker

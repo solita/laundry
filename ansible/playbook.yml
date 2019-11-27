@@ -70,6 +70,15 @@
         src: laundry.service.j2
         dest: /etc/systemd/system/laundry.service
       notify: restart laundry
+    - name: Copy docker libreconv image tarball to destination
+      copy:
+        src: "{{ docker_tarball_libreconv }}"
+        dest: "{{ docker_tarball_libreconv_dst }}"
+    - name: Load libreconv image to docker
+      docker_image:
+        name: libreconv
+        load_path: "{{ docker_tarball_libreconv_dst }}"
+        source: load
   handlers:
     - name: restart docker
       systemd:

@@ -36,3 +36,20 @@
           name: laundrybuild
           state: absent
       when: not opt_tarball.stat.exists
+    - name: Check whether docker libreconv image needs to be built
+      stat:
+        path: "{{ docker_tarball_libreconv }}"
+      register: stat_tarball_libreconv
+    - block:
+      - docker_image:
+          build:
+            dockerfile: Dockerfile.libreoffice
+            path: "{{ docker_build_dir }}"
+            pull: yes
+          name: libreconv
+          source: build
+      - docker_image:
+          archive_path: "{{ docker_tarball_libreconv }}"
+          name: libreconv
+          source: local
+      when: not stat_tarball_libreconv.stat.exists

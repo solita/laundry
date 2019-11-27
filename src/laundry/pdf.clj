@@ -8,6 +8,7 @@
    [laundry.machines :as machines :refer [badness-resp]]
    [laundry.util :refer [shell-out!]]
    [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
+   [ring.middleware.multipart-params :refer [wrap-multipart-params]]
    [ring.swagger.upload :as upload]
    [ring.util.http-response :as htresp]
    [schema.core :as s]
@@ -66,7 +67,7 @@
      (POST "/pdf-preview" []
        :summary "attempt to convert first page of a PDF to PNG"
        :multipart-params [file :- upload/TempFileUpload]
-       :middleware [upload/wrap-multipart-params]
+       :middleware [wrap-multipart-params]
        (let [tempfile (:tempfile file)
              filename (:filename file)]
          (info "PDF previewer received " filename "(" (:size file) "b)")
@@ -75,7 +76,7 @@
      (POST "/pdf2txt" []
        :summary "attempt to convert a PDF file to TXT"
        :multipart-params [file :- upload/TempFileUpload]
-       :middleware [upload/wrap-multipart-params]
+       :middleware [wrap-multipart-params]
        (let [tempfile (:tempfile file)
              filename (:filename file)]
          (info "PDF2TXT converter received " filename "(" (:size file) "b)")
@@ -84,7 +85,7 @@
      (POST "/pdf2pdfa" []
        :summary "attempt to convert a PDF file to PDF/A"
        :multipart-params [file :- upload/TempFileUpload]
-       :middleware [upload/wrap-multipart-params]
+       :middleware [wrap-multipart-params]
        (let [tempfile (:tempfile file)
              filename (:filename file)]
          (info "PDF converter received " filename "(" (:size file) "b)")

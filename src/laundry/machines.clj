@@ -1,6 +1,6 @@
 (ns laundry.machines
-    (:require
-     [ring.util.http-response :as htresp]))
+  (:require
+   [ring.util.http-response :as htresp]))
 
 (defonce command-line-rules (atom []))
 

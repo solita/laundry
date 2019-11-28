@@ -3,6 +3,7 @@ root = true
 [*]
 end_of_line = lf
 indent_style = space
+trim_trailing_whitespace = true
 
 [*.clj]
 indent_size = 2

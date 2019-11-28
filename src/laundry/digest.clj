@@ -10,11 +10,6 @@
    [schema.core :as s]
    [taoensso.timbre :as timbre :refer [trace debug info warn]]))
 
-;(machines/add-command-line-rule!
-;    [nil "--checksum-command COMMAND" "compute a checksum"
-;       :default "/opt/laundry/bin/checksum"
-;       :id :checksum-command])
-
 (s/defschema DigestAlgorithm
   (s/enum "sha256"))
 

@@ -5,6 +5,7 @@
    [compojure.api.sweet :as sweet :refer :all]
    [laundry.machines :as machines]
    [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
+   [ring.middleware.multipart-params :refer [wrap-multipart-params]]
    [ring.swagger.upload :as upload]
    [ring.util.http-response :refer [ok status content-type] :as resp]
    [schema.core :as s]
@@ -26,7 +27,7 @@
      (POST "/sha256" []
        :summary "compute a SHA256 digest for posted data"
        :multipart-params [file :- upload/TempFileUpload]
-       :middleware [upload/wrap-multipart-params]
+       :middleware [wrap-multipart-params]
        (let [tempfile (:tempfile file)
              filename (:filename file)]
          (info "SHA256 received " filename "(" (:size file) "b)")

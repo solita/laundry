@@ -8,6 +8,7 @@
    [laundry.machines :as machines]
    [laundry.util :refer [shell-out!]]
    [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
+   [ring.middleware.multipart-params :refer [wrap-multipart-params]]
    [ring.swagger.upload :as upload]
    [ring.util.http-response :as htresp]
    [schema.core :as s]
@@ -33,7 +34,7 @@
      (POST "/docx2pdf" []
        :summary "attempt to convert a .docx file to PDF"
        :multipart-params [file :- upload/TempFileUpload]
-       :middleware [upload/wrap-multipart-params]
+       :middleware [wrap-multipart-params]
        (let [tempfile (:tempfile file)
              filename (:filename file)]
          (info "docx converter received " filename "(" (:size file) "b)")

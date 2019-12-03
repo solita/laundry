@@ -8,6 +8,7 @@
    [laundry.machines :as machines :refer [badness-resp]]
    [laundry.util :refer [shell-out!]]
    [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
+   [ring.middleware.multipart-params :refer [wrap-multipart-params]]
    [ring.swagger.upload :as upload]
    [ring.util.http-response :as htresp]
    [schema.core :as s]
@@ -50,7 +51,7 @@
      (POST "/png2png" []
        :summary "attempt to convert a PNG file to PNG"
        :multipart-params [file :- upload/TempFileUpload]
-       :middleware [upload/wrap-multipart-params]
+       :middleware [wrap-multipart-params]
        (let [tempfile (:tempfile file)
              filename (:filename file)]
          (info "PNG converter received " filename "(" (:size file) "b)")
@@ -59,7 +60,7 @@
      (POST "/jpeg2jpeg" []
        :summary "attempt to convert a JPEG file to JPEG"
        :multipart-params [file :- upload/TempFileUpload]
-       :middleware [upload/wrap-multipart-params]
+       :middleware [wrap-multipart-params]
        (let [tempfile (:tempfile file)
              filename (:filename file)]
          (info "PNG converter received " filename "(" (:size file) "b)")

@@ -87,8 +87,8 @@ $(OUT)/bin/convert: tmp/ImageMagick $(OUT)/bin/asan $(OUT)/bin/asan++
 tmp/ImageMagick:
 	mkdir -p tmp
 	-rm -rf tmp/ImageMagick-*
-	wget -O tmp/imagemagick.tar.gz https://github.com/ImageMagick/ImageMagick/archive/7.0.8-50.tar.gz
-	sha256sum tmp/imagemagick.tar.gz | grep fffeae12ea1a727b206f428c4d25c1ee7580f9b19e707ffa36e3a643b99f3f9e
+	wget -O tmp/imagemagick.tar.gz https://github.com/ImageMagick/ImageMagick/archive/7.0.9-7.tar.gz
+	sha256sum tmp/imagemagick.tar.gz | grep 601bb6efb64c7d28038cc255b0d4331a08690e6146252b21bf202b0fa33b68f6
 	cd tmp && tar -zxf imagemagick.tar.gz
 	cd tmp && ln -s ImageMagick-* ImageMagick
 

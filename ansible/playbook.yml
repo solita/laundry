@@ -88,6 +88,11 @@
         name: laundry-programs
         load_path: "{{ docker_tarball_programs_dst }}"
         source: load
+    - name: Copy helper programs
+      copy:
+        src: ../programs/
+        dest: /opt/laundry/bin/
+        mode: preserve
   handlers:
     - name: restart docker
       systemd:

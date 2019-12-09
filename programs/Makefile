@@ -75,7 +75,7 @@ $(OUT)/bin/checksum: checksum
 
 $(OUT)/bin/gs:
 	cd .. && build-scripts/ghostscript.bash
-	cd ../build-data/src/ghostscript-9.27 && make install
+	cd ../build-data/src/ghostscript-9.50 && make install
 
 $(OUT)/bin/lein:
 	curl https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein > $(OUT)/bin/lein

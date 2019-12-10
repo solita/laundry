@@ -19,7 +19,5 @@ jdk:
 env:
  - LD_LIBRARY_PATH=/opt/laundry/lib64 CI_CACHE=$HOME/travis-cache DOWNLOAD_DIR=$HOME/travis-cache
 
-# should move the below to a separate script file
-
 script:
   - test/ci-tests.bash

@@ -2,15 +2,12 @@
   (:require
    [clojure.java.io :as io]
    [clojure.test :refer :all]
-   [laundry.machines :as machines]
-   [laundry.server :as server]
+   [laundry.test.fixture :as fixture]
    [peridot.multipart]
    [ring.mock.request :as mock]))
 
 (deftest api-digest-sha256
-  (let [conf {:tools "."}
-        api (machines/generate-apis conf)
-        app (server/make-handler api conf)
+  (let [app (fixture/get-app)
         request (-> (mock/request :post "/digest/sha256")
                     (merge (peridot.multipart/build {:file (io/file (io/resource "public/favicon.ico"))})))
         response (app request)]

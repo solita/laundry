@@ -14,7 +14,6 @@
    [laundry.machines :as machines]
    [laundry.pdf :as pdf]
    [laundry.schemas :refer :all]
-   [laundry.test :as test]
    [ring.adapter.jetty :as jetty]
    [ring.middleware.basic-authentication :refer [wrap-basic-authentication]]
    [ring.middleware.defaults :refer [wrap-defaults site-defaults]]

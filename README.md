@@ -23,3 +23,23 @@ Username for the API is `laundry-api`. The password can be read with the followi
 
     vagrant ssh
     $ sudo cat /opt/laundry/app/api-key.txt
+
+## Testing
+
+To run all tests except ones marked with `^:integration`:
+
+    lein test
+
+To run integration tests (that use docker):
+
+    lein test :integration
+
+As usual, all tests can be run with:
+
+    lein test :all
+
+If you don't have gvisor configured for docker, you may want to use `runc` as docker runtime:
+
+    LAUNDRY_DOCKER_RUNTIME=runc lein test :all
+
+On osx if you don't have rsyslog installed, you may also want to pass `LAUNDRY_DOCKER_LOG_DRIVER=none`.

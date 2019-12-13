@@ -30,4 +30,6 @@
        :timeout 900000 ; 90s, needed for slow machines
        }
    :main laundry.main
+   :test-selectors {:default (complement :integration)
+                    :integration :integration}
 )

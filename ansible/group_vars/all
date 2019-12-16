@@ -1,0 +1,12 @@
+docker_tarball_libreconv: ../target/libreconv.tar
+docker_tarball_programs: ../target/laundry-programs.tar
+docker_tarball_libreconv_dst: /opt/laundry/libreconv.tar
+docker_tarball_programs_dst: /opt/laundry/laundry-programs.tar
+laundry_api_key_path: "{{ laundry_home }}/api-key.txt"
+laundry_home: /opt/laundry/app
+laundry_port: 8080
+laundry_uberjar: ../target/uberjar/laundry.jar
+laundry_user: laundry
+gvisor_binary_path: /usr/local/bin/runsc
+gvisor_checksum: sha512:3a3ea9ef6d6f8f23e4748af925e23811946d719d5542e09e5afbadc086543cef2a69d78843683f2ec683d93395eb59c8738d791ca037d86832ded307465e9db3
+gvisor_url: https://storage.googleapis.com/gvisor/releases/nightly/2019-11-11/runsc

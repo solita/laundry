@@ -1,0 +1,72 @@
+- hosts: 127.0.0.1
+  connection: local
+  vars:
+    ansible_python_interpreter: python3
+    docker_build_dir: ../docker-build
+  tasks:
+    - command: lein uberjar
+      args:
+        creates: "{{ laundry_uberjar }}"
+      tags: lein
+    - name: Check whether laundry-opt.tgz needs to be built
+      stat:
+        path: "{{ docker_build_dir }}/laundry-opt.tgz"
+      register: opt_tarball
+    - block:
+      - docker_image:
+          build:
+            path: "{{ docker_build_dir }}"
+            pull: yes
+          name: laundrybuild
+          source: build
+      - docker_container:
+          capabilities:
+            - sys_ptrace
+          detach: no
+          env:
+            LAUNDRY_BUILD_BRANCH: develop
+          image: laundrybuild
+          interactive: yes
+          name: laundrybuild
+          tty: yes
+      - command: bash export-opt.bash laundrybuild laundry-opt.tgz
+        args:
+          chdir: "{{ docker_build_dir }}"
+      - docker_container:
+          name: laundrybuild
+          state: absent
+      when: not opt_tarball.stat.exists
+    - name: Check whether docker libreconv image needs to be built
+      stat:
+        path: "{{ docker_tarball_libreconv }}"
+      register: stat_tarball_libreconv
+    - block:
+      - docker_image:
+          build:
+            dockerfile: Dockerfile.libreoffice
+            path: "{{ docker_build_dir }}"
+            pull: yes
+          name: libreconv
+          source: build
+      - docker_image:
+          archive_path: "{{ docker_tarball_libreconv }}"
+          name: libreconv
+          source: local
+      when: not stat_tarball_libreconv.stat.exists
+    - name: Check whether docker programs image needs to be built
+      stat:
+        path: "{{ docker_tarball_programs }}"
+      register: stat_tarball_programs
+    - block:
+      - docker_image:
+          build:
+            dockerfile: Dockerfile.programs-runtime
+            path: "{{ docker_build_dir }}"
+            pull: yes
+          name: laundry-programs
+          source: build
+      - docker_image:
+          archive_path: "{{ docker_tarball_programs }}"
+          name: laundry-programs
+          source: local
+      when: not stat_tarball_programs.stat.exists

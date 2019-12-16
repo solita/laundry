@@ -1,0 +1,102 @@
+- hosts: all
+  become: yes
+  vars:
+    docker_users:
+      - laundry
+    pip_install_packages:
+      - name: docker
+    # https://github.com/geerlingguy/ansible-role-pip/issues/24
+    pip_package: python3-pip
+  pre_tasks:
+    - user:
+        name: laundry
+  roles:
+    - geerlingguy.docker
+    - geerlingguy.pip
+  tasks:
+    - name: Install dependencies
+      yum:
+        name:
+          - git
+          - java-1.8.0-openjdk-headless
+    - get_url:
+        url: "{{ gvisor_url }}"
+        dest: "{{ gvisor_binary_path }}"
+        checksum: "{{ gvisor_checksum }}"
+        mode: 0755
+    - name: Calculate checksum for docker daemon.json
+      stat:
+        path: /etc/docker/daemon.json
+      register: daemon_before
+    - name: Configure docker to use gvisor
+      command: /usr/local/bin/runsc install -- --platform=ptrace
+      changed_when: False
+    - name: Calculate checksum for docker daemon.json
+      stat:
+        path: /etc/docker/daemon.json
+      register: daemon_after
+    - debug:
+        msg: Docker daemon.json has been changed by runsc install
+      changed_when: "(not daemon_before.stat.exists) or (daemon_before.stat.checksum != daemon_after.stat.checksum)"
+      notify: restart docker
+    - file:
+        path: "{{ laundry_home }}"
+        state: directory
+        mode: 0700
+        owner: "{{ laundry_user }}"
+        group: "{{ laundry_user }}"
+    - copy:
+        src: "{{ laundry_uberjar }}"
+        dest: "{{ laundry_home }}/laundry.jar"
+        backup: yes
+        owner: "{{ laundry_user }}"
+        group: "{{ laundry_user }}"
+      notify: restart laundry
+    - set_fact:
+        api_key: "{{ lookup('password', '/dev/null chars=ascii_letters,digits,hexdigits') }}"
+    - name: Write API key if it does not exist
+      copy:
+        content: "{{ api_key }}\n"
+        dest: "{{ laundry_api_key_path }}"
+        force: no
+        mode: 0600
+        owner: "{{ laundry_user }}"
+        group: "{{ laundry_user }}"
+    - template:
+        src: laundry.service.j2
+        dest: /etc/systemd/system/laundry.service
+      notify: restart laundry
+    - name: Copy docker libreconv image tarball to destination
+      copy:
+        src: "{{ docker_tarball_libreconv }}"
+        dest: "{{ docker_tarball_libreconv_dst }}"
+    - name: Copy docker programs image tarball to destination
+      copy:
+        src: "{{ docker_tarball_programs }}"
+        dest: "{{ docker_tarball_programs_dst }}"
+    - name: Load libreconv image to docker
+      docker_image:
+        name: libreconv
+        load_path: "{{ docker_tarball_libreconv_dst }}"
+        source: load
+    - name: Load programs image to docker
+      docker_image:
+        name: laundry-programs
+        load_path: "{{ docker_tarball_programs_dst }}"
+        source: load
+    - name: Copy helper programs
+      copy:
+        src: ../programs/
+        dest: /opt/laundry/bin/
+        mode: preserve
+  handlers:
+    - name: restart docker
+      systemd:
+        name: docker.service
+        state: restarted
+    - name: restart laundry
+      systemd:
+        daemon_reload: yes
+        enabled: yes
+        name: laundry.service
+        state: restarted

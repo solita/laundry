@@ -14,10 +14,10 @@ cache:
     - $HOME/build-data/downloads
 
 jdk:
- - openjdk9
+  - openjdk9
 
 env:
- - LD_LIBRARY_PATH=/opt/laundry/lib64 CI_CACHE=$HOME/travis-cache DOWNLOAD_DIR=$HOME/travis-cache
+  - LD_LIBRARY_PATH=/opt/laundry/lib64 CI_CACHE=$HOME/travis-cache DOWNLOAD_DIR=$HOME/travis-cache
 
 script:
   - test/ci-tests.bash

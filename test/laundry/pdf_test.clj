@@ -38,3 +38,15 @@
     (is (= 200 (:status response)))
     (is (= "application/pdf" (get-in response [:headers "Content-Type"])))
     (is (clojure.string/starts-with? body "%PDF-1.4"))))
+
+(deftest ^:integration api-pdf-pdf2txt
+  (let [app (fixture/get-app)
+        file (io/file (io/resource "testcases/hypno.pdf"))
+        _ (assert file)
+        request (-> (mock/request :post "/pdf/pdf2txt")
+                    (merge (peridot.multipart/build {:file file})))
+        response (app request)
+        body (ring.util.request/body-string response)]
+    (is (= 200 (:status response)))
+    (is (= "text/plain; charset=utf-8" (get-in response [:headers "Content-Type"])))
+    (is (= "All glory to the hypnotoad." (clojure.string/trim body)))))

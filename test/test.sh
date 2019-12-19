@@ -4,7 +4,6 @@ PORT=9001
 HOST=http://localhost:$PORT
 LAUNDRYPID=
 START=yes
-FIREJAIL=/usr/local/bin/firejail
 TOOLS=/opt/laundry
 
 alivep() {
@@ -63,7 +62,6 @@ test_checksum() {
 
 test_pdf2txt() {
    echo -n "Testing pdf2txt:"
-   test -x $FIREJAIL || { echo "no firejail - skipping"; return 0; }
    echo -n " converting"
    curl -sf -F file=@test/testcases/hypno.pdf -X POST "$HOST/pdf/pdf2txt" > tmp/response.txt || die "conversion failed"
    echo -n ", checking"
@@ -73,7 +71,6 @@ test_pdf2txt() {
 
 test_pdf2jpeg() {
    echo -n "Testing pdf2jpeg:"
-   test -x $FIREJAIL || { echo "no firejail - skipping "; return 0; }
    echo -n " converting"
    curl -sf -F file=@test/testcases/hypno.pdf -X POST "$HOST/pdf/pdf-preview" > tmp/response.jpeg || die "conversion failed"
    echo -n ", checking"

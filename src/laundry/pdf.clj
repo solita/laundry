@@ -64,7 +64,7 @@
  (fn [env]
    (sweet/context "/pdf" []
      (POST "/pdf-preview" []
-       :summary "attempt to convert first page of a PDF to PNG"
+       :summary "attempt to convert first page of a PDF to JPEG"
        :multipart-params [file :- upload/TempFileUpload]
        :middleware [wrap-multipart-params]
        (let [tempfile (:tempfile file)

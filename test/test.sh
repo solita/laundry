@@ -89,7 +89,7 @@ test_pdf2pdfa() {
 }
 
 usage() {
-   echo "scripts/test.sh [-h|--help] [-s|--server $HOST]" 
+   echo "scripts/test.sh [-h|--help] [-s|--server $HOST]"
 }
 
 parse_args() {
@@ -118,18 +118,18 @@ parse_args() {
 
 main() {
    parse_args "$@" || return 1
-   
+
    test -d "$TOOLS/bin" || die "no tools at $TOOLS"
 
    # Laundry startup and initial state logging
    start_laundry
-   
-   # Actual tests 
+
+   # Actual tests
    test_checksum
    test_pdf2txt
    test_pdf2jpeg
    test_pdf2pdfa
-   
+
    echo "Tests OK"
 }
 

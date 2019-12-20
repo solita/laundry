@@ -3,4 +3,4 @@
 INPUT=$1
 OUTPUT=$2
 docker run --runtime=${LAUNDRY_DOCKER_RUNTIME:-runsc} --network=none --ipc=private --memory 1g --kernel-memory=100M --cap-drop=ALL --cap-add SYS_PTRACE -i --rm laundry-programs \
-       /bin/bash -c 'cat > /home/docconv/input.jpg && /opt/laundry/bin/convert /home/docconv/input.jpg /home/docconv/output.ppm > conv.out && /opt/laundry/bin/convert -quality 97 /home/docconv/output.ppm /home/docconv/output.jpg >> conv.out && cat /home/docconv/output.jpg' < $INPUT > $OUTPUT
+  /bin/bash -c '/opt/laundry/bin/convert jpg:- ppm:- |/opt/laundry/bin/convert -quality 97 ppm:- jpg:-' < "$INPUT" > "$OUTPUT"

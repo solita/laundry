@@ -6,7 +6,6 @@
    [clojure.set :as set]
    [clojure.string :as string]
    [compojure.api.sweet :as sweet :refer :all]
-   [laundry.cache :as cache]
    [laundry.config :as config]
    [laundry.digest :as digest]
    [laundry.docx :as docx]
@@ -136,7 +135,6 @@
   (start-server
    {:slow-request-warning 500
     :port 9001
-    :temp-directory "/tmp"
     :tools "."
     :log-level :info
     :basic-auth-password nil}))

@@ -26,7 +26,7 @@
       (htresp/content-type
        (htresp/ok (io/input-stream (io/file out-path)))
        "application/pdf")
-      (machines/badness-resp "docx2pdf conversion failed"))))
+      (machines/badness-resp "docx2pdf conversion failed" res))))
 
 (machines/add-api-generator!
  (fn [env]

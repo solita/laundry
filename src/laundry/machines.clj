@@ -1,6 +1,7 @@
 (ns laundry.machines
   (:require
-   [ring.util.http-response :as htresp]))
+   [ring.util.http-response :as htresp]
+   [taoensso.timbre :as timbre :refer [trace debug info warn]]))
 
 (defonce command-line-rules (atom []))
 
@@ -23,7 +24,8 @@
 
 ;; response helpers commonly used by machines
 
-(defn badness-resp [msg]
+(defn badness-resp [msg log]
+  (warn (str msg ": " log))
   (htresp/content-type (htresp/internal-server-error (str msg))
                        "text/plain"))
 

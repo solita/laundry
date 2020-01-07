@@ -13,6 +13,8 @@ alivep() {
 
 die() {
    echo "ERROR: $@"
+   echo "laundry.log:"
+   cat laundry.log
    exit 1
 }
 

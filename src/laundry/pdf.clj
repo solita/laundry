@@ -32,7 +32,7 @@
       (htresp/content-type
        (htresp/ok (temp-file-input-stream out-path))
        "application/pdf")
-      (badness-resp "pdf2pdfa conversion failed"))))
+      (badness-resp "pdf2pdfa conversion failed" res))))
 
 ;; pdf → txt conversion
 (s/defn api-pdf2txt [env, tempfile :- java.io.File]
@@ -45,7 +45,7 @@
       (htresp/content-type
        (htresp/ok (temp-file-input-stream out))
        "text/plain")
-      (badness-resp "pdf2txt conversion failed"))))
+      (badness-resp "pdf2txt conversion failed" res))))
 
 ;; previewer of first page
 (s/defn api-pdf2jpeg [env, tempfile :- java.io.File]
@@ -58,8 +58,7 @@
        (htresp/ok (temp-file-input-stream out))
        "image/jpeg")
       (do
-        (warn "pdf preview failed: " res)
-        (badness-resp "pdf preview failed")))))
+        (badness-resp "pdf preview failed" res)))))
 
 (machines/add-api-generator!
  (fn [env]

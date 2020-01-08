@@ -1,33 +1,17 @@
 #!/usr/bin/env bash
 
-TOOLBIN=$(dirname $0)
 INPUT=$1
 OUTPUT=$2
-CACHE=/tmp/pdf2txt
 
-export LD_LIBRARY_PATH=$(dirname $TOOLBIN)/lib64
-
-mkdir -p "$CACHE"
-
-CSUM=$(sha1sum "$INPUT" | sed -e 's/ .*//')
-
-cp "$INPUT" "$CACHE/$CSUM.pdf"
-
-echo "pdf2txt: $(0), $TOOOLBIN, $LD_LIBRARY_PATH"
-
-test -f "$CACHE/$CSUM.txt" || firejail \
-   --noprofile \
-   --private \
-   --read-write="$CACHE" \
-   --read-only=/opt \
-   --read-only=/usr \
-   --net=none \
-   --caps.drop=all \
-   --env="LD_LIBRARY_PATH=$LD_LIBRARY_PATH" \
-   --shell=none \
-   "$TOOLBIN/gs" -dBATCH -dNOPAUSE -dSAFER -sDEVICE=txtwrite -sOutputFile="$CACHE/$CSUM.txt" "$CACHE/$CSUM.pdf"
-
-rm "$CACHE/$CSUM.pdf"
-
-cp "$CACHE/$CSUM.txt" "$OUTPUT"
-
+docker run \
+  --runtime=${LAUNDRY_DOCKER_RUNTIME:-runsc} \
+  --network=none \
+  --ipc=private \
+  --memory 1g \
+  --kernel-memory=100M \
+  --cap-drop=ALL \
+  --cap-add SYS_PTRACE \
+  -i \
+  --rm \
+  laundry-programs \
+  /bin/bash -c '/opt/laundry/bin/gs -q -dBATCH -dNOPAUSE -dSAFER -sDEVICE=txtwrite -sOutputFile=- -' < "$INPUT" > "$OUTPUT"

@@ -1,40 +1,17 @@
 #!/usr/bin/env bash
 
-set -e
-
-TOOLBIN=$(dirname $0)
 INPUT=$1
 OUTPUT=$2
-JPEGSIZE=100
 
-CACHE=/tmp/pdf2jpeg
-
-export LD_LIBRARY_PATH=$(dirname $TOOLBIN)/lib64
-
-mkdir -p $CACHE
-
-CSUM=$(sha1sum "$INPUT" | sed -e 's/ .*//')
-
-cp "$INPUT" $CACHE/$CSUM.pdf
-
-# some room for race here
-test -f $CACHE/$CSUM.jpeg || firejail \
-   --noprofile \
-   --private \
-   --read-write=$CACHE \
-   --read-only=/opt \
-   --env="LD_LIBRARY_PATH=$LD_LIBRARY_PATH" \
-   --read-only=/usr \
-   --net=none \
-   --caps.drop=all \
-   --shell=none \
-   $TOOLBIN/gs -dSAFER -dBATCH -dNOPAUSE -sDEVICE=png16m -dGraphicsAlphaBits=4 -dTextAlphaBits=4 -sPageList=1 -sOutputFile="$CACHE/$CSUM.png" "$CACHE/$CSUM.pdf"
-
-# bound size and convert to jpeg (not scaled yet)
-$TOOLBIN/convert -define jpeg:extent=$(JPEGSIZE)kb $CACHE/$CSUM.png $CACHE/$CSUM.jpeg
-
-# remove temporary png
-rm $CACHE/$CSUM.png
-
-cp $CACHE/$CSUM.jpeg "$OUTPUT"
-
+docker run \
+  --runtime=${LAUNDRY_DOCKER_RUNTIME:-runsc} \
+  --network=none \
+  --ipc=private \
+  --memory 1g \
+  --kernel-memory=100M \
+  --cap-drop=ALL \
+  --cap-add SYS_PTRACE \
+  -i \
+  --rm \
+  laundry-programs \
+  /bin/bash -c '/opt/laundry/bin/gs -q -dSAFER -dBATCH -dNOPAUSE -sDEVICE=jpeg -dGraphicsAlphaBits=4 -dTextAlphaBits=4 -sPageList=1 -sOutputFile=- -' < "$INPUT" > "$OUTPUT"

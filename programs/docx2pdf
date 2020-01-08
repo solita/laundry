@@ -6,5 +6,5 @@ TOOLBIN=$(dirname $0)
 INPUT=$1
 OUTPUT=$2
 docker run --rm --runtime=runsc --network=none --ipc=private --memory 1g \
-   --kernel-memory=100M --cap-drop=ALL --log-driver=syslog -i -e docconv_suffix=docx \
+   --kernel-memory=100M --cap-drop=ALL -i -e docconv_suffix=docx \
    libreconv < $INPUT | tar --to-stdout -xf - out/document.pdf > $OUTPUT

@@ -2,5 +2,5 @@
 
 INPUT=$1
 OUTPUT=$2
-docker run --runtime=${LAUNDRY_DOCKER_RUNTIME:-runsc} --network=none --ipc=private --memory 1g --kernel-memory=100M --cap-drop=ALL --cap-add SYS_PTRACE --log-driver=syslog -i --rm laundry-programs \
+docker run --runtime=${LAUNDRY_DOCKER_RUNTIME:-runsc} --network=none --ipc=private --memory 1g --kernel-memory=100M --cap-drop=ALL --cap-add SYS_PTRACE -i --rm laundry-programs \
        /bin/bash -c 'cat > /home/docconv/input.png && /opt/laundry/bin/convert /home/docconv/input.png /home/docconv/output.ppm > conv.out && /opt/laundry/bin/convert /home/docconv/output.ppm /home/docconv/output.png >> conv.out && cat /home/docconv/output.png' < $INPUT > $OUTPUT

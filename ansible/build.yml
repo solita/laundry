@@ -9,34 +9,6 @@
       args:
         creates: "{{ laundry_uberjar }}"
       tags: lein
-    - name: Check whether laundry-opt.tgz needs to be built
-      stat:
-        path: "{{ docker_build_dir }}/laundry-opt.tgz"
-      register: opt_tarball
-    - block:
-      - docker_image:
-          build:
-            path: "{{ docker_build_dir }}"
-            pull: yes
-          name: laundrybuild
-          source: build
-      - docker_container:
-          capabilities:
-            - sys_ptrace
-          detach: no
-          env:
-            LAUNDRY_BUILD_BRANCH: develop
-          image: laundrybuild
-          interactive: yes
-          name: laundrybuild
-          tty: yes
-      - command: bash export-opt.bash laundrybuild laundry-opt.tgz
-        args:
-          chdir: "{{ docker_build_dir }}"
-      - docker_container:
-          name: laundrybuild
-          state: absent
-      when: not opt_tarball.stat.exists
     - name: Check whether docker libreconv image needs to be built
       stat:
         path: "{{ docker_tarball_libreconv }}"

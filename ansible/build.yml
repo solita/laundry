@@ -1,5 +1,6 @@
 - hosts: 127.0.0.1
   connection: local
+  gather_facts: no
   vars:
     ansible_python_interpreter: python3
     docker_build_dir: ../docker-build

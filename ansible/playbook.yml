@@ -14,10 +14,14 @@
     - geerlingguy.docker
     - geerlingguy.pip
   tasks:
-    - name: Install dependencies
-      yum:
+    - yum:
         name:
           - java-1.8.0-openjdk-headless
+      when: ansible_os_family == "RedHat"
+    - apt:
+        name:
+          - openjdk-8-jre-headless
+      when: ansible_os_family == "Debian"
     - get_url:
         url: "{{ gvisor_url }}"
         dest: "{{ gvisor_binary_path }}"

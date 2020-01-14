@@ -16,7 +16,8 @@
    :target-path "target/%s/"
    :profiles
       {:dev
-       {:dependencies [[ring-mock "0.1.5"]]
+       {:dependencies [[peridot "0.5.2"]
+                       [ring-mock "0.1.5"]]
           :resource-paths ["target/generated"]
           :plugins [[lein-cljsbuild "1.1.7"]]}
        :uberjar
@@ -29,4 +30,6 @@
        :timeout 900000 ; 90s, needed for slow machines
        }
    :main laundry.main
+   :test-selectors {:default (complement :integration)
+                    :integration :integration}
 )

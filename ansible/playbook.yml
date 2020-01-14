@@ -99,3 +99,7 @@
         enabled: yes
         name: laundry.service
         state: restarted
+  post_tasks:
+    - name: Wait for laundry server to start
+      wait_for:
+        port: "{{ laundry_port }}"

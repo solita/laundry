@@ -24,3 +24,6 @@ env:
 
 script:
   - test/ci-tests-lein.sh
+
+after_failure:
+  - sudo journalctl -u laundry.service

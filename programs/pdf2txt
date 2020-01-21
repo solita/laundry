@@ -10,7 +10,6 @@ docker run \
   --memory 1g \
   --kernel-memory=100M \
   --cap-drop=ALL \
-  --cap-add SYS_PTRACE \
   -i \
   --rm \
   laundry-programs \

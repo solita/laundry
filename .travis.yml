@@ -23,7 +23,7 @@ env:
   - LD_LIBRARY_PATH=/opt/laundry/lib64 CI_CACHE=$HOME/travis-cache DOWNLOAD_DIR=$HOME/travis-cache
 
 script:
-  - test/ci-tests-lein.sh
+  - travis_wait test/ci-tests-lein.sh
 
 after_failure:
   - sudo journalctl -u laundry.service

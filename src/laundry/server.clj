@@ -7,7 +7,6 @@
    [clojure.string :as string]
    [compojure.api.sweet :as sweet :refer :all]
    [laundry.config :as config]
-   [laundry.digest :as digest]
    [laundry.docx :as docx]
    [laundry.image :as image]
    [laundry.machines :as machines]

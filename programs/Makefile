@@ -1,7 +1,7 @@
 NPROCS=$(shell getconf _NPROCESSORS_ONLN || echo 1)
 OUT=/opt/laundry
 
-install: $(OUT)/bin/nsjail $(OUT)/bin/pdf2jpeg $(OUT)/bin/gs $(OUT)/bin/pdf2txt $(OUT)/bin/pdf2pdfa $(OUT)/bin/docx2pdf $(OUT)/bin/jpeg2jpeg $(OUT)/bin/png2png $(OUT)/bin/checksum $(OUT)/bin/lein $(OUT)/bin/convert
+install: $(OUT)/bin/nsjail $(OUT)/bin/pdf2jpeg $(OUT)/bin/gs $(OUT)/bin/pdf2txt $(OUT)/bin/pdf2pdfa $(OUT)/bin/docx2pdf $(OUT)/bin/jpeg2jpeg $(OUT)/bin/png2png $(OUT)/bin/lein $(OUT)/bin/convert
 
 deps: nsjail-deps
 	apt-get update && apt-get -y upgrade && apt-get -y install libpng-dev libjpeg-dev build-essential clang wget unzip curl
@@ -56,10 +56,6 @@ $(OUT)/bin/png2png: png2png
 	mkdir -p $(OUT)/bin
 	cp png2png $(OUT)/bin
 
-
-$(OUT)/bin/checksum: checksum
-	mkdir -p $(OUT)/bin
-	cp checksum $(OUT)/bin
 
 $(OUT)/bin/gs:
 	cd .. && build-scripts/ghostscript.bash

@@ -51,15 +51,6 @@ start_laundry() {
    wait_for alivep
 }
 
-test_checksum() {
-   date > tmp/testdata.txt
-   echo -n "Computing SHA256:"
-   curl -sf -F file=@tmp/testdata.txt -X POST "$HOST/digest/sha256" > tmp/response || die "upload failed"
-   RESPONSE=$(cat tmp/response)
-   cat tmp/testdata.txt | sha256sum | grep -q "$RESPONSE" || die "bad result"
-   echo " $RESPONSE ok"
-}
-
 test_pdf2txt() {
    echo -n "Testing pdf2txt:"
    echo -n " converting"
@@ -124,7 +115,6 @@ main() {
    start_laundry
 
    # Actual tests
-   test_checksum
    test_pdf2txt
    test_pdf2jpeg
    test_pdf2pdfa

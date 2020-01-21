@@ -3,7 +3,6 @@
       [[clj-http "3.10.0"]
        [com.fzakaria/slf4j-timbre "0.3.14"]
        [com.taoensso/timbre "4.10.0"]
-       [digest "1.4.9"]
        [enlive "1.1.6"]
        [hiccup "1.0.5"]
        [metosin/compojure-api "1.1.13"]

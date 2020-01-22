@@ -1,5 +1,8 @@
 language: clojure
-lein: 2.8.3
+lein: 2.9.1
+
+before_install:
+  - sudo pip install ansible docker
 
 sudo: required
 
@@ -20,4 +23,7 @@ env:
   - LD_LIBRARY_PATH=/opt/laundry/lib64 CI_CACHE=$HOME/travis-cache DOWNLOAD_DIR=$HOME/travis-cache
 
 script:
-  - test/ci-tests.bash
+  - travis_wait test/ci-tests-lein.sh
+
+after_failure:
+  - sudo journalctl -u laundry.service

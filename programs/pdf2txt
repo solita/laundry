@@ -10,8 +10,7 @@ docker run \
   --memory 1g \
   --kernel-memory=100M \
   --cap-drop=ALL \
-  --cap-add SYS_PTRACE \
   -i \
   --rm \
   laundry-programs \
-  /bin/bash -c '/opt/laundry/bin/gs -q -dBATCH -dNOPAUSE -dSAFER -sDEVICE=txtwrite -sOutputFile=- -' < "$INPUT" > "$OUTPUT"
+  /bin/bash -c 'gs -q -dBATCH -dNOPAUSE -dSAFER -sDEVICE=txtwrite -sOutputFile=- -' < "$INPUT" > "$OUTPUT"

@@ -37,7 +37,7 @@
         body (ring.util.request/body-string response)]
     (is (= 200 (:status response)))
     (is (= "application/pdf" (get-in response [:headers "Content-Type"])))
-    (is (clojure.string/starts-with? body "%PDF-1.4"))))
+    (is (clojure.string/starts-with? body "%PDF-"))))
 
 (deftest ^:integration api-pdf-pdf2txt
   (let [app (fixture/get-app)

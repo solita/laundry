@@ -134,7 +134,7 @@
   (start-server
    {:slow-request-warning 500
     :port 9001
-    :tools "."
+    :tools "programs"
     :log-level :info
     :basic-auth-password nil}))
 

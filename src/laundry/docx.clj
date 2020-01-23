@@ -19,7 +19,7 @@
 (s/defn api-docx2pdf [env, tempfile :- java.io.File]
   (let [in-path (.getAbsolutePath tempfile)
         out-path  (str in-path ".pdf")
-        res (shell-out! (str (:tools env) "/bin/docx2pdf")
+        res (shell-out! (str (:tools env) "/docx2pdf")
                         in-path out-path)]
     (.delete tempfile) ;; todo: move to finally block
     (if (= (:exit res) 0)

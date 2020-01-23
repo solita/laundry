@@ -6,7 +6,10 @@
 (def test-conf
   {:tools "programs"})
 
-(defn get-app []
-  (let [api (machines/generate-apis test-conf)
-        app (server/make-handler api test-conf)]
+(defn get-app-with [conf]
+  (let [api (machines/generate-apis conf)
+        app (server/make-handler api conf)]
     app))
+
+(defn get-app []
+  (get-app-with test-conf))

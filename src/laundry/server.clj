@@ -34,25 +34,37 @@
         (proxy-super close)
         (io/delete-file path)))))
 
+(defn create-auth-middleware [env]
+  (let [configured-password ((get env :basic-auth-password (constantly nil)))]
+    (if (nil? configured-password)
+      identity
+      (fn [handler]
+        (wrap-basic-authentication handler (fn auth-ok? [user-name provided-password]
+                                             (and (= "laundry-api" user-name)
+                                                  (= provided-password configured-password))))))))
+
 ;;; Handler
 
 (s/defn make-api-handler [api-calls, env :- LaundryConfig]
-  (apply api
-         (concat
-          [{:swagger
-            {:ui "/api-docs"
-             :spec "/swagger.json"
-             :data {:info {:title "Laundry API"
-                           :description ""}}}}
+  (api {:swagger
+        {:ui "/api-docs"
+         :spec "/swagger.json"
+         :data {:info {:title "Laundry API"
+                       :description ""}}}}
 
-           (undocumented
-             (GET "/" []
-               (resp/temporary-redirect "/index.html")))
+       (undocumented
+         (GET "/" []
+           (resp/temporary-redirect "/index.html")))
 
-           (GET "/alive" []
-             :summary "check whether server is running"
-             (ok "yes"))]
-          api-calls)))
+       (GET "/alive" []
+         :summary "check whether server is running"
+         (ok "yes"))
+
+       (context "/" []
+         :middleware [(create-auth-middleware env)]
+         (GET "/auth-test" []
+           (ok))
+         (apply routes api-calls))))
 
 (defn laundry-path-stripper [handler]
   ;; accommodate getting served requests with /laundry prefix
@@ -73,18 +85,12 @@
       res)))
 
 (s/defn make-handler [api env :- LaundryConfig]
-  (let [configured-password ((or (config/read :basic-auth-password) (fn []) nil))
-        authless-handler (-> (make-api-handler api env)
-                             request-time-logger
-                             laundry-path-stripper
-                             (wrap-defaults (-> (assoc-in site-defaults [:security :anti-forgery] false)
-                                                (assoc-in [:params :multipart] false))))]
-    (if (nil? configured-password)
-      authless-handler
-      ; else
-      (wrap-basic-authentication authless-handler
-                                 (fn auth-ok? [user-name provided-password]
-                                   (and (= "laundry-api" user-name) (= provided-password configured-password)))))))
+  (let [handler (-> (make-api-handler api env)
+                    request-time-logger
+                    laundry-path-stripper
+                    (wrap-defaults (-> (assoc-in site-defaults [:security :anti-forgery] false)
+                                       (assoc-in [:params :multipart] false))))]
+    handler))
 
 ;;; Startup and shutdown
 

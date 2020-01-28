@@ -25,7 +25,7 @@
 (s/defn api-pdf2pdfa [env, tempfile :- java.io.File]
   (let [in-path (.getAbsolutePath tempfile)
         out-path  (str (.getAbsolutePath tempfile) ".pdf")
-        res (shell-out! (str (:tools env) "/bin/pdf2pdfa")
+        res (shell-out! (str (:tools env) "/pdf2pdfa")
                         in-path out-path)]
     (.delete tempfile)
     (if (= (:exit res) 0)
@@ -39,7 +39,7 @@
   (info "Running, tools are at " (:tools env))
   (let [path (.getAbsolutePath tempfile)
         out  (str path ".txt")
-        res (shell-out! (str (:tools env) "/bin/pdf2txt") path out)]
+        res (shell-out! (str (:tools env) "/pdf2txt") path out)]
     (.delete tempfile)
     (if (= (:exit res) 0)
       (htresp/content-type
@@ -51,7 +51,7 @@
 (s/defn api-pdf2jpeg [env, tempfile :- java.io.File]
   (let [path (.getAbsolutePath tempfile)
         out  (str (.getAbsolutePath tempfile) ".jpeg")
-        res (shell-out! (str (:tools env) "/bin/pdf2jpeg") path out)]
+        res (shell-out! (str (:tools env) "/pdf2jpeg") path out)]
     (.delete tempfile)
     (if (= (:exit res) 0)
       (htresp/content-type

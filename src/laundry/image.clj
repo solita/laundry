@@ -24,7 +24,7 @@
 (s/defn api-png2png [env, tempfile :- java.io.File]
   (let [in-path (.getAbsolutePath tempfile)
         out-path  (str (.getAbsolutePath tempfile) ".png")
-        res (shell-out! (str (:tools env) "/bin/png2png")
+        res (shell-out! (str (:tools env) "/png2png")
                         in-path out-path)]
     (.delete tempfile)
     (if (= (:exit res) 0)
@@ -36,7 +36,7 @@
 (s/defn api-jpeg2jpeg [env, tempfile :- java.io.File]
   (let [in-path (.getAbsolutePath tempfile)
         out-path  (str (.getAbsolutePath tempfile) ".png")
-        res (shell-out! (str (:tools env) "/bin/jpeg2jpeg")
+        res (shell-out! (str (:tools env) "/jpeg2jpeg")
                         in-path out-path)]
     (.delete tempfile)
     (if (= (:exit res) 0)

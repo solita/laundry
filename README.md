@@ -6,8 +6,7 @@ Data sanitation services
 ## Development environment
 
     lein uberjar
-    ln -s programs bin
-    java -jar target/uberjar/laundry.jar -t $PWD
+    java -jar target/uberjar/laundry.jar
 
 Access swagger API docs on http://localhost:9001/api-docs/
 

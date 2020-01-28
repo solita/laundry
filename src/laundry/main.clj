@@ -28,8 +28,8 @@
 
 (machines/add-command-line-rule!
  ["-t" "--tools DIR" "External tools directory"
-  :default "/opt/laundry"
-  :validate [(fn [x] (.isDirectory (io/file (str x "/bin")))) "Argument directory must have at least a bin/ subdirectory"]])
+  :default "/opt/laundry/bin"
+  :validate [(fn [x] (.isDirectory (io/file x))) "Argument must be a directory"]])
 
 (machines/add-command-line-rule!
  ["-S" "--slow-request MS" "slow request warning threshold in ms"

@@ -4,7 +4,7 @@
    [laundry.server :as server]))
 
 (def test-conf
-  {:tools "."})
+  {:tools "programs"})
 
 (defn get-app []
   (let [api (machines/generate-apis test-conf)

@@ -36,7 +36,7 @@
         (io/delete-file path)))))
 
 (defn create-auth-middleware [env]
-  (let [configured-password ((get env :basic-auth-password (constantly nil)))]
+  (let [configured-password ((or (get env :basic-auth-password) (constantly nil)))]
     (if (nil? configured-password)
       identity
       (fn [handler]

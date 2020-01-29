@@ -6,6 +6,7 @@
    [clojure.set :as set]
    [clojure.string :as string]
    [compojure.api.sweet :as sweet :refer :all]
+   [compojure.route]
    [laundry.config :as config]
    [laundry.docx :as docx]
    [laundry.image :as image]
@@ -35,7 +36,7 @@
         (io/delete-file path)))))
 
 (defn create-auth-middleware [env]
-  (let [configured-password ((get env :basic-auth-password (constantly nil)))]
+  (let [configured-password ((or (get env :basic-auth-password) (constantly nil)))]
     (if (nil? configured-password)
       identity
       (fn [handler]
@@ -64,7 +65,10 @@
          :middleware [(create-auth-middleware env)]
          (GET "/auth-test" []
            (ok))
-         (apply routes api-calls))))
+         (apply routes api-calls))
+
+       (undocumented
+         (compojure.route/not-found (resp/not-found)))))
 
 (defn laundry-path-stripper [handler]
   ;; accommodate getting served requests with /laundry prefix

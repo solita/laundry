@@ -7,7 +7,6 @@
    [clojure.string :as string]
    [compojure.api.sweet :as sweet :refer :all]
    [compojure.route]
-   [laundry.config :as config]
    [laundry.docx :as docx]
    [laundry.image :as image]
    [laundry.machines :as machines]
@@ -78,19 +77,19 @@
     (let [new-req (update req :uri #(clojure.string/replace % #"^/laundry" ""))]
       (handler new-req))))
 
-(defn request-time-logger [handler]
+(defn request-time-logger [handler conf]
   (fn [req]
     (let [start (timestamp)
           res (handler req)
           elapsed (- (timestamp) start)]
-      (if (> elapsed (config/read :slow-request-warning 10000))
+      (if (> elapsed (get conf :slow-request-warning 10000))
         (warn (str "slow request: " (:uri req)
                    " took " elapsed "ms")))
       res)))
 
 (s/defn make-handler [api env :- LaundryConfig]
   (let [handler (-> (make-api-handler api env)
-                    request-time-logger
+                    (request-time-logger env)
                     laundry-path-stripper
                     (wrap-defaults (-> (assoc-in site-defaults [:security :anti-forgery] false)
                                        (assoc-in [:params :multipart] false))))]
@@ -112,24 +111,22 @@
   (stop-server)
   (reset! server (jetty/run-jetty handler conf))
   (when server
-    (info "Laundry is running at port" (config/read :port))))
+    (info "Laundry is running at port" (get conf :port))))
 
 (s/defn ^:always-validate start-server [conf :- LaundryConfig]
-  ;; update config
-  (config/set! conf)
   (let [api (machines/generate-apis conf)]
     ;; configure logging accordingly
     (timbre/merge-config!
      {:appenders
       {:spit
        (appenders/spit-appender
-        {:fname (config/read :logfile "laundry.log")})}})
+        {:fname (get conf :logfile "laundry.log")})}})
     (timbre/set-level!
-     (config/read :log-level :info))
-    (info "start-server, config " (config/current))
+     (get conf :log-level :info))
+    (info "start-server, config " conf)
     ;; configure logging
     (start-laundry (make-handler api conf)
-                   {:port (config/read :port 8080)
+                   {:port (get conf :port 8080)
                     :join? false})))
 
 ;;; Dev mode entry

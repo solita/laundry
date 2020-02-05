@@ -1,26 +1,10 @@
 NPROCS=$(shell getconf _NPROCESSORS_ONLN || echo 1)
 OUT=/opt/laundry
 
-install: $(OUT)/bin/nsjail $(OUT)/bin/pdf2jpeg $(OUT)/bin/pdf2txt $(OUT)/bin/pdf2pdfa $(OUT)/bin/docx2pdf $(OUT)/bin/jpeg2jpeg $(OUT)/bin/png2png $(OUT)/bin/lein
+install: $(OUT)/bin/pdf2jpeg $(OUT)/bin/pdf2txt $(OUT)/bin/pdf2pdfa $(OUT)/bin/docx2pdf $(OUT)/bin/jpeg2jpeg $(OUT)/bin/png2png $(OUT)/bin/lein
 
-deps: nsjail-deps
+deps:
 	apt-get update && apt-get -y upgrade && apt-get -y install wget curl
-
-nsjail-deps:
-	apt-get -y install pkg-config bison flex libprotobuf-dev protobuf-compiler
-
-## nsjail
-
-nsjail:
-	git clone https://github.com/google/nsjail.git
-	cd nsjail && git checkout 2.8
-
-nsjail/nsjail: nsjail
-	cd nsjail && make
-
-$(OUT)/bin/nsjail: nsjail/nsjail
-	mkdir -p $(OUT)/bin
-	cp -v nsjail/nsjail $(OUT)/bin
 
 $(OUT)/bin/pdf2jpeg: pdf2jpeg
 	mkdir -p $(OUT)/bin

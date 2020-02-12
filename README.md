@@ -51,3 +51,21 @@ If you don't have gvisor configured for docker, you may want to use `runc` as do
     LAUNDRY_DOCKER_RUNTIME=runc lein test :all
 
 On osx if you don't have rsyslog installed, you may also want to pass `LAUNDRY_DOCKER_LOG_DRIVER=none`.
+
+## Setting up a new server
+
+Build uberjar and docker images:
+
+    ./rebuild.sh
+
+Install to a server using ad-hoc inventory:
+
+    ansible-playbook -u username -i 123.123.123.123, ansible/playbook.yml
+
+Alternatively, create a `hosts` file and pass it to `ansible-playbook`:
+
+    echo "123.123.123.123 ansible_user=username" > hosts
+    ansible-playbook -i hosts ansible/playbook.yml
+
+This will run laundry on port 8080.
+To change the port, set the `laundry_port` ansible variable.

@@ -3,9 +3,18 @@ Data sanitation services
 
 [![Build Status](https://travis-ci.org/solita/laundry.svg?branch=develop)](https://travis-ci.org/solita/laundry)
 
-## Development environment
+## Building
+
+To rebuild the uberjar and docker images, run:
+
+    ./rebuild.sh
+
+To rebuild just the uberjar:
 
     lein uberjar
+
+## Development environment
+
     java -jar target/uberjar/laundry.jar
 
 Access swagger API docs on http://localhost:9001/api-docs/

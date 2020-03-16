@@ -1,7 +1,7 @@
 (ns laundry.util
   (:require
    [clojure.java.shell :as shell]
-   [taoensso.timbre :as timbre :refer [trace debug info warn]]))
+   [taoensso.timbre :as timbre :refer [warn]]))
 
 (defn shell-out! [binary-path input-path output-path]
   (try

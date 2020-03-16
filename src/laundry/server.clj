@@ -1,28 +1,25 @@
 (ns laundry.server
   (:require
-   [cheshire.core :as json]
    [clojure.java.io :as io]
-   [clojure.pprint :refer [pprint]]
-   [clojure.set :as set]
    [clojure.string :as string]
-   [compojure.api.sweet :as sweet :refer :all]
+   [compojure.api.sweet :as sweet :refer [api undocumented GET context routes]]
    [compojure.route]
-   [laundry.docx :as docx]
-   [laundry.image :as image]
+
+   ;; Require the machine defining namespaces
    [laundry.machines :as machines]
-   [laundry.pdf :as pdf]
-   [laundry.schemas :refer :all]
+   laundry.docx
+   laundry.image
+   laundry.pdf
+
+   [laundry.schemas :refer [LaundryConfig]]
+
    [ring.adapter.jetty :as jetty]
    [ring.middleware.basic-authentication :refer [wrap-basic-authentication]]
    [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
-   [ring.swagger.upload :as upload]
-   [ring.util.codec :as codec]
-   [ring.util.http-response :refer [ok status content-type] :as resp]
+   [ring.util.http-response :refer [ok] :as resp]
    [schema.core :as s]
-   [taoensso.timbre :as timbre :refer [trace debug info warn]]
-   [taoensso.timbre.appenders.core :as appenders])
-  (:import
-   [java.io File]))
+   [taoensso.timbre :as timbre :refer [info warn]]
+   [taoensso.timbre.appenders.core :as appenders]))
 
 (defn timestamp []
   (.getTime (java.util.Date.)))
@@ -82,7 +79,7 @@
     (let [start (timestamp)
           res (handler req)
           elapsed (- (timestamp) start)]
-      (if (> elapsed (get conf :slow-request-warning 10000))
+      (when (> elapsed (get conf :slow-request-warning 10000))
         (warn (str "slow request: " (:uri req)
                    " took " elapsed "ms")))
       res)))
@@ -132,10 +129,9 @@
 ;;; Dev mode entry
 
 (defn reset []
-  (if server
-    (do
-      (println "Stopping laundry")
-      (stop-server)))
+  (when server
+    (println "Stopping laundry")
+    (stop-server))
   (require 'laundry.server :reload)
   ;; todo: default config should come from command line setup
   (start-server

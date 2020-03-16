@@ -1,18 +1,14 @@
 (ns laundry.image
   (:require
    [clojure.java.io :as io]
-   [clojure.pprint :refer [pprint]]
-   [clojure.set :as set]
-   [clojure.string :as string]
-   [compojure.api.sweet :as sweet :refer :all]
+   [compojure.api.sweet :as sweet :refer [POST]]
    [laundry.machines :as machines :refer [badness-resp]]
    [laundry.util :refer [shell-out!]]
-   [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
    [ring.middleware.multipart-params :refer [wrap-multipart-params]]
    [ring.swagger.upload :as upload]
    [ring.util.http-response :as htresp]
    [schema.core :as s]
-   [taoensso.timbre :as timbre :refer [trace debug info warn]]))
+   [taoensso.timbre :as timbre :refer [info]]))
 
 (s/defn temp-file-input-stream [path :- s/Str]
   (let [input (io/input-stream (io/file path))]

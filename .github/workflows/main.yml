@@ -12,9 +12,9 @@ jobs:
         env:
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: install leiningen
+      - name: leiningen tests
         run: |
+          export LEIN_HOME="/home/runner/work"
           curl -o /home/runner/work/lein https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
           chmod a+x /home/runner/work/lein
-      - name: run tests
-        run: /home/runner/work/lein test
+          /home/runner/work/lein test

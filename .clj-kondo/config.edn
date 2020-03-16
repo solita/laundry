@@ -1,2 +1,4 @@
-{:lint-as {;schema.core/defn clojure.core/defn
-           }}
+{:linters
+ {:unresolved-symbol
+  {:exclude [(compojure.api.sweet/POST [file])]}}
+ :lint-as {}}

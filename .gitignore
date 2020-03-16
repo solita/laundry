@@ -7,3 +7,4 @@ target
 build-data
 programs/tools
 tmp
+/.clj-kondo/.cache/

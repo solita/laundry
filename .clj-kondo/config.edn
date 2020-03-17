@@ -1,0 +1,4 @@
+{:linters
+ {:unresolved-symbol
+  {:exclude [(compojure.api.sweet/POST [file])]}}
+ :lint-as {}}

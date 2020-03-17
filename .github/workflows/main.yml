@@ -1,0 +1,20 @@
+name: lint
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: install clj-kondo
+        run: bash <(curl -s https://raw.githubusercontent.com/borkdude/clj-kondo/master/script/install-clj-kondo) --dir /home/runner/work
+      - name: clj-kondo checks
+        run: .github/lint.bash
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: leiningen tests
+        run: |
+          export LEIN_HOME="/home/runner/work"
+          curl -o /home/runner/work/lein https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
+          chmod a+x /home/runner/work/lein
+          /home/runner/work/lein test

@@ -3,7 +3,8 @@
    [clojure.java.io :as io]
    [clojure.tools.cli :refer [parse-opts]]
    [laundry.machines :as machines]
-   [laundry.server :as server])
+   [laundry.server :as server]
+   [clojure.string :as str])
   (:gen-class))
 
 (machines/add-command-line-rule!
@@ -21,7 +22,7 @@
   :default nil
   :parse-fn (fn [x] ;; obfuscation against printing/logging the config
               (let [pw (when x
-                         (clojure.string/trim-newline (slurp x)))]
+                         (str/trim-newline (slurp x)))]
                 (fn []
                   pw)))
   :id :basic-auth-password])

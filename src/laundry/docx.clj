@@ -1,20 +1,14 @@
 (ns laundry.docx
   (:require
    [clojure.java.io :as io]
-   [clojure.pprint :refer [pprint]]
-   [clojure.set :as set]
-   [clojure.string :as string]
-   [compojure.api.sweet :as sweet :refer :all]
+   [compojure.api.sweet :as sweet :refer [POST]]
    [laundry.machines :as machines]
    [laundry.util :refer [shell-out!]]
-   [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
    [ring.middleware.multipart-params :refer [wrap-multipart-params]]
    [ring.swagger.upload :as upload]
    [ring.util.http-response :as htresp]
    [schema.core :as s]
-   [taoensso.timbre :as timbre :refer [trace debug info warn]])
-  (:import
-   (java.io ByteArrayOutputStream ByteArrayInputStream StringWriter File)))
+   [taoensso.timbre :as timbre :refer [info]]))
 
 (s/defn api-docx2pdf [env, tempfile :- java.io.File]
   (let [in-path (.getAbsolutePath tempfile)

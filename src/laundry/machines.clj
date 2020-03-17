@@ -1,7 +1,7 @@
 (ns laundry.machines
   (:require
    [ring.util.http-response :as htresp]
-   [taoensso.timbre :as timbre :refer [trace debug info warn]]))
+   [taoensso.timbre :as timbre :refer [warn]]))
 
 (defonce command-line-rules (atom []))
 

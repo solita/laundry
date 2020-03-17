@@ -69,3 +69,4 @@ Alternatively, create a `hosts` file and pass it to `ansible-playbook`:
 
 This will run laundry on port 8080.
 To change the port, set the `laundry_port` ansible variable.
+The ansible configuration was developed & tested with version 2.9.4.

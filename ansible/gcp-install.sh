@@ -1,5 +1,10 @@
 #!/bin/bash
 
+set -euxo pipefail
+
+# set your api key here
+# API_KEY=
+
 PATH=/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 cd /usr/local
 which git || dnf install -y git nano
@@ -14,5 +19,7 @@ pip3 install docker
 ansible-playbook -v --connection=local -i localhost, ansible/playbook.yml -e ansible_python_interpreter=python3 || true # fails on first time (circular dep between build and playbook? build playbook doesn't work if run before mai playbook either?)
 
 ansible-playbook -v --connection=local -i localhost, ansible/build.yml ansible/playbook.yml -e ansible_python_interpreter=python3 # fails to start server at the end?
+echo "$API_KEY" > /opt/laundry/app/api-key.txt
+
 systemctl restart laundry
 

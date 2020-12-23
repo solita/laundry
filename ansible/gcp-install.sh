@@ -7,7 +7,7 @@ set -euxo pipefail
 
 PATH=/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 cd /usr/local
-which git || dnf install -y git nano
+which git || dnf install -y git nano dnf-automatic
 which java || dnf -y install java-11-openjdk
 test -d laundry || git clone https://github.com/solita/laundry.git
 cd laundry

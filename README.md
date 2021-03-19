@@ -86,5 +86,8 @@ Default port is 8080. The port can be given as parameter to the script
 
     ./build-and-run.sh -p 7777
 
+### Running on Windows
+You can run this in WSL but the distro has to be WSL version 2. The Docker socket won't have correct ownership otherwise.
+
 ### Running on Mac
 Mac users might need to run the laundry container with `--user=root`, because the Docker socket has `root:root` ownership in the container.

@@ -18,7 +18,7 @@ cat /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 32 >> api-key
 echo "Using api key: $(cat api-key)"
 
 echo Building laundry
-docker build -t laundry --build-arg PORT=$port --file Dockerfile2 ./
+docker build -t laundry --build-arg PORT=$port --file Dockerfile.laundry ./
 rm api-key
 
 echo Run laundry

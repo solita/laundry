@@ -14,12 +14,11 @@ docker build -t libreconv https://github.com/solita/laundry.git#develop --file d
 echo Building laundry programs
 docker build -t laundry-programs https://github.com/solita/laundry.git#develop --file docker-build/Dockerfile.programs-runtime
 
-cat /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 32 >> api-key
-echo "Using api key: $(cat api-key)"
+api_key="$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 32)"
+echo "Using api key: $api_key"
 
 echo Building laundry
-docker build -t laundry --build-arg PORT=$port --file Dockerfile.laundry ./
-rm api-key
+docker build -t laundry . --build-arg PORT=$port --build-arg API_KEY=$api_key --file Dockerfile.laundry
 
 echo Run laundry
 docker run -d --rm -p $port:$port -v /var/run/docker.sock:/var/run/docker.sock --group-add "$(cut -d: -f3 < <(getent group docker))" -e LAUNDRY_DOCKER_RUNTIME=runc laundry

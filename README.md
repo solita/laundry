@@ -76,15 +76,15 @@ _**Do not use this method in production. It is unsafe!**_
 
 Laundry and required images can be built without cloning the entire repository:
 
-    ./build-and-run.bash
+    ./docker-dev/build-and-run.bash
 
-The script builds `libreconv` and `laundry-programs` images straight from GitHub. Then it builds the laundry itself in two steps with `Dockerfile.laundry`.
+The script builds `libreconv` and `laundry-programs` images and `laundry` itself using GitHub as build context.
 
 When running the laundry, the Docker host socket is exposed to the laundry container, so that the laundry can create sibling containers.
 
 Default port is 8080. The port can be given as parameter to the script
 
-    ./build-and-run.sh -p 7777
+    ./docker-dev/build-and-run.bash -p 7777
 
 ### Running on Windows
 You can run this in WSL but the distro has to be WSL version 2. The Docker socket won't have correct ownership otherwise.

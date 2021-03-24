@@ -17,7 +17,7 @@ docker build -t laundry-programs https://github.com/solita/laundry.git#develop -
 api_key="$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 32)"
 
 echo Building laundry
-docker build -t laundry . --build-arg PORT=$port --build-arg API_KEY=$api_key --file Dockerfile.laundry-dev
+docker build -t laundry https://github.com/solita/laundry.git#develop --build-arg PORT=$port --build-arg API_KEY=$api_key --file docker-dev/Dockerfile.laundry-dev
 
 echo Run laundry
 echo "Using api key: $api_key"

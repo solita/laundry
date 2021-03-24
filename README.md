@@ -76,7 +76,7 @@ _**Do not use this method in production. It is unsafe!**_
 
 Laundry and required images can be built without cloning the entire repository:
 
-    ./build-and-run.sh
+    ./build-and-run.bash
 
 The script builds `libreconv` and `laundry-programs` images straight from GitHub. Then it builds the laundry itself in two steps with `Dockerfile.laundry`.
 

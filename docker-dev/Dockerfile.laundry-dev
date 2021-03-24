@@ -1,0 +1,33 @@
+FROM adoptopenjdk/openjdk11:alpine-jre as builder
+ARG API_KEY
+
+RUN apk update && \
+  apk add --no-cache curl git bash && \
+  curl https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein > /usr/local/bin/lein && \
+  chmod +x /usr/local/bin/lein
+
+WORKDIR /
+RUN git clone https://github.com/solita/laundry.git
+WORKDIR /laundry
+RUN echo "${API_KEY}" > api-key && \
+  lein uberjar
+
+
+FROM adoptopenjdk/openjdk11:alpine-jre as laundry
+ARG PORT
+ENV PORT=$PORT
+
+RUN apk update && \
+  apk add --no-cache docker-cli bash && \
+  addgroup -S laundry && \
+  adduser -S laundry -G laundry && \
+  mkdir -p /opt/laundry/bin && \
+  chown laundry:laundry /opt/laundry/bin
+USER laundry:laundry
+WORKDIR /home/laundry
+
+COPY --chown=laundry --from=builder /laundry/api-key /home/laundry/api-key
+COPY --chown=laundry --from=builder /laundry/target/uberjar/laundry.jar /home/laundry/laundry.jar
+COPY --chown=laundry --from=builder /laundry/programs /opt/laundry/bin/
+
+ENTRYPOINT exec java -jar /home/laundry/laundry.jar -p $PORT --api-key-file /home/laundry/api-key

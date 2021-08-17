@@ -1,3 +1,10 @@
+terraform {
+  backend "gcs" {
+    bucket  = "laundry-dev-tf-state"
+    prefix  = "terraform/state"
+  }
+}
+
 provider "google" {
   project = "hanki-2361-laundry-dev"
   region  = "europe-north1"
@@ -19,5 +26,3 @@ resource "google_compute_network" "vpc_network" {
   name                    = "terraform-network"
   auto_create_subnetworks = "true"
 }
-
-

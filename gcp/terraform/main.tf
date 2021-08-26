@@ -17,16 +17,6 @@ resource "google_compute_network" "vpc_network" {
   routing_mode = "REGIONAL"
 }
 
-resource "google_compute_forwarding_rule" "default" {
-  name       = "laundry-forwarding-rule"
-  target     = google_compute_target_pool.default.id
-  port_range = "8080"
-}
-
-resource "google_compute_target_pool" "default" {
-  name = "laundry-target-pool"
-}
-
 resource "google_compute_region_backend_service" "default" {
   load_balancing_scheme = "EXTERNAL"
 

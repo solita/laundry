@@ -14,19 +14,30 @@ provider "google" {
 resource "google_compute_network" "vpc_network" {
   name                    = "terraform-network"
   auto_create_subnetworks = "true"
+  routing_mode = "REGIONAL"
+}
+
+resource "google_compute_forwarding_rule" "default" {
+  name       = "laundry-forwarding-rule"
+  target     = google_compute_target_pool.default.id
+  port_range = "8080"
+}
+
+resource "google_compute_target_pool" "default" {
+  name = "laundry-target-pool"
 }
 
 resource "google_compute_region_backend_service" "default" {
-  load_balancing_scheme = "INTERNAL_MANAGED"
+  load_balancing_scheme = "EXTERNAL"
 
   backend {
     group          = google_compute_region_instance_group_manager.rigm.instance_group
-    balancing_mode = "UTILIZATION"
-    capacity_scaler = 1.0
+    balancing_mode = "CONNECTION"
+
   }
 
   name        = "laundry-dev-service"
-  protocol    = "HTTP"
+  protocol    = "TCP"
   timeout_sec = 10
 
   health_checks = [google_compute_region_health_check.default.id]
@@ -35,7 +46,9 @@ resource "google_compute_region_backend_service" "default" {
 resource "google_compute_region_health_check" "default" {
   name   = "rbs-health-check"
   http_health_check {
-    port_specification = "USE_SERVING_PORT"
+    port_specification = "USE_FIXED_PORT"
+    port = 8080
+    request_path = "/laundry/alive"
   }
 }
 
@@ -48,6 +61,7 @@ resource "google_compute_region_instance_group_manager" "rigm" {
   base_instance_name = "internal-glb"
   target_size        = 1
 }
+
 
 data "google_compute_image" "debian_image" {
   family   = "debian-9"

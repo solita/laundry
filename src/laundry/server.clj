@@ -8,6 +8,7 @@
    ;; Require the machine defining namespaces
    [laundry.machines :as machines]
    laundry.docx
+   laundry.xlsx
    laundry.image
    laundry.pdf
 

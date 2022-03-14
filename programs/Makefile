@@ -1,7 +1,7 @@
 NPROCS=$(shell getconf _NPROCESSORS_ONLN || echo 1)
 OUT=/opt/laundry
 
-install: $(OUT)/bin/pdf2jpeg $(OUT)/bin/pdf2txt $(OUT)/bin/pdf2pdfa $(OUT)/bin/docx2pdf $(OUT)/bin/jpeg2jpeg $(OUT)/bin/png2png $(OUT)/bin/lein
+install: $(OUT)/bin/pdf2jpeg $(OUT)/bin/pdf2txt $(OUT)/bin/pdf2pdfa $(OUT)/bin/docx2pdf $(OUT)/bin/jpeg2jpeg $(OUT)/bin/png2png $(OUT)/bin/xlsx2pdf $(OUT)/bin/lein
 
 deps:
 	apt-get update && apt-get -y upgrade && apt-get -y install wget curl
@@ -29,6 +29,10 @@ $(OUT)/bin/jpeg2jpeg: jpeg2jpeg
 $(OUT)/bin/png2png: png2png
 	mkdir -p $(OUT)/bin
 	cp png2png $(OUT)/bin
+
+$(OUT)/bin/xlsx2pdf: xlsx2pdf
+	mkdir -p $(OUT)/bin
+	cp xlsx2pdf $(OUT)/bin
 
 
 $(OUT)/bin/lein:

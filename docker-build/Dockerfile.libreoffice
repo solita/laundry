@@ -1,5 +1,5 @@
 FROM ubuntu:18.04
-RUN useradd -m docconv && apt-get update && apt-get -y upgrade && apt-get -y install libreoffice-writer
+RUN useradd -m docconv && apt-get update && apt-get -y upgrade && apt-get -y install libreoffice-writer libreoffice-calc
 USER docconv
 WORKDIR /home/docconv
 ENTRYPOINT set -u && cat > /home/docconv/document.$docconv_suffix && \

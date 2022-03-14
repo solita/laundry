@@ -1,48 +1,91 @@
 <html>
 <head>
 <style>
-body { background-color: #fcfaf4 } 
+body { background-color: #fcfaf4 }
 a { color: #098809; text-decoration: none }
 a:hover { color: #098809; text-decoration: underline }
 </style>
 <script>
-function converter() {
-   var form = document.getElementById("pdfop");
-   var seln = document.getElementById("operation");
-   var formData = new FormData(form);
-   var xhr = new XMLHttpRequest();
-   if (form[0].files.length != 1) {
-      alert("Select a PDF file first");
+  function pdfConverter() {
+    var form = document.getElementById("pdfop");
+    var seln = document.getElementById("pdfOperation");
+    converter(form, seln)
+  }
+
+  function imageConverter() {
+    var form = document.getElementById("imgop");
+    var seln = document.getElementById("imgOperation");
+    converter(form, seln)
+  }
+
+  function documentConverter() {
+    var form = document.getElementById("docop");
+    var seln = document.getElementById("docOperation");
+    converter(form, seln)
+  }
+
+  function converter(form, seln) {
+    var formData = new FormData(form);
+    var xhr = new XMLHttpRequest();
+    if (form[0].files.length != 1) {
+      alert("Select a file first");
       return;
-   }
-   xhr.open("POST", seln.value, true);
-   xhr.responseType = "blob";
-   xhr.onload = function(e) {
+    }
+    xhr.open("POST", seln.value, true);
+    xhr.responseType = "blob";
+    xhr.onload = function(e) {
       var urlsource= window.URL || window.webkitURL;
       var bloburl = urlsource.createObjectURL(this.response);
-      //document.getElementById("preview-data").src = bloburl;
       window.open(bloburl);
-   }
-   xhr.send(formData);
-}
+    }
+    xhr.send(formData);
+  }
 </script>
 <title>Laundry</title>
 </head>
 <body>
    <h1>Laundry</h1>
    <a href="api-docs">Swagger API</a>
-   
+
    <hr>
-   <p>PDF <select id="operation">
-      <option value="pdf/pdf-preview">preview</option>
-      <option value="pdf/pdf2pdfa">to PDF/A</option>
-      <option value="pdf/pdf2txt">to text
-   </select>
-   <form id="pdfop">
+
+   <p>PDF
+     <select id="pdfOperation">
+       <option value="pdf/pdf-preview">preview</option>
+       <option value="pdf/pdf2pdfa">to PDF/A</option>
+       <option value="pdf/pdf2txt">to text
+     </select>
+   </p>
+   <form id="imgop">
    <input type="file" name="file">
-   <input type="button" value="Convert" onclick="converter()">
+   <input type="button" value="Convert" onclick="pdfConverter()">
    </form>
+
    <hr>
-   
+
+   <p>Image
+     <select id="imgOperation">
+       <option value="image/png2png">png</option>
+       <option value="image/jpeg2jpeg">jpeg</option>
+     </select>
+   </p>
+   <form id="pdfop">
+     <input type="file" name="file">
+     <input type="button" value="Convert" onclick="imageConverter()">
+   </form>
+
+   <hr>
+
+   <p>Document
+     <select id="docOperation">
+       <option value="docx/docx2pdf">docx</option>
+       <option value="xlsx/xlsx2pdf">xlsx</option>
+     </select>
+   </p>
+   <form id="docop">
+     <input type="file" name="file">
+     <input type="button" value="Convert" onclick="documentConverter()">
+   </form>
+
 </body>
 </html>

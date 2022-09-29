@@ -5,7 +5,11 @@
        [com.taoensso/timbre "4.10.0"]
        [enlive "1.1.6"]
        [hiccup "1.0.5"]
-       [metosin/compojure-api "1.1.13"]
+       ; ring-swagger-ui upgraded manually due to compojure-api 
+       ; having issue https://github.com/swagger-api/swagger-ui/issues/2547
+       ; which breaks image uploads from swagger-ui
+       [metosin/compojure-api "1.1.13" :exclusion [metosin/ring-swagger-ui]]
+       [metosin/ring-swagger-ui "4.5.0"]
        [org.clojure/clojure "1.10.1"]
        [org.clojure/tools.cli "0.4.2"]
        [prismatic/schema "1.1.12"]

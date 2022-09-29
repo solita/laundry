@@ -59,6 +59,6 @@
        :middleware [wrap-multipart-params]
        (let [tempfile (:tempfile file)
              filename (:filename file)]
-         (info "PNG converter received " filename "(" (:size file) "b)")
+         (info "JPEG converter received " filename "(" (:size file) "b)")
          (.deleteOnExit tempfile) ;; cleanup if VM is terminated
          (api-jpeg2jpeg env tempfile))))))

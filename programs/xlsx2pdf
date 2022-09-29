@@ -1,10 +1,18 @@
 #!/usr/bin/env bash
 
-set -e -u
+set -u
 
-TOOLBIN=$(dirname $0)
 INPUT=$1
 OUTPUT=$2
-docker run --rm --runtime=${LAUNDRY_DOCKER_RUNTIME:-runsc} --network=none --ipc=private --memory 1g \
-   --kernel-memory=100M --cap-drop=ALL -i -e docconv_suffix=xlsx \
-   libreconv < $INPUT | tar --to-stdout -xf - out/document.pdf > $OUTPUT
+
+docker run \
+  --runtime="${LAUNDRY_DOCKER_RUNTIME:-runsc}" \
+  --network=none \
+  --ipc=private \
+  --memory 1g \
+  --kernel-memory=100M \
+  --cap-drop=ALL \
+  -i \
+  --rm \
+  -e docconv_suffix=xlsx \
+  libreconv < "$INPUT" | tar --to-stdout -xf - out/document.pdf > "$OUTPUT"

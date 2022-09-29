@@ -9,7 +9,7 @@
 
 (deftest ^:integration api-xlsx
   (let [app (fixture/get-app)
-        file (io/file (io/resource "testcases/test.xlsx"))
+        file (io/file (io/resource "test.xls"))
         _ (assert file)
         request (-> (mock/request :post "/xlsx/xlsx2pdf")
                     (merge (peridot.multipart/build {:file file})))

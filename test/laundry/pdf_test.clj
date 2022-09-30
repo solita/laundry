@@ -11,7 +11,7 @@
 
 (deftest ^:integration api-pdf-pdf-preview
   (let [app (fixture/get-app)
-        file (io/file (io/resource "testcases/hypno.pdf"))
+        file (io/file (io/resource "hypno.pdf"))
         _ (assert file)
         request (-> (mock/request :post "/pdf/pdf-preview")
                     (merge (peridot.multipart/build {:file file})))
@@ -29,7 +29,7 @@
 
 (deftest ^:integration api-pdf-pdf2pdfa
   (let [app (fixture/get-app)
-        file (io/file (io/resource "testcases/hypno.pdf"))
+        file (io/file (io/resource "hypno.pdf"))
         _ (assert file)
         request (-> (mock/request :post "/pdf/pdf2pdfa")
                     (merge (peridot.multipart/build {:file file})))
@@ -41,7 +41,7 @@
 
 (deftest ^:integration api-pdf-pdf2txt
   (let [app (fixture/get-app)
-        file (io/file (io/resource "testcases/hypno.pdf"))
+        file (io/file (io/resource "hypno.pdf"))
         _ (assert file)
         request (-> (mock/request :post "/pdf/pdf2txt")
                     (merge (peridot.multipart/build {:file file})))

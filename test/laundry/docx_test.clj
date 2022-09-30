@@ -9,7 +9,7 @@
 
 (deftest ^:integration api-docx
   (let [app (fixture/get-app)
-        file (io/file (io/resource "testcases/test.doc"))
+        file (io/file (io/resource "test.doc"))
         _ (assert file)
         request (-> (mock/request :post "/docx/docx2pdf")
                     (merge (peridot.multipart/build {:file file})))

@@ -5,8 +5,10 @@
 # docker build -f Dockerfile.programs-runtime -t laundry-programs  .
 
 FROM ubuntu:18.04
-RUN apt update
-RUN apt -y install ghostscript imagemagick
+RUN apt-get update && apt-get -y upgrade && apt-get -y install \
+    ghostscript \
+    imagemagick \
+ && rm -rf /var/lib/apt/lists/*
 RUN useradd -m docconv
 WORKDIR /home/docconv
 USER docconv

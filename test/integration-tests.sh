@@ -1,8 +1,6 @@
 #!/bin/sh
 set -eux
 
-lein test
-
 ansible-galaxy install --role-file=ansible/dependencies.yml --roles-path=ansible/roles
 ansible-playbook --connection=local -i localhost, ansible/build.yml ansible/playbook.yml
 

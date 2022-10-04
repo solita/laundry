@@ -17,6 +17,6 @@ jobs:
       - name: check Docker
         run: docker -v
 
-      - name: run tests
-        run: test/ci-tests-lein.sh
+      - name: run integraion test
+        run: test/integration-test.sh
 

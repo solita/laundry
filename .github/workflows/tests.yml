@@ -1,0 +1,22 @@
+name: Tests
+
+on: [push]
+
+jobs:
+  tests:
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: Install Clojure tools
+        uses: DeLaGuardo/setup-clojure@9.5
+
+      - name: Install Ansible
+        run: sudo pip3 install ansible && sudo ansible-galaxy install --role-file=ansible/dependencies.yml --roles-path=ansible/roles
+
+      - name: check Docker
+        run: docker -v
+
+      - name: run tests
+      - run: test/ci-tests-lein.sh
+

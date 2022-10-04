@@ -11,6 +11,8 @@ jobs:
 
       - name: Install Clojure tools
         uses: DeLaGuardo/setup-clojure@9.5
+        with:
+          lein: 2.9.10
 
       - name: Install Ansible
         run: sudo pip3 install ansible && sudo ansible-galaxy install --role-file=ansible/dependencies.yml --roles-path=ansible/roles

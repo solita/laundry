@@ -1,7 +1,5 @@
 # laundry
 
-[![Build Status](https://travis-ci.org/solita/laundry.svg?branch=develop)](https://travis-ci.org/solita/laundry)
-
 `laundry` converts user-supplied possibly dangerous files to more static and safer versions. Use it to reduce the risks of malware spreading via files supplied by external users or systems. The conversions are done with an up-to-date toolchain in a hardened stateless sandbox.
 
 Antivirus products can mitigate the risks of malware, but they are imperfect. They mostly work against mass malware and have their own large attack surfaces. Consider using antivirus tool to check all user-supplied files and use `laundry` for additional level of security.

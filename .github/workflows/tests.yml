@@ -1,4 +1,4 @@
-name: Tests
+name: Ansible & integraion test
 
 on: [push]
 

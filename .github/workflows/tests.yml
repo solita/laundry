@@ -20,6 +20,6 @@ jobs:
       - name: check Docker
         run: docker -v
 
-      - name: run integraion test
-        run: test/integration-test.sh
+      - name: run integration tests
+        run: test/integration-tests.sh
 

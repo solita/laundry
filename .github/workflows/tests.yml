@@ -1,4 +1,4 @@
-name: Ansible & integraion test
+name: Ansible & integration test
 
 on: [push]
 
@@ -17,8 +17,8 @@ jobs:
       - name: Install Ansible
         run: sudo pip3 install ansible && sudo ansible-galaxy install --role-file=ansible/dependencies.yml --roles-path=ansible/roles
 
-      - name: check Docker
-        run: docker -v
+      - name: check Docker & install python Docker module
+        run: docker -v && sudo pip3 install docker
 
       - name: run integration tests
         run: test/integration-tests.sh

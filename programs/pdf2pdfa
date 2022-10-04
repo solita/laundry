@@ -1,7 +1,18 @@
 #!/usr/bin/env bash
 
+set -u
+
 INPUT=$1
 OUTPUT=$2
 
-docker run --runtime=${LAUNDRY_DOCKER_RUNTIME:-runsc} --network=none --ipc=private --memory 1g --kernel-memory=100M --cap-drop=ALL -i --rm laundry-programs \
+docker run \
+  --runtime="${LAUNDRY_DOCKER_RUNTIME:-runsc}" \
+  --network=none \
+  --ipc=private \
+  --memory 1g \
+  --kernel-memory=100M \
+  --cap-drop=ALL \
+  -i \
+  --rm \
+  laundry-programs \
   /bin/bash -c 'gs -q -dPDFA -dBATCH -dNOPAUSE -sProcessColorModel=DeviceCMYK -sDEVICE=pdfwrite -dPDFACompatibilityPolicy=1 -sOutputFile=- -' < "$INPUT" > "$OUTPUT"

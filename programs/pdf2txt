@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 
+set -u
+
 INPUT=$1
 OUTPUT=$2
 
 docker run \
-  --runtime=${LAUNDRY_DOCKER_RUNTIME:-runsc} \
+  --runtime="${LAUNDRY_DOCKER_RUNTIME:-runsc}" \
   --network=none \
   --ipc=private \
   --memory 1g \

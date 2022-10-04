@@ -1,7 +1,28 @@
 # laundry
-Data sanitation services
 
 [![Build Status](https://travis-ci.org/solita/laundry.svg?branch=develop)](https://travis-ci.org/solita/laundry)
+
+`laundry` converts user-supplied possibly dangerous files to more static and safer versions. Use it to reduce the risks of malware spreading via files supplied by external users or systems. The conversions are done with an up-to-date toolchain in a hardened stateless sandbox.
+
+Antivirus products can mitigate the risks of malware, but they are imperfect. They mostly work against mass malware and have their own large attack surfaces. Consider using antivirus tool to check all user-supplied files and use `laundry` for additional level of security.
+
+## Features
+
+`laundry` provides an HTTP API for the conversions below.
+
+| Input  | Output | Uses                                        | Purpose |
+|--------|--------|---------------------------------------------|---------|
+| doc(x) | pdf    | [LibreOffice](https://www.libreoffice.org/) | Removes any embedded macros etc and turns .doc(x) to portable PDF which can be e.g. embedded in HTML. |
+| jpeg   | jpeg   | [ImageMagick](https://imagemagick.org/)     | Strip away all metadata and extraneous bytes, keep only pixel-by-pixel color data. Conversion performed with intermediate [PPM](https://en.wikipedia.org/wiki/Netpbm) format. |
+| pdf    | pdf/a  | [Ghostscript](https://www.ghostscript.com/) | Archive PDF's as [PDF/A](https://en.wikipedia.org/wiki/PDF/A). |
+| pdf    | jpeg   | [Ghostscript](https://www.ghostscript.com/) | Converts the first page to jpeg for thumbnails or previews. |
+| pdf    | text   | [Ghostscript](https://www.ghostscript.com/) | Extract plain text from a PDF. Does **not** perform [OCR](https://en.wikipedia.org/wiki/Optical_character_recognition). |
+| png    | png    | [ImageMagick](https://imagemagick.org/)     | Strip away all metadata and extraneous bytes, keep only pixel-by-pixel color data. Conversion performed with intermediate [PPM](https://en.wikipedia.org/wiki/Netpbm) format. |
+| xls(x) | pdf    | [LibreOffice](https://www.libreoffice.org/) |  Removes any embedded macros etc and turns .xls(x) to portable PDF which can be e.g. embedded in HTML. |
+
+The `laundry` HTTP server provides an REST API and online tool to try out the conversions directly from the browser. Optional API-key-based authorization is available.
+
+Conversions are performed in single-use disposable Docker containers. The containers are secured, and their runtime is [gVisor](https://gvisor.dev/) `runsc`. It provides an additional layer of isolation for the containers.
 
 ## Building
 

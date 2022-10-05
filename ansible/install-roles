@@ -1,3 +1,0 @@
-#!/bin/sh -x
-cd "$(dirname "$(realpath "$0")")"
-ansible-galaxy install --force -p roles/ -r dependencies.yml

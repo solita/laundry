@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+set -e
+
+usage() { echo "usage: $0 [-p port]" 1>&2; exit 1; }
+
+port=8080
+while getopts "p:" flag
+do
+    case "${flag}" in
+        p) port=${OPTARG};;
+        *) usage;;
+    esac
+done
+
+# Prevent non-option arguments
+shift $((OPTIND-1))
+if [ "$1" ]; then
+    usage
+fi
+
+echo Building docker images...
+DIR="$( dirname -- "$( readlink -f -- "$0"; )"; )"
+"$DIR"/../docker-build/build-all.sh
+
+api_key="$(tr -dc 'a-zA-Z0-9' < /dev/urandom | head -c 32)"
+
+echo Building laundry...
+docker build -t laundry-demo . --build-arg PORT="$port" --build-arg API_KEY="$api_key" --file Dockerfile.laundry-demo
+
+echo Running laundry...
+id="$(docker run --name laundry-demo -d --rm -p "$port:$port" -v /var/run/docker.sock:/var/run/docker.sock --group-add "$(cut -d: -f3 < <(getent group docker))" -e LAUNDRY_DOCKER_RUNTIME=runc laundry-demo)"
+
+ip="$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$id")"
+
+echo
+echo "Using api key: $api_key"
+echo "Demo server available at http://$ip:$port"
+echo
+echo "To stop and destroy the container please run: docker stop laundry-demo"
+echo

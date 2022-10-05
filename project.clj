@@ -32,6 +32,7 @@
       {:init-ns laundry.server
        :init (println "Now (go)")
        :timeout 900000 ; 90s, needed for slow machines
+       :port 43210 ; Vagrantfile opens this port for host access
        }
    :main laundry.main
    :test-selectors {:default (complement :integration)

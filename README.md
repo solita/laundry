@@ -51,6 +51,8 @@ Default port is `8080`. The port can be given as parameter to the script
 
 See the script output for random api-key and the HTTP API address. Exit the demo with `docker stop laundry-demo`.
 
+**Note:** Windows Subsystem for Linux users should be able to use the provided scripts. This has been tested on WSL version 2.
+
 **Note:** macOS users might need to edit the script to run the `laundry-demo` container with `--user=root`, because the Docker socket has `root:root` ownership in the container.
 
 ### Production installation with Docker and gVisor runsc

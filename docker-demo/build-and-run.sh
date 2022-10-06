@@ -33,6 +33,16 @@ id="$(docker run --name laundry-demo -d --rm -p "$port:$port" -v /var/run/docker
 
 ip="$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$id")"
 
+# Docker installations on WSL (2) might behave differently
+# shellcheck disable=2143
+if [ "$(grep -i "microsoft" /proc/version)" ]; then
+    echo 
+    echo "Running on Windows Subsystem for Linux?"
+    echo "Thus the ip $ip of laundry-demo might not be accessible and you'll need to connect via localhost"
+    echo 
+    ip="localhost"
+fi
+
 echo
 echo "Using api key: $api_key"
 echo "Demo server available at http://$ip:$port"

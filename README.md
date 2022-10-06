@@ -47,7 +47,7 @@ The script builds the necessary docker images including a temporary `laundry-dem
 
 Default port is `8080`. The port can be given as parameter to the script
 
-    ./docker-dev/build-and-run.bash -p 7777
+    ./docker-demo/build-and-run.bash -p 7777
 
 See the script output for random api-key and the HTTP API address. Exit the demo with `docker stop laundry-demo`.
 

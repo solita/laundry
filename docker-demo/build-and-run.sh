@@ -26,7 +26,7 @@ DIR="$( dirname -- "$( readlink -f -- "$0"; )"; )"
 api_key="$(tr -dc 'a-zA-Z0-9' < /dev/urandom | head -c 32)"
 
 echo Building laundry...
-docker build -t laundry-demo . --build-arg PORT="$port" --build-arg API_KEY="$api_key" --file Dockerfile.laundry-demo
+docker build -t laundry-demo "$DIR" --build-arg PORT="$port" --build-arg API_KEY="$api_key" --file "$DIR"/Dockerfile.laundry-demo
 
 echo Running laundry...
 id="$(docker run --name laundry-demo -d --rm -p "$port:$port" -v /var/run/docker.sock:/var/run/docker.sock --group-add "$(cut -d: -f3 < <(getent group docker))" -e LAUNDRY_DOCKER_RUNTIME=runc laundry-demo)"

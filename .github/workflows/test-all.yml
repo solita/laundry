@@ -1,4 +1,4 @@
-name: test
+name: "lein test: all"
 on: [push, pull_request]
 jobs:
   build:

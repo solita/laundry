@@ -1,4 +1,4 @@
-name: lint
+name: ".github/lint.bash"
 on: [push, pull_request]
 jobs:
   build:

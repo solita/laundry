@@ -55,6 +55,8 @@ See the script output for random api-key and the HTTP API address. Exit the demo
 
 **Note:** macOS users might need to edit the script to run the `laundry-demo` container with `--user=root`, because the Docker socket has `root:root` ownership in the container.
 
+**Note:** The demo configures Docker to expose this port to the internet and may open the host firewall for it.
+
 ### Production installation with Docker and gVisor runsc
 
 **System requirements:** Linux with Docker, gVisor runsc, Java SDK and leiningen

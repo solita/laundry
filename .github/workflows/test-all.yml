@@ -1,0 +1,24 @@
+name: test
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: install runsc
+        run: |
+          sudo curl --fail -o /usr/local/bin/runsc https://storage.googleapis.com/gvisor/releases/nightly/2019-11-11/runsc
+          echo "3a3ea9ef6d6f8f23e4748af925e23811946d719d5542e09e5afbadc086543cef2a69d78843683f2ec683d93395eb59c8738d791ca037d86832ded307465e9db3  /usr/local/bin/runsc" | sha512sum -c -
+          sudo chmod a+x /usr/local/bin/runsc
+          sudo /usr/local/bin/runsc install -- --platform=ptrace
+          sudo systemctl restart docker
+      - name: build docker images
+        run: |
+          cd docker-build
+          ./build-all.sh
+      - name: leiningen tests
+        run: |
+          export LEIN_HOME="/home/runner/work"
+          curl --fail -o /home/runner/work/lein https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
+          chmod a+x /home/runner/work/lein
+          /home/runner/work/lein test :all

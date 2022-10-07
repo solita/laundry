@@ -27,7 +27,7 @@ USER laundry:laundry
 WORKDIR /home/laundry
 
 COPY --chown=laundry --from=builder /laundry/api-key /home/laundry/api-key
-COPY --chown=laundry --from=builder /laundry/target/uberjar/laundry.jar /home/laundry/laundry.jar
+COPY --chown=laundry --from=builder /laundry/target/default+uberjar/laundry.jar /home/laundry/laundry.jar
 COPY --chown=laundry --from=builder /laundry/programs /opt/laundry/bin/
 
 ENTRYPOINT exec java -jar /home/laundry/laundry.jar -p $PORT --api-key-file /home/laundry/api-key

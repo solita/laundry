@@ -13,13 +13,13 @@ $ vagrant ssh
 
 Run these scripts to build & start the local server:
 
-$ ./vagrant/docker-build/build-all.sh
+$ /vagrant/docker-build/build-all.sh
 => Builds and tags the docker images where the conversions will take place.
 
-$ ./vagrant/vagrant-dev/compile.sh
+$ /vagrant/vagrant-dev/compile.sh
 => Compiles and packages the Clojure web app.
 
-$ ./vagrant/vagrant-dev/devserver.sh
+$ /vagrant/vagrant-dev/devserver.sh
 => Runs the web app. Available at http://192.168.123.123:8080/
 
 Live-reload is not yet supported; thus recompile and restart the web app as

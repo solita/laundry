@@ -1,0 +1,10 @@
+FROM ubuntu:18.04
+RUN apt-get update && apt-get -y upgrade && apt-get -y install \
+    ghostscript \
+    imagemagick \
+    libreoffice-writer \
+    libreoffice-calc \
+ && rm -rf /var/lib/apt/lists/*
+RUN useradd -m docconv
+WORKDIR /home/docconv
+USER docconv

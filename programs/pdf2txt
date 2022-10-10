@@ -15,4 +15,5 @@ docker run \
   -i \
   --rm \
   laundry-programs \
-  /bin/bash -c 'gs -q -dBATCH -dNOPAUSE -dSAFER -sDEVICE=txtwrite -sOutputFile=- -' < "$INPUT" > "$OUTPUT"
+  /bin/bash -c 'gs -q -dBATCH -dNOPAUSE -dSAFER -sDEVICE=txtwrite -sOutputFile=- -' \
+  < "$INPUT" > "$OUTPUT"

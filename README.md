@@ -2,7 +2,7 @@
 
 `laundry` converts user-supplied possibly dangerous files to more static and safer versions. Use it to reduce the risks of malware spreading via files supplied by external users or systems. The conversions are done with an up-to-date toolchain in a hardened stateless sandbox.
 
-Antivirus products can mitigate the risks of malware, but they are imperfect. They mostly work against mass malware and have their own large attack surfaces. Consider using antivirus tool to check all user-supplied files and use `laundry` for additional level of security.
+Antivirus products can mitigate the risks of malware, but they are imperfect. They mostly work against mass malware and have their own attack surfaces. `laundry` provides optional antivirus scans with [ClamAV](https://www.clamav.net/) open-source antivirus engine for additional level of security.
 
 ## Features
 
@@ -18,9 +18,11 @@ Antivirus products can mitigate the risks of malware, but they are imperfect. Th
 | png    | png    | [ImageMagick](https://imagemagick.org/)     | Strip away all metadata and extraneous bytes, keep only pixel-by-pixel color data. Conversion performed with intermediate [PPM](https://en.wikipedia.org/wiki/Netpbm) format. |
 | xls(x) | pdf    | [LibreOffice](https://www.libreoffice.org/) |  Removes any embedded macros etc and turns .xls(x) to portable PDF which can be e.g. embedded in HTML. |
 
-The `laundry` HTTP server provides an REST API and online tool to try out the conversions directly from the browser. Optional API-key-based authorization is available.
+The `laundry` HTTP server provides an REST API and online tool to try out the conversions and antivirus scans directly from the browser. Optional API-key-based authorization is available.
 
 Conversions are performed in single-use disposable Docker containers. The containers are secured, and their runtime is [gVisor](https://gvisor.dev/) `runsc`. It provides an additional layer of isolation for the containers.
+
+Antivirus scan is exposed as an HTTP API. It takes in one file and the response tells whether there were any viruses in the file. The scans are performed with [ClamAV](https://www.clamav.net/) `clamdscan` from [their official Docker image](https://hub.docker.com/r/clamav/clamav). This container is not a single-use; instead it is kept alive for extended periods in order to keep the anti-virus signature database up-to-date.
 
 ## Installation instructions
 
@@ -41,7 +43,7 @@ git clone https://github.com/solita/laundry.git
 ./laundry/docker-demo/build-and-run.sh
 ```
 
-The script builds the necessary docker images including a temporary `laundry-demo`. It starts a docker container for the `laundry` HTTP server. The Docker host socket is exposed to the container, so that the `laundry-demo` can create temporary sibling containers for each conversion. `gVisor runsc` runtime is **not used** in the demo installation.
+The script builds the necessary docker images including a temporary `laundry-demo`. It starts a docker containers for the `laundry` HTTP server and for the ClamAV. The Docker host socket is exposed to the container, so that the `laundry-demo` can create temporary sibling containers for each conversion. `gVisor runsc` runtime is **not used** in the demo installation.
 
 Default port is `8080`. The port can be given as parameter to the script
 
@@ -86,6 +88,16 @@ find -maxdepth 1 -name "docker-image-*-.tar.gz" -exec docker load --input {} \;
 # generate a random API key
 tr -dc 'a-zA-Z0-9' < /dev/urandom | head -c 32 >> /home/laundry/api-key.txt
 
+# ClamAV container (must have the name `laundry-clamav`)
+docker run \ 
+    -d \
+    --name laundry-clamav \
+    --memory 4g \
+    --ipc=private \
+    --runtime=runsc \
+    --cap-drop=ALL \
+    clamav/clamav:latest
+
 # systemd service
 sudo tee /etc/systemd/system/laundry.service <<EOF
 [Unit]
@@ -119,6 +131,8 @@ curl -I -u "laundry-api:$(cat /home/laundry/api-key.txt)" http://localhost:8080/
 ```
 
 ### Customized production installations
+
+ The `laundry` [production installation instructions ](#production-installation-with-docker-and-gvisor-runsc) set up ClamAV to run in a container. You can customize it to suit your environment. Please refer to the official [ClamAV docker documentation](https://docs.clamav.net/manual/Installing/Docker.html) to see different options.
 
 You can install and run a customized `laundry` with alternative sandboxing, such as [nsjail](https://github.com/google/nsjail). The scripts in `programs/` will be executed by the `laundry` HTTP API, thus you have the option to customize their behaviour; Clone the repository and edit the contents of `programs/` to match your needs.
 

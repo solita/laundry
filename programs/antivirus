@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -u
+
+INPUT=$1
+
+# Return codes:
+#  0 : No virus found.
+#  1 : Virus(es) found OR failed to connect to the docker container.
+#  2 : An error occured while clamdscan was running.
+docker exec \
+  -i \
+  laundry-clamav clamdscan - \
+  < "$INPUT" 

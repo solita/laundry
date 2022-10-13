@@ -18,8 +18,9 @@ Vagrant brings up an Centos Stream 8 VM with all the required dependencies. The 
 Connect to the VM with `vagrant ssh` and do `cd /vagrant`:
  
 - Run `./docker-build/build-all.sh` to (re)build the required Docker images. 
-- Run `./vagrant-dev/compile.sh` to compile the HTTP API with leiningen
-- Run `./vagrant-dev/devserver.sh` to start the HTTP API at `http://192.168.123.123:8080/`
+- Run `./vagrant-dev/compile.sh` to compile the HTTP API with leiningen.
+- Run `docker run --name laundry-clamav -d --rm clamav/clamav:latest` to start the ClamAV container on the background.
+- Run `./vagrant-dev/devserver.sh` to start the HTTP API at `http://192.168.123.123:8080/`.
 
 To work with Clojure REPL from the host you should first run `lein repl :start` inside the VM and then connect to it from the host with `lein repl :connect`.
 

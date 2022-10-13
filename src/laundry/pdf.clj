@@ -32,7 +32,6 @@
 
 ;; pdf → txt conversion
 (s/defn api-pdf2txt [env, tempfile :- java.io.File]
-  (info "Running, tools are at " (:tools env))
   (let [path (.getAbsolutePath tempfile)
         out  (str path ".txt")
         res (shell-out! (str (:tools env) "/pdf2txt") path out)]

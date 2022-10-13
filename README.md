@@ -1,93 +1,132 @@
 # laundry
-Data sanitation services
 
-[![Build Status](https://travis-ci.org/solita/laundry.svg?branch=develop)](https://travis-ci.org/solita/laundry)
+`laundry` converts user-supplied possibly dangerous files to more static and safer versions. Use it to reduce the risks of malware spreading via files supplied by external users or systems. The conversions are done with an up-to-date toolchain in a hardened stateless sandbox.
 
-## Building
+Antivirus products can mitigate the risks of malware, but they are imperfect. They mostly work against mass malware and have their own large attack surfaces. Consider using antivirus tool to check all user-supplied files and use `laundry` for additional level of security.
 
-To rebuild the uberjar and docker images, run:
+## Features
 
-    ./rebuild.sh
+`laundry` provides an HTTP API for the conversions below.
 
-To rebuild just the uberjar:
+| Input  | Output | Uses                                        | Purpose |
+|--------|--------|---------------------------------------------|---------|
+| doc(x) | pdf    | [LibreOffice](https://www.libreoffice.org/) | Removes any embedded macros etc and turns .doc(x) to portable PDF which can be e.g. embedded in HTML. |
+| jpeg   | jpeg   | [ImageMagick](https://imagemagick.org/)     | Strip away all metadata and extraneous bytes, keep only pixel-by-pixel color data. Conversion performed with intermediate [PPM](https://en.wikipedia.org/wiki/Netpbm) format. |
+| pdf    | pdf/a  | [Ghostscript](https://www.ghostscript.com/) | Archive PDF's as [PDF/A](https://en.wikipedia.org/wiki/PDF/A). |
+| pdf    | jpeg   | [Ghostscript](https://www.ghostscript.com/) | Converts the first page to jpeg for thumbnails or previews. |
+| pdf    | text   | [Ghostscript](https://www.ghostscript.com/) | Extract plain text from a PDF. Does **not** perform [OCR](https://en.wikipedia.org/wiki/Optical_character_recognition). |
+| png    | png    | [ImageMagick](https://imagemagick.org/)     | Strip away all metadata and extraneous bytes, keep only pixel-by-pixel color data. Conversion performed with intermediate [PPM](https://en.wikipedia.org/wiki/Netpbm) format. |
+| xls(x) | pdf    | [LibreOffice](https://www.libreoffice.org/) |  Removes any embedded macros etc and turns .xls(x) to portable PDF which can be e.g. embedded in HTML. |
 
-    lein uberjar
+The `laundry` HTTP server provides an REST API and online tool to try out the conversions directly from the browser. Optional API-key-based authorization is available.
 
-## Development environment
+Conversions are performed in single-use disposable Docker containers. The containers are secured, and their runtime is [gVisor](https://gvisor.dev/) `runsc`. It provides an additional layer of isolation for the containers.
 
-    java -jar target/uberjar/laundry.jar
+## Installation instructions
 
-Access swagger API docs on http://localhost:9001/api-docs/
+Three kinds of installation methods are presented in the following subsections. 
 
-## Vagrant environment
+- We recommend to start by doing a [Temporary installation for demo purposes](#temporary-installation-for-demo-purposes) so that you can integrate the `laundry` to your systems and processes. 
+- The [Production installation with Docker and gVisor runsc](#production-installation-with-docker-and-gvisor-runsc) outlines the procedures for a common installation on a dedicated server or vm.
+- You can optionally continue to harden the setup with instructions given in [Customized production  installations](#customized-production-installations)
 
-Vagrant uses ansible playbooks under `ansible/` to build (first time) and deploy laundry and the docker images to the vagrant box.
+### Temporary installation for demo purposes
 
-    vagrant up --provision
+**System requirements:** Linux or Mac & Docker
 
-By default the host port 8080 (or the first available port after it) is forwarded to the guest, so to access swagger API docs, open <http://localhost:8080/api-docs/>.
+This installation method gives you the option to try out the laundry, integrate it into your systems or just to play around with it. This temporary installation method is **not suitable for production use** as it lacks sandboxing.
 
-Username for the API is `laundry-api`. The password can be read with the following commands:
+```sh
+git clone https://github.com/solita/laundry.git
+./laundry/docker-demo/build-and-run.sh
+```
 
-    vagrant ssh
-    $ sudo cat /opt/laundry/app/api-key.txt
+The script builds the necessary docker images including a temporary `laundry-demo`. It starts a docker container for the `laundry` HTTP server. The Docker host socket is exposed to the container, so that the `laundry-demo` can create temporary sibling containers for each conversion. `gVisor runsc` runtime is **not used** in the demo installation.
 
-## Testing
+Default port is `8080`. The port can be given as parameter to the script
 
-To run all tests except ones marked with `^:integration`:
+    ./docker-demo/build-and-run.bash -p 7777
 
-    lein test
+See the script output for random api-key and the HTTP API address. Exit the demo with `docker stop laundry-demo`.
 
-To run integration tests (that use docker):
+**Note:** Windows Subsystem for Linux users should be able to use the provided scripts. This has been tested on WSL version 2.
 
-    lein test :integration
+**Note:** macOS users might need to edit the script to run the `laundry-demo` container with `--user=root`, because the Docker socket has `root:root` ownership in the container.
 
-As usual, all tests can be run with:
+**Note:** The demo configures Docker to expose this port to the internet and may open the host firewall for it.
 
-    lein test :all
+### Production installation with Docker and gVisor runsc
 
-If you don't have gvisor configured for docker, you may want to use `runc` as docker runtime:
+**System requirements:** Linux with Docker, gVisor runsc and Java SDK
 
-    LAUNDRY_DOCKER_RUNTIME=runc lein test :all
+Install the prerequisites:
 
-On osx if you don't have rsyslog installed, you may also want to pass `LAUNDRY_DOCKER_LOG_DRIVER=none`.
+ 1. Docker: https://docs.docker.com/engine/install/
+ 2. gVisor runsc: https://gvisor.dev/docs/user_guide/install/, https://gvisor.dev/docs/user_guide/production/ and https://gvisor.dev/docs/architecture_guide/platforms/
+ 3. Java SDK should be version 11 or newer: https://adoptium.net/temurin/releases/
+ 
+**Note:** We recommend running [Docker Bench for Security](https://github.com/docker/docker-bench-security) before proceeding with the installation. It checks your Docker installation for common security-related best practices.
 
-## Setting up a new server
+Download [a release](https://github.com/solita/laundry/releases) and lets and install laundry as systemd service. The following example assumes that:
 
-Build uberjar and docker images:
+- Current user is `laundry`
+- The user `laundry` has privileges to run `docker`
+- Current directory is `/home/laundry`
+- All the [assets of a release](https://github.com/solita/laundry/releases) have been downloaded to `/home/laundry`
+- The HTTP API should be run in port `8080`
+- A random API KEY should be generated and used for authorization
 
-    ./rebuild.sh
+```sh
+# extract HTTP server and conversion programs
+tar -xf release-*.tar.gz
 
-Install to a server using ad-hoc inventory:
+# load the docker images
+find -maxdepth 1 -name "docker-image-*-.tar.gz" -exec docker load --input {} \;
 
-    ansible-playbook -u username -i 123.123.123.123, ansible/playbook.yml
+# generate a random API key
+tr -dc 'a-zA-Z0-9' < /dev/urandom | head -c 32 >> /home/laundry/api-key.txt
 
-Alternatively, create a `hosts` file and pass it to `ansible-playbook`:
+# systemd service
+sudo tee /etc/systemd/system/laundry.service <<EOF
+[Unit]
+Description=Laundry services
 
-    echo "123.123.123.123 ansible_user=username" > hosts
-    ansible-playbook -i hosts ansible/playbook.yml
+[Service]
+ExecStart=/usr/bin/java -jar /home/laundry/laundry/target/default+uberjar/laundry.jar -p 8080 --api-key-file /home/laundry/api-key.txt
+User=laundry
+Group=laundry
+Type=simple
+KillMode=process
+Restart=always
+WorkingDirectory=/laundry/home
 
-This will run laundry on port 8080.
-To change the port, set the `laundry_port` ansible variable.
-The ansible configuration was developed & tested with version 2.9.4.
+[Install]
+WantedBy=multi-user.target
+EOF
 
-## Using in development or CI/CD
-_**Do not use this method in production. It is unsafe!**_
+# enable and start laundry
+sudo systemctl enable laundry.service
+sudo systemctl start laundry.service
 
-Laundry and required images can be built without cloning the entire repository:
+# verify installation is running
+curl -w "\n" http://localhost:8080/alive
 
-    ./docker-dev/build-and-run.bash
+# verify request without api key is rejected
+curl -I http://localhost:8080/auth-test
 
-The script builds `libreconv` and `laundry-programs` images and `laundry` itself using GitHub as build context.
+# verify request with api key succeeds
+curl -I -u "laundry-api:$(cat /home/laundry/api-key.txt)" http://localhost:8080/auth-test
+```
 
-When running the laundry, the Docker host socket is exposed to the laundry container, so that the laundry can create sibling containers.
+### Customized production installations
 
-Default port is 8080. The port can be given as parameter to the script
+You can install and run a customized `laundry` with alternative sandboxing, such as [nsjail](https://github.com/google/nsjail). The scripts in `programs/` will be executed by the `laundry` HTTP API, thus you have the option to customize their behaviour; Clone the repository and edit the contents of `programs/` to match your needs.
 
-    ./docker-dev/build-and-run.bash -p 7777
+You could also run `laundry` without Docker; Check the `docker-build/` Dockerfiles for dependencies of `programs/` scripts. Install them or customized versions of them into the host. Clone the repository and edit the `programs/` to invoke those directly without Docker.
 
-### Running on Windows
-You can run this in WSL but the distro has to be WSL version 2. The Docker socket won't have correct ownership otherwise.
+And instead of using `docker load` you might want to build the necessary docker images by yourself. A script and Dockerfiles for that purpose are included with the release. Check `docker-build/` folder from the [release-VERSIONNUMBER.tar.gz](https://github.com/solita/laundry/releases) asset.
 
-### Running on Mac
-Mac users might need to run the laundry container with `--user=root`, because the Docker socket has `root:root` ownership in the container.
+
+## Development, releasing and contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md)

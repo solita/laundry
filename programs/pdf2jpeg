@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 
+set -u
+
 INPUT=$1
 OUTPUT=$2
 
 docker run \
-  --runtime=${LAUNDRY_DOCKER_RUNTIME:-runsc} \
+  --runtime="${LAUNDRY_DOCKER_RUNTIME:-runsc}" \
   --network=none \
   --ipc=private \
   --memory 1g \
@@ -13,4 +15,5 @@ docker run \
   -i \
   --rm \
   laundry-programs \
-  /bin/bash -c 'gs -q -dSAFER -dBATCH -dNOPAUSE -sDEVICE=jpeg -dGraphicsAlphaBits=4 -dTextAlphaBits=4 -sPageList=1 -sOutputFile=- -' < "$INPUT" > "$OUTPUT"
+  /bin/bash -c 'gs -q -dSAFER -dBATCH -dNOPAUSE -sDEVICE=jpeg -dGraphicsAlphaBits=4 -dTextAlphaBits=4 -sPageList=1 -sOutputFile=- -' \
+  < "$INPUT" > "$OUTPUT"

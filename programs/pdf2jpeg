@@ -15,4 +15,5 @@ docker run \
   -i \
   --rm \
   laundry-programs \
-  /bin/bash -c 'gs -q -dSAFER -dBATCH -dNOPAUSE -sDEVICE=jpeg -dGraphicsAlphaBits=4 -dTextAlphaBits=4 -sPageList=1 -sOutputFile=- -' < "$INPUT" > "$OUTPUT"
+  /bin/bash -c 'gs -q -dSAFER -dBATCH -dNOPAUSE -sDEVICE=jpeg -dGraphicsAlphaBits=4 -dTextAlphaBits=4 -sPageList=1 -sOutputFile=- -' \
+  < "$INPUT" > "$OUTPUT"

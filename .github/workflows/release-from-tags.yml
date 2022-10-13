@@ -1,0 +1,41 @@
+
+name: "Draft release from git tag v*.*.*"
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build HTTP server (laundry.jar)
+        run: |
+          export LEIN_HOME="/home/runner/work"
+          curl --fail -o /home/runner/work/lein https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
+          chmod u+x /home/runner/work/lein
+          lein uberjar
+      - name: Create release tar gzip with HTTP server, programs and documentation
+        run: |
+          mkdir "release-${{ GITHUB.REF_NAME }}"
+          cp -r README.md target/default+uberjar/laundry.jar programs docker-build "release-${{ GITHUB.REF_NAME }}/"
+          tar -C "release-${{ GITHUB.REF_NAME }}" -cvzf "release-${{ GITHUB.REF_NAME }}.tar.gz" .
+      - name: Build Docker image tar archives
+        run: |
+          ./docker-build/build-all.sh
+          echo "Docker tar archive export for laundry-programs ..."
+          docker save laundry-programs:latest | gzip > "docker-image-laundry-programs-${{ GITHUB.REF_NAME }}.tar.gz"
+      - name: Open Release draft
+        # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-third-party-actions
+        uses: softprops/action-gh-release@cd28b0f5ee8571b76cfdaa62a30d51d752317477
+        with:
+          name: "laundry ${{ GITHUB.REF_NAME }}"
+          body: |
+            See installation and upgrade instructions from README.md.
+          draft: true
+          files: |
+            release-${{ GITHUB.REF_NAME }}.tar.gz
+            docker-image-laundry-programs.tar.gz
+          fail_on_unmatched_files: true
+          generate_release_notes: true

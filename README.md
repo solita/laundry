@@ -57,35 +57,33 @@ See the script output for random api-key and the HTTP API address. Exit the demo
 
 ### Production installation with Docker and gVisor runsc
 
-**System requirements:** Linux with Docker, gVisor runsc, Java SDK and leiningen
+**System requirements:** Linux with Docker, gVisor runsc and Java SDK
 
 Install the prerequisites:
 
  1. Docker: https://docs.docker.com/engine/install/
  2. gVisor runsc: https://gvisor.dev/docs/user_guide/install/, https://gvisor.dev/docs/user_guide/production/ and https://gvisor.dev/docs/architecture_guide/platforms/
  3. Java SDK should be version 11 or newer: https://adoptium.net/temurin/releases/
- 4. Leiningen: https://leiningen.org/
-
+ 
 **Note:** We recommend running [Docker Bench for Security](https://github.com/docker/docker-bench-security) before proceeding with the installation. It checks your Docker installation for common security-related best practices.
 
-Download, build and install laundry as systemd service. The following example assumes that:
+Download [a release](https://github.com/solita/laundry/releases) and lets and install laundry as systemd service. The following example assumes that:
 
 - Current user is `laundry`
 - The user `laundry` has privileges to run `docker`
 - Current directory is `/home/laundry`
+- All the [assets of a release](https://github.com/solita/laundry/releases) have been downloaded to `/home/laundry`
 - The HTTP API should be run in port `8080`
 - A random API KEY should be generated and used for authorization
 
 ```sh
-git clone https://github.com/solita/laundry.git
+# extract HTTP server and conversion programs
+tar -xf release-*.tar.gz
 
-# docker images
-./laundry/docker-build/build-all.sh
+# load the docker images
+find -maxdepth 1 -name "docker-image-*-.tar.gz" -exec docker load --input {} \;
 
-# HTTP server
-(cd laundry && lein uberjar)
-
-# API key
+# generate a random API key
 tr -dc 'a-zA-Z0-9' < /dev/urandom | head -c 32 >> /home/laundry/api-key.txt
 
 # systemd service
@@ -126,39 +124,9 @@ You can install and run a customized `laundry` with alternative sandboxing, such
 
 You could also run `laundry` without Docker; Check the `docker-build/` Dockerfiles for dependencies of `programs/` scripts. Install them or customized versions of them into the host. Clone the repository and edit the `programs/` to invoke those directly without Docker.
 
-## Local development
+And instead of using `docker load` you might want to build the necessary docker images by yourself. A script and Dockerfiles for that purpose are included with the release. Check `docker-build/` folder from the [release-VERSIONNUMBER.tar.gz](https://github.com/solita/laundry/releases) asset.
 
-**System requirements:** Linux or Mac & [Vagrant](https://www.vagrantup.com/)
 
-```sh
-git clone https://github.com/solita/laundry.git
+## Development, releasing and contributing
 
-cd laundry
-vagrant up
-```
-
-**Note:** Once `vagrant up` is ready it will print some instructions for you. Make sure to check them out!
-
-Vagrant brings up an Centos Stream 8 VM with all the required dependencies. The source code is synced to `/vagrant`. Run `vagrant rsync-auto` to continue syncing further file edits from the host to the VM.
-
-Connect to the VM with `vagrant ssh` and do `cd /vagrant`:
- 
-- Run `./docker-build/build-all.sh` to (re)build the required Docker images. 
-- Run `./vagrant-dev/compile.sh` to compile the HTTP API with leiningen
-- Run `./vagrant-dev/devserver.sh` to start the HTTP API at `http://192.168.123.123:8080/`
-
-To work with Clojure REPL from the host you should first run `lein repl :start` inside the VM and then connect to it from the host with `lein repl :connect`.
-
-### Testing
-
-To run all tests except ones marked with `^:integration`:
-
-    lein test
-
-To run integration tests (that use docker):
-
-    lein test :integration
-
-All tests can be run with:
-
-    lein test :all
+See [CONTRIBUTING.md](CONTRIBUTING.md)

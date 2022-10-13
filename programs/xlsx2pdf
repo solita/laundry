@@ -14,5 +14,13 @@ docker run \
   --cap-drop=ALL \
   -i \
   --rm \
-  -e docconv_suffix=xlsx \
-  libreconv < "$INPUT" | tar --to-stdout -xf - out/document.pdf > "$OUTPUT"
+  laundry-programs \
+  /bin/bash -c 'cat > /home/docconv/document.pdf && \
+    mkdir -p /home/docconv/out &&  umask 077 &&      \
+    soffice                                          \
+    --headless                                       \
+    --convert-to pdf:writer_pdf_Export               \
+    --outdir /home/docconv/out                       \
+    /home/docconv/document.pdf > conv.out 2>&1;     \
+    tar -cf - conv.out out/*; ls -la . out >> conv.out' \
+  < "$INPUT" | tar --to-stdout -xf - out/document.pdf > "$OUTPUT"

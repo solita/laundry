@@ -28,9 +28,3 @@
   (warn (str msg ": " log))
   (htresp/content-type (htresp/internal-server-error (str msg))
                        "text/plain"))
-
-(defn not-there-resp [msg]
-  (htresp/content-type (htresp/internal-server-error (str msg))
-                       "text/plain"))
-
-(def ok htresp/ok)

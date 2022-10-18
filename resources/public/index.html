@@ -24,6 +24,26 @@ a:hover { color: #098809; text-decoration: underline }
     converter(form, seln)
   }
 
+  function antivirusScanner() {
+    var form = document.getElementById("scanop");
+    var formData = new FormData(form);
+    var xhr = new XMLHttpRequest();
+    if (form[0].files.length != 1) {
+      alert("Select a file first");
+      return;
+    }
+    xhr.open("POST", "antivirus/scan", true);
+    xhr.onload = function() {
+      if (xhr.status == 200) {
+        alert("Good, no viruses found.")
+      }
+      else {
+        alert("Bad!\n" + xhr.response)
+      }
+    }
+    xhr.send(formData);
+  }
+
   function converter(form, seln) {
     var formData = new FormData(form);
     var xhr = new XMLHttpRequest();
@@ -87,5 +107,12 @@ a:hover { color: #098809; text-decoration: underline }
      <input type="button" value="Convert" onclick="documentConverter()">
    </form>
 
+   <hr>
+
+   <p>Antivirus</p>
+   <form id="scanop">
+    <input type="file" name="file">
+    <input type="button" value="Scan" onclick="antivirusScanner()">
+   </form>
 </body>
 </html>

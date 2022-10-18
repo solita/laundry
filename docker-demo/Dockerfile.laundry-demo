@@ -6,9 +6,12 @@ RUN apk update && \
   curl https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein > /usr/local/bin/lein && \
   chmod +x /usr/local/bin/lein
 
-WORKDIR /
-RUN git clone https://github.com/solita/laundry.git
+RUN mkdir /laundry
 WORKDIR /laundry
+COPY programs/ programs/
+COPY resources/ resources/
+COPY src/ src/
+COPY project.clj .
 RUN echo "${API_KEY}" > api-key && \
   lein uberjar
 

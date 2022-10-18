@@ -35,6 +35,17 @@ Vagrant.configure("2") do |config|
   config.vm.hostname = "laundry-dev"
   config.vm.box = "centos/stream8"
 
+  # ClamAV needs quite a lot of memory, thus providing 8 GiB 
+  config.vm.provider "libvirt" do |v|
+    v.memory = 8192
+    v.cpus = 2
+  end
+  # ... also with virtualbox for those who use it
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 8192
+    v.cpus = 2
+  end
+
   # Excluded '.git' from rsync-auto to reduce unnecessary syncs
   # Excluded 'target' from rsync-auto to not lose compiled jars from the VM on each sync
   config.vm.synced_folder ".", "/vagrant", type: "rsync", rsync__exclude: ['.git/', 'target/']

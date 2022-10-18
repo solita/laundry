@@ -33,6 +33,7 @@
        :init (println "Now (go)")
        :timeout 900000 ; 90s, needed for slow machines
        :port 43210 ; Vagrantfile opens this port for host access
+       :host "0.0.0.0" ; allow connections from outside the vm
        }
    :main laundry.main
    :test-selectors {:default (complement :integration)

@@ -1,12 +1,12 @@
 (ns laundry.server
   (:require
-   [clojure.java.io :as io]
    [clojure.string :as string]
    [compojure.api.sweet :as sweet :refer [api undocumented GET context routes]]
    [compojure.route]
 
    ;; Require the machine defining namespaces
    [laundry.machines :as machines]
+   laundry.antivirus
    laundry.docx
    laundry.xlsx
    laundry.image
@@ -24,13 +24,6 @@
 
 (defn timestamp []
   (.getTime (java.util.Date.)))
-
-(s/defn temp-file-input-stream [path :- s/Str]
-  (let [input (io/input-stream (io/file path))]
-    (proxy [java.io.FilterInputStream] [input]
-      (close []
-        (proxy-super close)
-        (io/delete-file path)))))
 
 (defn create-auth-middleware [env]
   (let [configured-password ((or (get env :basic-auth-password) (constantly nil)))]

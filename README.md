@@ -43,7 +43,7 @@ git clone https://github.com/solita/laundry.git
 ./laundry/docker-demo/build-and-run.sh
 ```
 
-The script builds the necessary docker images including a temporary `laundry-demo`. It starts a docker containers for the `laundry` HTTP server and for the ClamAV. The Docker host socket is exposed to the container, so that the `laundry-demo` can create temporary sibling containers for each conversion. `gVisor runsc` runtime is **not used** in the demo installation.
+The script builds the necessary docker images including a temporary `laundry-demo`. It starts docker containers for the `laundry` HTTP server and for the ClamAV. The Docker host socket is exposed to the container, so that the `laundry-demo` can create temporary sibling containers for each conversion. `gVisor runsc` runtime is **not used** in the demo installation.
 
 Default port is `8080`. The port can be given as parameter to the script
 

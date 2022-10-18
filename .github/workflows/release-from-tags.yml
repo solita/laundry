@@ -36,6 +36,6 @@ jobs:
           draft: true
           files: |
             release-${{ GITHUB.REF_NAME }}.tar.gz
-            docker-image-laundry-programs.tar.gz
+            docker-image-laundry-programs-${{ GITHUB.REF_NAME }}.tar.gz
           fail_on_unmatched_files: true
           generate_release_notes: true

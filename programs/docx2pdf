@@ -16,7 +16,6 @@ docker run \
   --network=none \
   --ipc=private \
   --memory $MEMORY_LIMIT \
-  --kernel-memory=100M \
   --cap-drop=ALL \
   -i \
   --rm \

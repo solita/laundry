@@ -4,12 +4,18 @@ set -u
 
 INPUT=$1
 OUTPUT=$2
+if [ "$CI" = "true" ]; then
+  MEMORY_LIMIT=0
+else
+  MEMORY_LIMIT="${LAUNDRY_MEMORY_LIMIT:-1g}"
+fi
+
 
 docker run \
   --runtime="${LAUNDRY_DOCKER_RUNTIME:-runsc}" \
   --network=none \
   --ipc=private \
-  --memory 1g \
+  --memory $MEMORY_LIMIT \
   --kernel-memory=100M \
   --cap-drop=ALL \
   -i \

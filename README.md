@@ -11,11 +11,11 @@ Antivirus products can mitigate the risks of malware, but they are imperfect. Th
 | Input  | Output | Uses                                        | Purpose |
 |--------|--------|---------------------------------------------|---------|
 | doc(x) | pdf    | [LibreOffice](https://www.libreoffice.org/) | Removes any embedded macros etc and turns .doc(x) to portable PDF which can be e.g. embedded in HTML. |
-| jpeg   | jpeg   | [ImageMagick](https://imagemagick.org/)     | Strip away all metadata and extraneous bytes, keep only pixel-by-pixel color data. Conversion performed with intermediate [PPM](https://en.wikipedia.org/wiki/Netpbm) format. |
+| jpeg   | jpeg   | [Independent JPEG Group libjpeg](https://ijg.org/)     | Strip away all metadata and extraneous bytes, keep only pixel-by-pixel color data. Conversion performed with intermediate [PPM](https://en.wikipedia.org/wiki/Netpbm) format. |
 | pdf    | pdf/a  | [Ghostscript](https://www.ghostscript.com/) | Clean up a PDF with conversion to [PDF/A](https://en.wikipedia.org/wiki/PDF/A) for archival purposes. Beware the potentially large file sizes. |
 | pdf    | jpeg   | [Ghostscript](https://www.ghostscript.com/) | Converts the first page to jpeg for thumbnails or previews. |
 | pdf    | text   | [Ghostscript](https://www.ghostscript.com/) | Extract plain text from a PDF. Does **not** perform [OCR](https://en.wikipedia.org/wiki/Optical_character_recognition). |
-| png    | png    | [ImageMagick](https://imagemagick.org/)     | Strip away all metadata and extraneous bytes, keep only pixel-by-pixel color data. Conversion performed with intermediate [PPM](https://en.wikipedia.org/wiki/Netpbm) format. |
+| png    | png    | [Netpbm](https://netpbm.sourceforge.net/)     | Strip away all metadata and extraneous bytes, keep only pixel-by-pixel color data. Conversion performed with intermediate [PPM](https://en.wikipedia.org/wiki/Netpbm) format. |
 | xls(x) | pdf    | [LibreOffice](https://www.libreoffice.org/) |  Removes any embedded macros etc and turns .xls(x) to portable PDF which can be e.g. embedded in HTML. |
 
 The `laundry` HTTP server provides an REST API and online tool to try out the conversions and antivirus scans directly from the browser. Optional API-key-based authorization is available.

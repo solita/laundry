@@ -15,5 +15,5 @@ docker run \
   -i \
   --rm \
   laundry-programs \
-  /bin/bash -c 'convert jpg:- ppm:- |convert -quality 97 ppm:- jpg:-' \
+  /bin/bash -c 'djpeg | cjpeg -quality 97' \
   < "$INPUT" > "$OUTPUT"

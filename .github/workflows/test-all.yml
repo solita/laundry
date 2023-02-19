@@ -2,7 +2,7 @@ name: "lein test: all"
 on: [push, pull_request]
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
       - name: test docker opts work in GHA env before gvisor

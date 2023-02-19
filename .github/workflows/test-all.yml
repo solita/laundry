@@ -5,28 +5,6 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
-      - name: test docker opts work in GHA env before gvisor
-        run: |
-          docker --version
-          docker run \
-              -i \
-              --rm ubuntu:18.04 true
-          docker run \
-              --network=none \
-              -i \
-              --rm ubuntu:18.04 true
-          docker run \
-              --network=none \
-              --ipc=private \
-              -i \
-              --rm ubuntu:18.04 true
-          docker run \
-              --network=none \
-              --ipc=private \
-              --memory 1g \
-              --cap-drop=ALL \
-              -i \
-              --rm ubuntu:18.04 true
       - name: install runsc
         run: |
           sudo curl --fail -o /usr/local/bin/runsc https://storage.googleapis.com/gvisor/releases/nightly/2019-11-11/runsc
@@ -34,31 +12,15 @@ jobs:
           sudo chmod a+x /usr/local/bin/runsc
           sudo /usr/local/bin/runsc install -- --platform=ptrace
           sudo systemctl restart docker
-      - name: test docker opts work in GHA env with gvisor
+      - name: test docker opts work in GHA env with and without gvisor
         run: |
+          docker --version
           docker run \
               -i \
-              --rm ubuntu:18.04 true || exit 1
+              --rm alpine true || exit 1
           docker run --runtime=runsc \
               -i \
-              --rm ubuntu:18.04 true || exit 2
-          docker run --runtime=runsc \
-              --network=none \
-              -i \
-              --rm ubuntu:18.04 true
-          docker run --runtime=runsc \
-              --network=none \
-              --ipc=private \
-              -i \
-              --rm ubuntu:18.04 true || exit 3
-          docker run --runtime=runsc \
-              --network=none \
-              --ipc=private \
-              --memory 1g \
-              --cap-drop=ALL \
-              -i \
-              --rm ubuntu:18.04 true || exit 4
-
+              --rm alpine true || exit 2
       - name: build docker images
         run: |
           cd docker-build

@@ -7,9 +7,16 @@ jobs:
       - uses: actions/checkout@v3
       - name: install runsc
         run: |
-          sudo curl --fail -o /usr/local/bin/runsc https://storage.googleapis.com/gvisor/releases/nightly/2019-11-11/runsc
-          echo "3a3ea9ef6d6f8f23e4748af925e23811946d719d5542e09e5afbadc086543cef2a69d78843683f2ec683d93395eb59c8738d791ca037d86832ded307465e9db3  /usr/local/bin/runsc" | sha512sum -c -
-          sudo chmod a+x /usr/local/bin/runsc
+          set -e
+          ARCH=$(uname -m)
+          URL=https://storage.googleapis.com/gvisor/releases/release/20230130/${ARCH}
+          sudo wget ${URL}/runsc ${URL}/runsc.sha512 \
+            ${URL}/containerd-shim-runsc-v1 ${URL}/containerd-shim-runsc-v1.sha512
+          sha512sum -c runsc.sha512 \
+            -c containerd-shim-runsc-v1.sha512
+          sudo rm -f *.sha512
+          sudo chmod a+rx runsc containerd-shim-runsc-v1
+          sudo mv runsc containerd-shim-runsc-v1 /usr/local/bin
           sudo /usr/local/bin/runsc install -- --platform=ptrace
           sudo systemctl restart docker
       - name: test docker opts work in GHA env with and without gvisor

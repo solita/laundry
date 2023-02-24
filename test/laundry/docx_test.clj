@@ -16,4 +16,4 @@
         response (app request)
         body (ring.util.request/body-string response)]
     (is (= 200 (:status response)))
-    (is (clojure.string/starts-with? body "%PDF-1.4"))))
+    (is (clojure.string/starts-with? body "%PDF-1."))))

@@ -14,5 +14,6 @@ docker run \
   -i \
   --rm \
   laundry-programs \
-  /bin/bash -c 'gs -q -dPDFA -dBATCH -dNOPAUSE -sProcessColorModel=DeviceCMYK -sDEVICE=pdfwrite -dPDFACompatibilityPolicy=1 -sOutputFile=- -' \
-  < "$INPUT" > "$OUTPUT"
+    /bin/bash -c 'cat > /home/docconv/document.pdf && \
+    gs -q -dPDFA -dBATCH -dNOPAUSE -sProcessColorModel=DeviceCMYK -sDEVICE=pdfwrite -dPDFACompatibilityPolicy=1 -sOutputFile=- /home/docconv/document.pdf' \
+    < "$INPUT" > "$OUTPUT"

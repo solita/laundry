@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - "v*.*.*"
+      - "release-workflow-test"
 
 jobs:
   build:
@@ -13,7 +14,7 @@ jobs:
       - name: Build HTTP server (laundry.jar)
         run: |
           export LEIN_HOME="/home/runner/work"
-          curl --fail -o /home/runner/work/lein https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
+          curl --fail -o /home/runner/work/lein https://raw.githubusercontent.com/technomancy/leiningen/2.9.10/bin/lein
           chmod u+x /home/runner/work/lein
           lein uberjar
       - name: Create release tar gzip with HTTP server, programs and documentation

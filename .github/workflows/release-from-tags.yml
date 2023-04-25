@@ -4,7 +4,7 @@ on:
   push:
     tags:
       - "v*.*.*"
-      - "release-workflow-test"
+      - "release-workflow-test*"
 
 jobs:
   build:

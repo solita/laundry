@@ -17,7 +17,7 @@
        [ring/ring "1.8.0"]
        [ring/ring-defaults "0.3.2"]]
    :source-paths ["src"]
-   :target-path "target/%s/"
+   :target-path "target/default+uberjar/"
    :profiles
       {:dev
        {:dependencies [[peridot "0.5.2"]

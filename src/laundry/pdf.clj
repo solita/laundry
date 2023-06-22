@@ -18,11 +18,12 @@
         (io/delete-file path)))))
 
 ;; pdf/a converter
-(s/defn api-pdf2pdfa [env, tempfile :- java.io.File]
+(s/defn api-pdf2pdfa [env, tempfile :- java.io.File, dpinum :- s/Int]
   (let [in-path (.getAbsolutePath tempfile)
         out-path  (str (.getAbsolutePath tempfile) ".pdf")
+        dpi (str dpinum)
         res (shell-out! (str (:tools env) "/pdf2pdfa")
-                        in-path out-path)]
+                        in-path out-path dpi)]
     (.delete tempfile)
     (if (= (:exit res) 0)
       (htresp/content-type
@@ -77,10 +78,11 @@
          (api-pdf2txt env tempfile)))
      (POST "/pdf2pdfa" []
        :summary "attempt to convert a PDF file to PDF/A"
+       :query-params [{dpi :- s/Int 720}]
        :multipart-params [file :- upload/TempFileUpload]
        :middleware [wrap-multipart-params]
        (let [tempfile (:tempfile file)
              filename (:filename file)]
          (info "PDF converter received " filename "(" (:size file) "b)")
          (.deleteOnExit tempfile) ;; cleanup if VM is terminated
-         (api-pdf2pdfa env tempfile))))))
+         (api-pdf2pdfa env tempfile dpi))))))

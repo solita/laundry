@@ -4,6 +4,15 @@ set -u
 
 INPUT=$1
 OUTPUT=$2
+DPI=$3
+if [ -z "$DPI" ]; then
+  DPI=720
+fi
+re='^[0-9]+$'
+if ! [[ $DPI =~ $re ]] ; then
+  echo "error: DPI is not a number"
+  exit 2
+fi
 
 docker run \
   --runtime="${LAUNDRY_DOCKER_RUNTIME:-runsc}" \
@@ -15,5 +24,5 @@ docker run \
   --rm \
   laundry-programs \
     /bin/bash -c 'cat > /home/docconv/document.pdf && \
-    gs -q -dPDFA -dBATCH -dNOPAUSE -sProcessColorModel=DeviceCMYK -sDEVICE=pdfwrite -dPDFACompatibilityPolicy=1 -sOutputFile=- /home/docconv/document.pdf' \
+    gs -q -dPDFA -dBATCH -dNOPAUSE -r'$DPI' -sProcessColorModel=DeviceCMYK -sDEVICE=pdfwrite -dPDFACompatibilityPolicy=1 -sOutputFile=- /home/docconv/document.pdf' \
     < "$INPUT" > "$OUTPUT"

@@ -46,6 +46,7 @@
         request (-> (mock/request :post "/pdf/pdf2pdfa")
                     (assoc-in [:query-params :dpi] 720)
                     (assoc-in [:query-params :maxbitmap] 0)
+                    (assoc-in [:query-params :pdfsettings] "/default")
                     (merge (peridot.multipart/build {:file file})))
         response (app request)
         body (ring.util.request/body-string response)]

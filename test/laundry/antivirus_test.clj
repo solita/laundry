@@ -11,10 +11,12 @@
 
 (defn query-clamav-health! []
   (let [ret (shell/sh
-             "docker" "inspect" "-f" "{{.State.Running}}" "laundry-clamav")]
-    (-> ret
-        :out
-        string/trim-newline)))
+             "docker" "inspect" "-f" "{{.State.Running}}" "laundry-clamav")
+        health (-> ret
+                   :out
+                   string/trim-newline)]
+    (println "health status:" health)
+    health))
 
 (defn laundry-clamav-fixture! [f]
   (shell/sh "docker" "run" "--name" "laundry-clamav" "--env" "CLAMAV_NO_FRESHCLAMD=true" "--network=none" "--rm" "-d" "clamav/clamav:latest")

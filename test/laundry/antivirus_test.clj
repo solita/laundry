@@ -9,10 +9,21 @@
    [ring.mock.request :as mock]
    [ring.util.request]))
 
+(defn query-clamav-health! []
+  (let [ret (shell/sh
+             "docker" "inspect" "-f" "{{.State.Health.Status}}" "laundry-clamav")
+        health (-> ret
+                   :out
+                   string/trim-newline)]
+    (println "health status:" health)
+    health))
+
 (defn laundry-clamav-fixture! [f]
   (shell/sh "docker" "run" "--name" "laundry-clamav" "--env" "CLAMAV_NO_FRESHCLAMD=true" "--network=none" "--rm" "-d" "clamav/clamav:latest")
-  ;; clamd bootup is somewhat slow, thus need to sleep a bit before container can be used
-  (Thread/sleep 30000)
+  ;; clamd bootup is slow, thus need to wait for container healthy stat
+  (while (not= "healthy" (query-clamav-health!))
+    (println "waiting for clamav container healthy status")
+    (Thread/sleep 5000))
   (f)
   (shell/sh "docker" "stop" "laundry-clamav"))
 

@@ -11,7 +11,7 @@
 
 (defn query-clamav-health! []
   (let [ret (shell/sh
-             "docker" "inspect" "-f" "{{.State.Running}}" "laundry-clamav")
+             "docker" "inspect" "-f" "{{.State.Health.Status}}" "laundry-clamav")
         health (-> ret
                    :out
                    string/trim-newline)]

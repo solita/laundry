@@ -4,6 +4,44 @@ set -u
 
 INPUT=$1
 OUTPUT=$2
+DPI=$3
+MAXBITMAP=$4
+PDFSETTINGS=$5
+
+if [ -z "$DPI" ]; then
+  DPI=720
+fi
+re='^[0-9]+$'
+if ! [[ $DPI =~ $re ]] ; then
+  echo "error: DPI is not a number"
+  exit 2
+fi
+
+
+if [ -n "$PDFSETTINGS" ]; then
+  valid_settings=("/screen" "/ebook" "/printer" "/prepress" "/default")
+  for i in "${valid_settings[@]}"
+  do
+    if [ "$i" = "$PDFSETTINGS" ] ; then
+      found=true
+    fi
+  done
+  if [ "$found" != true ]; then
+    echo "error: Invalid PDFSETTINGS value"
+    exit 2
+  fi
+  PDFSETTINGS="-dPDFSETTINGS=$PDFSETTINGS"
+else
+  PDFSETTINGS="-dPDFSETTINGS=/default"
+fi
+
+if [ -z "$MAXBITMAP" ]; then
+  MAXBITMAP=0
+fi
+if ! [[ $MAXBITMAP =~ $re ]] ; then
+  echo "error: MAXBITMAP is not a number"
+  exit 2
+fi
 
 docker run \
   --runtime="${LAUNDRY_DOCKER_RUNTIME:-runsc}" \
@@ -15,5 +53,5 @@ docker run \
   --rm \
   laundry-programs \
     /bin/bash -c 'cat > /home/docconv/document.pdf && \
-    gs -q -dPDFA -dBATCH -dNOPAUSE -sProcessColorModel=DeviceCMYK -sDEVICE=pdfwrite -dPDFACompatibilityPolicy=1 -sOutputFile=- /home/docconv/document.pdf' \
+    gs -q -dPDFA -dBATCH -dNOPAUSE -r'$DPI' -dMaxBitmap='$MAXBITMAP' '$PDFSETTINGS' -sProcessColorModel=DeviceCMYK -sDEVICE=pdfwrite -dPDFACompatibilityPolicy=1 -sOutputFile=- /home/docconv/document.pdf' \
     < "$INPUT" > "$OUTPUT"

@@ -39,6 +39,21 @@
     (is (= "application/pdf" (get-in response [:headers "Content-Type"])))
     (is (clojure.string/starts-with? body "%PDF-"))))
 
+(deftest ^:integration api-pdf-pdf2pdfa-with-opt-args
+  (let [app (fixture/get-app)
+        file (io/file (io/resource "hypno.pdf"))
+        _ (assert file)
+        request (-> (mock/request :post "/pdf/pdf2pdfa")
+                    (assoc-in [:query-params :dpi] 720)
+                    (assoc-in [:query-params :maxbitmap] 0)
+                    (assoc-in [:query-params :pdfsettings] "/default")
+                    (merge (peridot.multipart/build {:file file})))
+        response (app request)
+        body (ring.util.request/body-string response)]
+    (is (= 200 (:status response)))
+    (is (= "application/pdf" (get-in response [:headers "Content-Type"])))
+    (is (clojure.string/starts-with? body "%PDF-"))))
+
 (deftest ^:integration api-pdf-pdf2txt
   (let [app (fixture/get-app)
         file (io/file (io/resource "hypno.pdf"))

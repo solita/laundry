@@ -80,7 +80,7 @@
          (api-pdf2txt env tempfile)))
      (POST "/pdf2pdfa" []
        :summary "attempt to convert a PDF file to PDF/A"
-       :query-params [{dpi :- s/Int 720} {maxbitmap :- s/Int 0} {pdfsettings :- s/Str "/default"}]
+       :query-params #_{:clj-kondo/ignore [:unresolved-symbol]} [{dpi :- s/Int 720} {maxbitmap :- s/Int 0} {pdfsettings :- s/Str "/default"}]
        :multipart-params [file :- upload/TempFileUpload]
        :middleware [wrap-multipart-params]
        (let [tempfile (:tempfile file)

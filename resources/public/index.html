@@ -9,7 +9,8 @@ a:hover { color: #098809; text-decoration: underline }
   var pdfParameters = [
     {"type": "pdf/pdf2pdfa", key: "dpi", dtype: "number", wrapper: "pdf_dpi_elem", elem: "pdf_dpi" },
     {"type": "pdf/pdf2pdfa", key: "maxbitmap", dtype: "number", wrapper: "pdf_maxbitmap_elem", elem: "pdf_maxbitmap" },
-    {"type": "pdf/pdf2pdfa", key: "pdfsettings", wrapper: "pdf_pdfsettings_elem", elem: "pdf_pdfsettings" }
+    {"type": "pdf/pdf2pdfa", key: "pdfsettings", wrapper: "pdf_pdfsettings_elem", elem: "pdf_pdfsettings" },
+    {"type": "pdf/pdf2pdfa", key: "pdfaconformance", dtype: "number", wrapper: "pdf_pdfaconformance_elem", elem: "pdf_pdfaconformance" }
   ]
 
   function updateConversionParameters() {
@@ -103,6 +104,9 @@ a:hover { color: #098809; text-decoration: underline }
    </div>
    <div id="pdf_pdfsettings_elem">
      <input type="text" id="pdf_pdfsettings" name="pdfsettings" value="/default"> Pdfsettings
+   </div>
+   <div id="pdf_pdfaconformance_elem">
+     <input type="number" id="pdf_pdfaconformance" name="pdfaconformance" value="1"> Pdf/a conformance (Valid values: 1-3)
    </div>
    <form id="pdfop">
    <input type="file" name="file">

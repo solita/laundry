@@ -47,6 +47,7 @@
                     (assoc-in [:query-params :dpi] 720)
                     (assoc-in [:query-params :maxbitmap] 0)
                     (assoc-in [:query-params :pdfsettings] "/default")
+                    (assoc-in [:query-params :pdfaconformance] 2)
                     (merge (peridot.multipart/build {:file file})))
         response (app request)
         body (ring.util.request/body-string response)]

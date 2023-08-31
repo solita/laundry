@@ -17,21 +17,28 @@
         (proxy-super close)
         (io/delete-file path)))))
 
+(s/defn validate-pdf-settings [pdfsettings :- s/Str]
+  (when-not (#{"/screen" "/ebook" "/printer" "/prepress" "/default"} pdfsettings) "pdfsettings is not given in correct format"))
+
 ;; pdf/a converter
-(s/defn api-pdf2pdfa [env, tempfile :- java.io.File, dpinum :- s/Int, maxbitmapnum :- s/Int, pdfsettings :- s/Str]
-  (let [in-path (.getAbsolutePath tempfile)
-        out-path  (str (.getAbsolutePath tempfile) ".pdf")
-        dpi (str dpinum)
-        maxbitmap (str maxbitmapnum)
-        pdfsettings (str pdfsettings)
-        res (shell-out! (str (:tools env) "/pdf2pdfa")
-                        in-path out-path dpi maxbitmap pdfsettings)]
-    (.delete tempfile)
-    (if (= (:exit res) 0)
-      (htresp/content-type
-       (htresp/ok (temp-file-input-stream out-path))
-       "application/pdf")
-      (badness-resp "pdf2pdfa conversion failed" res))))
+(s/defn api-pdf2pdfa [env, tempfile :- java.io.File, dpinum :- s/Int, maxbitmapnum :- s/Int, pdfsettings :- s/Str, pdfaconformancenum :- s/Int]
+  (if-let [pdfsettings-error (validate-pdf-settings (str pdfsettings))] 
+    (badness-resp pdfsettings-error pdfsettings-error)
+
+    (let [in-path (.getAbsolutePath tempfile)
+          out-path  (str (.getAbsolutePath tempfile) ".pdf")
+          dpi (str dpinum)
+          maxbitmap (str maxbitmapnum)
+          pdfsettings (str pdfsettings)
+          pdfaconformance (str pdfaconformancenum)
+          res (shell-out! (str (:tools env) "/pdf2pdfa")
+                          in-path out-path dpi maxbitmap pdfsettings pdfaconformance)]
+      (.delete tempfile)
+      (if (= (:exit res) 0)
+        (htresp/content-type
+         (htresp/ok (temp-file-input-stream out-path))
+         "application/pdf")
+        (badness-resp "pdf2pdfa conversion failed" res)))))
 
 ;; pdf → txt conversion
 (s/defn api-pdf2txt [env, tempfile :- java.io.File]
@@ -80,11 +87,11 @@
          (api-pdf2txt env tempfile)))
      (POST "/pdf2pdfa" []
        :summary "attempt to convert a PDF file to PDF/A"
-       :query-params #_{:clj-kondo/ignore [:unresolved-symbol]} [{dpi :- s/Int 720} {maxbitmap :- s/Int 0} {pdfsettings :- s/Str "/default"}]
+       :query-params #_{:clj-kondo/ignore [:unresolved-symbol]} [{dpi :- s/Int 720} {maxbitmap :- s/Int 0} {pdfsettings :- s/Str "/default"} {pdfaconformance :- s/Int 1}]
        :multipart-params [file :- upload/TempFileUpload]
        :middleware [wrap-multipart-params]
        (let [tempfile (:tempfile file)
              filename (:filename file)]
          (info "PDF converter received " filename "(" (:size file) "b)")
          (.deleteOnExit tempfile) ;; cleanup if VM is terminated
-         (api-pdf2pdfa env tempfile dpi maxbitmap pdfsettings))))))
+         (api-pdf2pdfa env tempfile dpi maxbitmap pdfsettings pdfaconformance))))))

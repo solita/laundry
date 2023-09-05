@@ -1,7 +1,8 @@
 FROM ubuntu:18.04
 RUN apt-get update && apt-get -y upgrade && apt-get -y install \
     ghostscript \
-    imagemagick \
+    libjpeg-progs \
+    netpbm \
     libreoffice-writer \
     libreoffice-calc \
  && rm -rf /var/lib/apt/lists/*

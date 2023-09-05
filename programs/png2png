@@ -14,5 +14,5 @@ docker run \
   -i \
   --rm \
   laundry-programs \
-  /bin/bash -c 'convert png:- ppm:- |convert ppm:- png:-' \
+  /bin/bash -c 'pngtopnm | pnmtopng' \
   < "$INPUT" > "$OUTPUT"

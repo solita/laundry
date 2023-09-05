@@ -1,6 +1,7 @@
 (ns laundry.pdf
   (:require
    [clojure.java.io :as io]
+   [clojure.string :as str]
    [compojure.api.sweet :as sweet :refer [POST]]
    [laundry.machines :as machines :refer [badness-resp]]
    [laundry.util :refer [shell-out!]]
@@ -17,13 +18,20 @@
         (proxy-super close)
         (io/delete-file path)))))
 
+(def valid-pdf-settings
+  "Valid values for pdf settings parameter"
+  #{"/screen" "/ebook" "/printer" "/prepress" "/default"})
+
 (s/defn validate-pdf-settings [pdfsettings :- s/Str]
-  (when-not (#{"/screen" "/ebook" "/printer" "/prepress" "/default"} pdfsettings) "pdfsettings is not given in correct format"))
+  (when-not (valid-pdf-settings pdfsettings)
+    (str "pdfsettings must be one of: " (str/join ", " valid-pdf-settings))))
 
 ;; pdf/a converter
 (s/defn api-pdf2pdfa [env, tempfile :- java.io.File, dpinum :- s/Int, maxbitmapnum :- s/Int, pdfsettings :- s/Str, pdfaconformancenum :- s/Int]
-  (if-let [pdfsettings-error (validate-pdf-settings (str pdfsettings))] 
-    (badness-resp pdfsettings-error pdfsettings-error)
+  (if-let [pdfsettings-error (validate-pdf-settings (str pdfsettings))]
+    (htresp/content-type
+     (htresp/bad-request pdfsettings-error)
+     "text/plain")
 
     (let [in-path (.getAbsolutePath tempfile)
           out-path  (str (.getAbsolutePath tempfile) ".pdf")

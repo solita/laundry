@@ -15,7 +15,7 @@ jobs:
           export LEIN_HOME="/home/runner/work"
           curl --fail -o /home/runner/work/lein https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
           chmod u+x /home/runner/work/lein
-          lein uberjar
+          /home/runner/work/lein uberjar
       - name: Create release tar gzip with HTTP server, programs and documentation
         run: |
           mkdir "release-${{ GITHUB.REF_NAME }}"

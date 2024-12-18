@@ -270,6 +270,8 @@ Install the prerequisites:
  
 **Note:** We recommend running [Docker Bench for Security](https://github.com/docker/docker-bench-security) before proceeding with the installation. It checks your Docker installation for common security-related best practices.
 
+Note that the Ubuntu 24.04 LTS -image is tested with gVisor version 20241210. Previously used version in tests was 20230130, which did not work with the newest Ubuntu LTS.
+
 Download [a release](https://github.com/solita/laundry/releases) and lets and install laundry as systemd service. The following example assumes that:
 
 - Current user is `laundry`

@@ -4,6 +4,7 @@ set -u
 
 INPUT=$1
 OUTPUT=$2
+PDFVERSION=$3
 
 docker run \
   --runtime="${LAUNDRY_DOCKER_RUNTIME:-runsc}" \
@@ -18,7 +19,7 @@ docker run \
     mkdir -p /home/docconv/out &&  umask 077 &&      \
     soffice                                          \
     --headless                                       \
-    --convert-to pdf:writer_pdf_Export               \
+    --convert-to pdf:writer_pdf_Export:"{\"SelectPdfVersion\":{\"type\":\"long\",\"value\":'\"$PDFVERSION\"'}}" \
     --outdir /home/docconv/out                       \
     /home/docconv/document.docx > conv.out 2>&1;     \
     tar -cf - conv.out out/*; ls -la . out >> conv.out' \
